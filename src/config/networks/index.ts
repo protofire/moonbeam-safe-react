@@ -7,6 +7,7 @@ import volta from './volta'
 import polygon from './polygon'
 import bsc from './bsc'
 import moonbase from './moonbase'
+import moonriver from './moonriver'
 
 export default {
   local,
@@ -18,4 +19,5 @@ export default {
   polygon,
   bsc,
   moonbase,
+  moonriver,
 }
