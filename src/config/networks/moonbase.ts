@@ -2,14 +2,14 @@ import devLogo from 'src/config/assets/token_eth.svg'
 import { EnvironmentSettings, ETHEREUM_NETWORK, FEATURES, NetworkConfig, WALLETS } from 'src/config/networks/network.d'
 
 const baseConfig: EnvironmentSettings = {
-  clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/',
-  txServiceUrl: 'https://transaction.moonbase.multisig.moonbeam.network/',
+  clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network',
+  txServiceUrl: 'https://transaction.moonbase.multisig.moonbeam.network',
   safeUrl: 'https://multisig.moonbeam.network',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   safeAppsRpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   networkExplorerName: 'Blockscout Moonbase DEV Explorer',
-  networkExplorerUrl: 'https://moonbase-blockscout.testnet.moonbeam.network/',
+  networkExplorerUrl: 'https://moonbase-blockscout.testnet.moonbeam.network',
   networkExplorerApiUrl: 'https://moonbase-blockscout.testnet.moonbeam.network/api',
 }
 
