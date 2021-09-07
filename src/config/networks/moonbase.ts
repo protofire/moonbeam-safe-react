@@ -2,9 +2,9 @@ import devLogo from 'src/config/assets/token_eth.svg'
 import { EnvironmentSettings, ETHEREUM_NETWORK, FEATURES, NetworkConfig, WALLETS } from 'src/config/networks/network.d'
 
 const baseConfig: EnvironmentSettings = {
-  clientGatewayUrl: 'https://client.testnet.moonbeam.network/v1/chains/',
-  txServiceUrl: 'https://client.testnet.moonbeam.network/safe-transaction-service/api/v1/about/',
-  safeUrl: 'https://alpha-safe-react.s3-website-us-west-1.amazonaws.com/',
+  clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/',
+  txServiceUrl: 'https://transaction.moonbase.multisig.moonbeam.network/',
+  safeUrl: 'https://multisig.moonbeam.network',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   safeAppsRpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
