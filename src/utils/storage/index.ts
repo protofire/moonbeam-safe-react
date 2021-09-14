@@ -10,6 +10,7 @@ const stores = [IndexedDbStore, LocalStorageStore]
 export const storage = new ImmortalStorage(stores)
 
 const PREFIX = `v2_${getNetworkName()}`
+console.log(`[Storage] Prefix: ${PREFIX}`)
 
 export const loadFromStorage = async <T = unknown>(key: string): Promise<T | undefined> => {
   try {

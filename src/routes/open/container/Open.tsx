@@ -79,6 +79,9 @@ const getSafePropsValuesFromQueryParams = (queryParams: SafeCreationQueryParams)
 }
 
 export const createSafe = async (values: CreateSafeValues, userAccount: string): Promise<TransactionReceipt> => {
+  console.log('Creating safe...values', values, userAccount)
+  console.log('Creating safe...userAccount', userAccount)
+
   return new Promise((resolve, reject) => {
     const confirmations = getThresholdFrom(values)
     const ownerAddresses = getAccountsFrom(values)
@@ -143,6 +146,7 @@ const Open = (): ReactElement => {
   useEffect(() => {
     const load = async () => {
       const pendingCreation = await loadFromStorage<{ txHash: string }>(SAFE_PENDING_CREATION_STORAGE_KEY)
+      console.log('Open.tsx pendingCreation', pendingCreation)
       if (pendingCreation && pendingCreation.txHash) {
         setSafeCreationPendingInfo(pendingCreation)
         setShowProgress(true)
@@ -167,6 +171,9 @@ const Open = (): ReactElement => {
     }
 
     const receiptPromise = createSafe(values, userAccount)
+    receiptPromise.then((receipt) => {
+      console.log('receiptPromise', receipt)
+    })
     setCreationTxPromise(receiptPromise)
     setShowProgress(true)
   }
@@ -242,6 +249,7 @@ const Open = (): ReactElement => {
 
   return (
     <Page>
+      {console.log('showProgress', showProgress)}
       {showProgress ? (
         <SafeDeployment
           creationTxHash={safeCreationPendingInfo?.txHash}
