@@ -16,7 +16,7 @@ import Row from 'src/components/layout/Row'
 import { headerHeight, md, screenSm, sm } from 'src/theme/variables'
 import { useStateHandler } from 'src/logic/hooks/useStateHandler'
 
-import SafeLogo from '../assets/gnosis-safe-multisig-logo.svg'
+import SafeLogo from '../assets/moonbeam_logo.svg'
 import { getNetworks } from 'src/config'
 import { shouldSwitchNetwork } from 'src/logic/wallets/utils/network'
 
@@ -74,7 +74,7 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
     <Row className={classes.summary}>
       <Col className={classes.logo} middle="xs" start="xs">
         <Link to="/">
-          <Img alt="Gnosis Team Safe" height={36} src={SafeLogo} testId="heading-gnosis-logo" />
+          <Img alt="Moonbeam Safe" height={36} src={SafeLogo} testId="heading-gnosis-logo" />
         </Link>
       </Col>
       <Spacer />

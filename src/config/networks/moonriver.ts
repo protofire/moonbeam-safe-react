@@ -1,4 +1,4 @@
-import devLogo from 'src/config/assets/token_eth.svg'
+import devLogo from 'src/config/assets/token_movr.svg'
 import { EnvironmentSettings, ETHEREUM_NETWORK, FEATURES, NetworkConfig, WALLETS } from 'src/config/networks/network.d'
 
 const baseConfig: EnvironmentSettings = {
