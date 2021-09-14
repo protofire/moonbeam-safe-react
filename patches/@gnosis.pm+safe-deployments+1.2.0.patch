@@ -1,0 +1,156 @@
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json
+index ace2283..13c2a62 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json
+@@ -11,6 +11,8 @@
+         "88": "0xd5D82B6aDDc9027B22dCA772Aa68D5d74cdBdF44",
+         "100": "0xd5D82B6aDDc9027B22dCA772Aa68D5d74cdBdF44",
+         "246": "0xd5D82B6aDDc9027B22dCA772Aa68D5d74cdBdF44",
++        "1285": "0xd5D82B6aDDc9027B22dCA772Aa68D5d74cdBdF44",
++        "1287": "0xd5D82B6aDDc9027B22dCA772Aa68D5d74cdBdF44",
+         "73799": "0xd5D82B6aDDc9027B22dCA772Aa68D5d74cdBdF44"
+     },
+     "abi": [
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json
+index e7686fe..d5a79f2 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json
+@@ -11,6 +11,8 @@
+         "88": "0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F",
+         "100": "0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F",
+         "246": "0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F",
++        "1285": "0xdB6FC7603DdC91F027379267A3549D28E65484D5",
++        "1287": "0xE88b05409C27686EF28F9905d345B8dE56dF50DE",
+         "73799": "0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F"
+     },
+     "abi": [
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/multi_send.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/multi_send.json
+index 4362bf2..a56671a 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/multi_send.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/multi_send.json
+@@ -11,6 +11,8 @@
+         "88": "0x8D29bE29923b68abfDD21e541b9374737B49cdAD",
+         "100": "0x8D29bE29923b68abfDD21e541b9374737B49cdAD",
+         "246": "0x8D29bE29923b68abfDD21e541b9374737B49cdAD",
++        "1285": "0x8D29bE29923b68abfDD21e541b9374737B49cdAD",
++        "1287": "0x8D29bE29923b68abfDD21e541b9374737B49cdAD",
+         "73799": "0x8D29bE29923b68abfDD21e541b9374737B49cdAD"
+     },
+     "abi": [
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/proxy_factory.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/proxy_factory.json
+index 0004e5e..e8ef677 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/proxy_factory.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.1.1/proxy_factory.json
+@@ -11,6 +11,8 @@
+         "88": "0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F9B",
+         "100": "0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F9B",
+         "246": "0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F9B",
++        "1285": "0xAADFe7925b0Cad895665aDE74f5848043B8c4b7D",
++        "1287": "0x4e84bA733D2456477bEFBC643E8905e9744D16C1",
+         "73799": "0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F9B"
+     },
+     "abi": [
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json
+index eb2a772..a684c49 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json
+@@ -12,6 +12,8 @@
+         "100": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "137": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "246": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
++        "1285": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
++        "1287": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "4002": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "42161": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "73799": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4"
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json
+index bdaa7e9..9f3ec95 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json
+@@ -12,6 +12,8 @@
+         "100": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "137": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "246": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
++        "1285": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
++        "1287": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "4002": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "42161": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "73799": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4"
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json
+index 5c81e4a..31f5366 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json
+@@ -12,6 +12,8 @@
+         "100": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+         "137": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+         "246": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
++        "1285": "0xdB6FC7603DdC91F027379267A3549D28E65484D5",
++        "1287": "0xE88b05409C27686EF28F9905d345B8dE56dF50DE",
+         "4002": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+         "42161": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+         "73799": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json
+index ca7ab82..dab348e 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json
+@@ -12,6 +12,8 @@
+         "100": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+         "137": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+         "246": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
++        "1285": "0x293557aAaBfeB45859366e42fc8AF80291425975",
++        "1287": "0x0cC8a3a24727Fca7162De39F7dBD281576d4e1B3",
+         "4002": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+         "42161": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+         "73799": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json
+index 4ee74a8..6336d79 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json
+@@ -12,6 +12,8 @@
+         "100": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "137": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "246": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
++        "1285": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
++        "1287": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "4002": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "42161": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "73799": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761"
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json
+index 08a740f..8431ce5 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json
+@@ -12,6 +12,8 @@
+         "100": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "137": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "246": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
++        "1285": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
++        "1287": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "4002": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "42161": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "73799": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D"
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
+index 8415039..3904d97 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
+@@ -12,6 +12,8 @@
+         "100": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+         "137": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+         "246": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
++        "1285": "0xAADFe7925b0Cad895665aDE74f5848043B8c4b7D",
++        "1287": "0x4e84bA733D2456477bEFBC643E8905e9744D16C1",
+         "4002": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+         "42161": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+         "73799": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2"
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json
+index 8f22e5c..5022da5 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json
+@@ -12,6 +12,8 @@
+         "100": "0xa25b3579a295be016de5eb5F082b54B12d45F72C",
+         "137": "0xa25b3579a295be016de5eb5F082b54B12d45F72C",
+         "246": "0xa25b3579a295be016de5eb5F082b54B12d45F72C",
++        "1285": "0xa25b3579a295be016de5eb5F082b54B12d45F72C",
++        "1287": "0xa25b3579a295be016de5eb5F082b54B12d45F72C",
+         "4002": "0xa25b3579a295be016de5eb5F082b54B12d45F72C",
+         "42161": "0xa25b3579a295be016de5eb5F082b54B12d45F72C",
+         "73799": "0xa25b3579a295be016de5eb5F082b54B12d45F72C"
