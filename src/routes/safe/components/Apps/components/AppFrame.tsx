@@ -1,14 +1,19 @@
 import React, { ReactElement, useState, useRef, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
-import { FixedIcon, Loader, Title, Card } from '@gnosis.pm/safe-react-components'
-import { GetBalanceParams, GetTxBySafeTxHashParams, MethodToResponse, RPCPayload } from '@gnosis.pm/safe-apps-sdk'
+import { Loader, Title, Card } from '@gnosis.pm/safe-react-components'
+import {
+  GetBalanceParams,
+  GetTxBySafeTxHashParams,
+  MethodToResponse,
+  RPCPayload,
+  Methods,
+} from '@gnosis.pm/safe-apps-sdk'
 import { generatePath, useHistory } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { INTERFACE_MESSAGES, Transaction, RequestId, LowercaseNetworks } from '@gnosis.pm/safe-apps-sdk-v1'
 import Web3 from 'web3'
 
 import { currentSafe } from 'src/logic/safe/store/selectors'
-import { grantedSelector } from 'src/routes/safe/container/selector'
 import { getNetworkId, getNetworkName, getSafeAppsRpcServiceUrl, getTxServiceUrl } from 'src/config'
 import { SAFE_ROUTES } from 'src/routes/routes'
 import { isSameURL } from 'src/utils/url'
@@ -27,14 +32,6 @@ import { fetchTokenCurrenciesBalances } from 'src/logic/safe/api/fetchTokenCurre
 import { fetchSafeTransaction } from 'src/logic/safe/transactions/api/fetchSafeTransaction'
 import { logError, Errors } from 'src/logic/exceptions/CodedException'
 import { addressBookEntryName } from 'src/logic/addressBook/store/selectors'
-
-const OwnerDisclaimer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  height: 476px;
-`
 
 const AppWrapper = styled.div`
   display: flex;
@@ -87,7 +84,6 @@ const safeAppWeb3Provider = new Web3.providers.HttpProvider(getSafeAppsRpcServic
 })
 
 const AppFrame = ({ appUrl }: Props): ReactElement => {
-  const granted = useSelector(grantedSelector)
   const { address: safeAddress, ethBalance, owners, threshold } = useSelector(currentSafe)
   const safeName = useSelector((state) => addressBookEntryName(state, { address: safeAddress }))
   const { trackEvent } = useAnalytics()
@@ -170,7 +166,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       txServiceUrl: getTxServiceUrl(),
     }))
 
-    communicator?.on('getTxBySafeTxHash', async (msg) => {
+    communicator?.on(Methods.getTxBySafeTxHash, async (msg) => {
       const { safeTxHash } = msg.data.params as GetTxBySafeTxHashParams
 
       const tx = await fetchSafeTransaction(safeTxHash)
@@ -178,7 +174,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       return tx
     })
 
-    communicator?.on('getSafeInfo', () => ({
+    communicator?.on(Methods.getSafeInfo, () => ({
       safeAddress,
       network: NETWORK_NAME,
       chainId: parseInt(NETWORK_ID, 10),
@@ -186,7 +182,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       threshold,
     }))
 
-    communicator?.on('getSafeBalances', async (msg) => {
+    communicator?.on(Methods.getSafeBalances, async (msg) => {
       const { currency = 'usd' } = msg.data.params as GetBalanceParams
 
       const balances = await fetchTokenCurrenciesBalances({ safeAddress, selectedCurrency: currency })
@@ -194,7 +190,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       return balances
     })
 
-    communicator?.on('rpcCall', async (msg) => {
+    communicator?.on(Methods.rpcCall, async (msg) => {
       const params = msg.data.params as RPCPayload
 
       try {
@@ -222,7 +218,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       }
     })
 
-    communicator?.on('sendTransactions', (msg) => {
+    communicator?.on(Methods.sendTransactions, (msg) => {
       // @ts-expect-error explore ways to fix this
       openConfirmationModal(msg.data.params.txs as Transaction[], msg.data.params.params, msg.data.id)
     })
@@ -283,15 +279,6 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
 
   if (consentReceived === false) {
     return <LegalDisclaimer onCancel={redirectToBalance} onConfirm={onConsentReceipt} />
-  }
-
-  if (NETWORK_NAME === 'UNKNOWN' || !granted) {
-    return (
-      <OwnerDisclaimer>
-        <FixedIcon type="notOwner" />
-        <Title size="xs">To use apps, you must be an owner of this Safe</Title>
-      </OwnerDisclaimer>
-    )
   }
 
   return (

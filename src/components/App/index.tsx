@@ -32,6 +32,7 @@ import { grantedSelector } from 'src/routes/safe/container/selector'
 
 import ReceiveModal from './ReceiveModal'
 import { useSidebarItems } from 'src/components/AppLayout/Sidebar/useSidebarItems'
+import useAddressBookSync from 'src/logic/addressBook/hooks/useAddressBookSync'
 
 const notificationStyles = {
   success: {
@@ -80,6 +81,7 @@ const App: React.FC = ({ children }) => {
   // Temp information will be built from `addressFromUrl`
   const safeLoaded = useLoadSafe(safeAddress || addressFromUrl)
   useSafeScheduledUpdates(safeLoaded, safeAddress)
+  useAddressBookSync()
 
   const sendFunds = safeActionsState.sendFunds
   const formattedTotalBalance = currentSafeBalance ? formatAmountInUsFormat(currentSafeBalance.toString()) : ''
@@ -138,7 +140,7 @@ const App: React.FC = ({ children }) => {
             selectedToken={sendFunds.selectedToken}
           />
 
-          {safeAddress && safeName && (
+          {safeAddress && (
             <Modal
               description="Receive Tokens Form"
               handleClose={onReceiveHide}
