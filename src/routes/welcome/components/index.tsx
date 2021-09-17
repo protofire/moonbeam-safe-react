@@ -107,12 +107,12 @@ export const WelcomeLayout = ({ isOldMultisigMigration }: Props): React.ReactEle
               </StyledTitle>
             </TitleWrapper>
             <Text size="xl">
-              Gnosis Safe supports a wide range of wallets that you can choose to interact with your Safe.
+              Moonbeam Safe supports a wide range of wallets that you can choose to interact with your Safe.
             </Text>
             <StyledButtonLink textSize="xl" color="primary" iconType="externalLink" iconSize="sm">
               <LinkSRC
                 size="xl"
-                href="https://help.gnosis-safe.io/en/articles/4689442-why-do-i-need-to-connect-a-wallet"
+                href="https://docs.moonbeam.network/learn/platform/welcome/#wallets"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="More info about: Why do I need to connect a wallet?"

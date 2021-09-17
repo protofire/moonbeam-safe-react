@@ -1,5 +1,12 @@
 import devLogo from 'src/config/assets/token_movr.svg'
-import { EnvironmentSettings, ETHEREUM_NETWORK, FEATURES, NetworkConfig, WALLETS } from 'src/config/networks/network.d'
+import {
+  EnvironmentSettings,
+  ETHEREUM_LAYER,
+  ETHEREUM_NETWORK,
+  FEATURES,
+  NetworkConfig,
+  WALLETS,
+} from 'src/config/networks/network.d'
 
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonriver.multisig.moonbeam.network',
@@ -27,10 +34,11 @@ const moonriver: NetworkConfig = {
   },
   network: {
     id: ETHEREUM_NETWORK.MOONRIVER,
-    backgroundColor: '#8B50ED',
+    backgroundColor: ' #F2A007',
     textColor: '#ffffff',
     label: 'Moonriver',
     isTestNet: false,
+    ethereumLayer: ETHEREUM_LAYER.L2,
     nativeCoin: {
       address: '0x0000000000000000000000000000000000000000',
       name: 'MOVR',
