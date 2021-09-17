@@ -1,7 +1,7 @@
 import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
 import { default as networks } from 'src/config/networks'
 
-const { mainnet, xdai } = networks
+const { moonbase, moonriver } = networks
 
 describe('Config Services', () => {
   beforeEach(() => {
@@ -22,11 +22,11 @@ describe('Config Services', () => {
     expect(networkInfo.id).toBe(ETHEREUM_NETWORK.LOCAL)
   })
 
-  it(`should load 'mainnet' network config`, () => {
+  it(`should load 'moonriver' network config`, () => {
     // Given
     jest.mock('src/utils/constants', () => ({
       NODE_ENV: '',
-      NETWORK: 'MAINNET',
+      NETWORK: 'MOONRIVER',
     }))
     const { getNetworkInfo } = require('src/config')
 
@@ -34,17 +34,17 @@ describe('Config Services', () => {
     const networkInfo = getNetworkInfo()
 
     // Then
-    expect(networkInfo.id).toBe(ETHEREUM_NETWORK.MAINNET)
+    expect(networkInfo.id).toBe(ETHEREUM_NETWORK.MOONRIVER)
   })
 
-  it(`should load 'mainnet.dev' network config`, () => {
+  it(`should load 'moonriver.dev' network config`, () => {
     // Given
     jest.mock('src/utils/constants', () => ({
       NODE_ENV: '',
-      NETWORK: 'MAINNET',
+      NETWORK: 'MOONRIVER',
     }))
     const { getTxServiceUrl, getGnosisSafeAppsUrl } = require('src/config')
-    const TX_SERVICE_URL = mainnet.environment.dev?.txServiceUrl
+    const TX_SERVICE_URL = moonriver.environment.dev?.txServiceUrl
 
     // When
     const txServiceUrl = getTxServiceUrl()
@@ -53,14 +53,14 @@ describe('Config Services', () => {
     expect(TX_SERVICE_URL).toBe(txServiceUrl)
   })
 
-  it(`should load 'mainnet.staging' network config`, () => {
+  it(`should load 'moonriver.staging' network config`, () => {
     // Given
     jest.mock('src/utils/constants', () => ({
       NODE_ENV: 'production',
-      NETWORK: 'MAINNET',
+      NETWORK: 'MOONRIVER',
     }))
     const { getTxServiceUrl } = require('src/config')
-    const TX_SERVICE_URL = mainnet.environment.staging?.txServiceUrl
+    const TX_SERVICE_URL = moonriver.environment.staging?.txServiceUrl
 
     // When
     const txServiceUrl = getTxServiceUrl()
@@ -69,15 +69,15 @@ describe('Config Services', () => {
     expect(TX_SERVICE_URL).toBe(txServiceUrl)
   })
 
-  it(`should load 'mainnet.production' network config`, () => {
+  it(`should load 'moonriver.production' network config`, () => {
     // Given
     jest.mock('src/utils/constants', () => ({
       NODE_ENV: 'production',
-      NETWORK: 'MAINNET',
+      NETWORK: 'MOONRIVER',
       APP_ENV: 'production',
     }))
     const { getTxServiceUrl, getGnosisSafeAppsUrl } = require('src/config')
-    const TX_SERVICE_URL = mainnet.environment.production.txServiceUrl
+    const TX_SERVICE_URL = moonriver.environment.production.txServiceUrl
 
     // When
     const txServiceUrl = getTxServiceUrl()
@@ -86,15 +86,15 @@ describe('Config Services', () => {
     expect(TX_SERVICE_URL).toBe(txServiceUrl)
   })
 
-  it(`should load 'xdai.production' network config`, () => {
+  it(`should load 'moonbase.production' network config`, () => {
     // Given
     jest.mock('src/utils/constants', () => ({
       NODE_ENV: 'production',
-      NETWORK: 'XDAI',
+      NETWORK: 'MOONBASE',
       APP_ENV: 'production',
     }))
     const { getTxServiceUrl, getGnosisSafeAppsUrl } = require('src/config')
-    const TX_SERVICE_URL = xdai.environment.production.txServiceUrl
+    const TX_SERVICE_URL = moonbase.environment.production.txServiceUrl
 
     // When
     const txServiceUrl = getTxServiceUrl()
@@ -102,14 +102,14 @@ describe('Config Services', () => {
     expect(TX_SERVICE_URL).toBe(txServiceUrl)
   })
 
-  it(`should default to 'xdai.dev' network config if no environment is found`, () => {
+  it(`should default to 'moonbase.dev' network config if no environment is found`, () => {
     // Given
     jest.mock('src/utils/constants', () => ({
       NODE_ENV: '',
-      NETWORK: 'XDAI',
+      NETWORK: 'MOONBASE',
     }))
     const { getTxServiceUrl, getGnosisSafeAppsUrl } = require('src/config')
-    const TX_SERVICE_URL = xdai.environment.dev?.txServiceUrl
+    const TX_SERVICE_URL = moonbase.environment.dev?.txServiceUrl
 
     // When
     const txServiceUrl = getTxServiceUrl()
