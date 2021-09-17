@@ -1,5 +1,12 @@
 import devLogo from 'src/config/assets/token_movr.svg'
-import { EnvironmentSettings, ETHEREUM_NETWORK, FEATURES, NetworkConfig, WALLETS } from 'src/config/networks/network.d'
+import {
+  EnvironmentSettings,
+  ETHEREUM_LAYER,
+  ETHEREUM_NETWORK,
+  FEATURES,
+  NetworkConfig,
+  WALLETS,
+} from 'src/config/networks/network.d'
 
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/v1',
@@ -27,10 +34,11 @@ const moonbase: NetworkConfig = {
   },
   network: {
     id: ETHEREUM_NETWORK.MOONBASE,
-    backgroundColor: '#8B50ED',
+    backgroundColor: '#222B60',
     textColor: '#ffffff',
     label: 'Moonbase',
     isTestNet: true,
+    ethereumLayer: ETHEREUM_LAYER.L2,
     nativeCoin: {
       address: '0x0000000000000000000000000000000000000000',
       name: 'DEV',

@@ -11,10 +11,10 @@ import { cookieBannerOpen } from 'src/logic/cookies/store/selectors'
 import { loadFromCookie, saveCookie } from 'src/logic/cookies/utils'
 import { mainFontFamily, md, primary, screenSm } from 'src/theme/variables'
 import { loadGoogleAnalytics, removeCookies } from 'src/utils/googleAnalytics'
-import { closeIntercom, isIntercomLoaded, loadIntercom } from 'src/utils/intercom'
+// import { closeIntercom, isIntercomLoaded, loadIntercom } from 'src/utils/intercom'
 import AlertRedIcon from './assets/alert-red.svg'
-import IntercomIcon from './assets/intercom.png'
-import { useSafeAppUrl } from 'src/logic/hooks/useSafeAppUrl'
+// import IntercomIcon from './assets/intercom.png'
+// import { useSafeAppUrl } from 'src/logic/hooks/useSafeAppUrl'
 import { CookieAttributes } from 'js-cookie'
 
 const isDesktop = process.env.REACT_APP_BUILD_FOR_DESKTOP
@@ -99,30 +99,30 @@ interface CookiesBannerFormProps {
 const CookiesBanner = (): ReactElement => {
   const classes = useStyles()
   const dispatch = useRef(useDispatch())
-  const intercomLoaded = isIntercomLoaded()
+  // const intercomLoaded = isIntercomLoaded()
 
   const [showAnalytics, setShowAnalytics] = useState(false)
-  const [showIntercom, setShowIntercom] = useState(false)
+  // const [showIntercom, setShowIntercom] = useState(true)
   const [localNecessary, setLocalNecessary] = useState(true)
   const [localAnalytics, setLocalAnalytics] = useState(false)
-  const [localIntercom, setLocalIntercom] = useState(false)
-  const { getAppUrl } = useSafeAppUrl()
+  // const [localIntercom, setLocalIntercom] = useState(false)
+  // const { getAppUrl } = useSafeAppUrl()
 
   const showBanner = useSelector(cookieBannerOpen)
-  const newAppUrl = getAppUrl()
-  const isSafeAppView = newAppUrl !== null
+  // const newAppUrl = getAppUrl()
+  // const isSafeAppView = newAppUrl !== null
 
-  useEffect(() => {
-    if (showIntercom && !isSafeAppView) {
-      loadIntercom()
-    }
-  }, [showIntercom, isSafeAppView])
+  // useEffect(() => {
+  //   if (showIntercom && !isSafeAppView) {
+  //     loadIntercom()
+  //   }
+  // }, [showIntercom, isSafeAppView])
 
-  useEffect(() => {
-    if (intercomLoaded && isSafeAppView) {
-      closeIntercom()
-    }
-  }, [isSafeAppView, intercomLoaded])
+  // useEffect(() => {
+  //   if (intercomLoaded && isSafeAppView) {
+  //     closeIntercom()
+  //   }
+  // }, [isSafeAppView, intercomLoaded])
 
   useEffect(() => {
     async function fetchCookiesFromStorage() {
@@ -141,11 +141,11 @@ const CookiesBanner = (): ReactElement => {
             expires: acceptedAnalytics ? 365 : 7,
           }
           await saveCookie(COOKIES_KEY, newState, cookieConfig)
-          setLocalIntercom(newState.acceptedIntercom)
-          setShowIntercom(newState.acceptedIntercom)
+          // setLocalIntercom(newState.acceptedIntercom)
+          // setShowIntercom(newState.acceptedIntercom)
         } else {
-          setLocalIntercom(acceptedIntercom)
-          setShowIntercom(acceptedIntercom)
+          // setLocalIntercom(acceptedIntercom)
+          // setShowIntercom(acceptedIntercom)
         }
         setLocalAnalytics(acceptedAnalytics)
         setLocalNecessary(acceptedNecessary)
@@ -156,7 +156,7 @@ const CookiesBanner = (): ReactElement => {
       }
     }
     fetchCookiesFromStorage()
-  }, [showAnalytics, showIntercom])
+  }, [showAnalytics])
 
   const acceptCookiesHandler = async () => {
     const newState = {
@@ -169,7 +169,7 @@ const CookiesBanner = (): ReactElement => {
     }
     await saveCookie(COOKIES_KEY, newState, cookieConfig)
     setShowAnalytics(!isDesktop)
-    setShowIntercom(true)
+    // setShowIntercom(true)
     dispatch.current(openCookieBanner({ cookieBannerOpen: false }))
   }
 
@@ -177,22 +177,22 @@ const CookiesBanner = (): ReactElement => {
     const newState = {
       acceptedNecessary: true,
       acceptedAnalytics: localAnalytics,
-      acceptedIntercom: localIntercom,
+      // acceptedIntercom: localIntercom,
     }
     const cookieConfig: CookieAttributes = {
       expires: localAnalytics ? 365 : 7,
     }
     await saveCookie(COOKIES_KEY, newState, cookieConfig)
     setShowAnalytics(localAnalytics)
-    setShowIntercom(localIntercom)
+    // setShowIntercom(localIntercom)
 
     if (!localAnalytics) {
       removeCookies()
     }
 
-    if (!localIntercom && isIntercomLoaded()) {
-      closeIntercom()
-    }
+    // if (!localIntercom && isIntercomLoaded()) {
+    //   closeIntercom()
+    // }
     dispatch.current(openCookieBanner({ cookieBannerOpen: false }))
   }
 
@@ -229,13 +229,13 @@ const CookiesBanner = (): ReactElement => {
               />
             </div>
             <div className={classes.formItem}>
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={<Checkbox checked={localIntercom} />}
                 label="Customer support"
                 name="Customer support"
                 onChange={() => setLocalIntercom((prev) => !prev)}
                 value={localIntercom}
-              />
+              /> */}
             </div>
             <div className={classes.formItem}>
               <FormControlLabel
@@ -276,13 +276,13 @@ const CookiesBanner = (): ReactElement => {
 
   return (
     <>
-      {!isDesktop && !showIntercom && !isSafeAppView && (
+      {/* {!isDesktop && !showIntercom && !isSafeAppView && (
         <img
           className={classes.intercomImage}
           src={IntercomIcon}
           onClick={() => dispatch.current(openCookieBanner({ cookieBannerOpen: true, intercomAlertDisplayed: true }))}
         />
-      )}
+      )} */}
       {!isDesktop && showBanner?.cookieBannerOpen && (
         <CookiesBannerForm alertMessage={showBanner?.intercomAlertDisplayed} />
       )}

@@ -4,7 +4,7 @@ import { COOKIES_KEY_INTERCOM } from 'src/logic/cookies/model/cookie'
 import { loadFromCookie, saveCookie } from 'src/logic/cookies/utils'
 import { INTERCOM_ID } from 'src/utils/constants'
 
-let intercomLoaded = false
+let intercomLoaded = true
 
 export const isIntercomLoaded = (): boolean => intercomLoaded
 
