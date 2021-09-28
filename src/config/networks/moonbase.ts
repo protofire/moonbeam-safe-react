@@ -11,7 +11,7 @@ import {
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/v1',
   txServiceUrl: 'https://transaction.moonbase.multisig.moonbeam.network/api/v1',
-  safeUrl: 'https://multisig.moonbeam.network',
+  safeUrl: 'https://moonbase.multisig.moonbeam.network',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   safeAppsRpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
