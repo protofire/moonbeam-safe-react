@@ -89,7 +89,7 @@ export const WelcomeLayout = ({ isOldMultisigMigration }: Props): React.ReactEle
           </>
         ) : (
           <>
-            Gnosis Safe is the most trusted platform to manage digital assets. <br /> Here is how to get started:{' '}
+            Moonbeam Safe is the most trusted platform to manage digital assets. <br /> Here is how to get started:{' '}
           </>
         )}
       </Title>
@@ -112,7 +112,7 @@ export const WelcomeLayout = ({ isOldMultisigMigration }: Props): React.ReactEle
             <StyledButtonLink textSize="xl" color="primary" iconType="externalLink" iconSize="sm">
               <LinkSRC
                 size="xl"
-                href="https://docs.moonbeam.network/learn/platform/welcome/#wallets"
+                href="https://docs.moonbeam.network/tokens/connect/"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="More info about: Why do I need to connect a wallet?"

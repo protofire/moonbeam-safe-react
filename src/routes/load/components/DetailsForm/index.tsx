@@ -84,7 +84,7 @@ const DetailsForm = ({ errors, form, safeName }: DetailsFormProps): ReactElement
       <Block margin="md">
         <Paragraph color="primary" noMargin size="md">
           You are about to add an existing Moonbeam Safe. First, choose a name and enter the Safe address. The name is
-          only stored locally and will never be shared with Gnosis or any third parties.
+          only stored locally and will never be shared with Moonbeam or any third parties.
           <br />
           Your connected wallet does not have to be the owner of this Safe. In this case, the interface will provide you
           a read-only view.
@@ -148,7 +148,7 @@ const DetailsForm = ({ errors, form, safeName }: DetailsFormProps): ReactElement
             terms of use
           </a>{' '}
           and{' '}
-          <a href="https://gnosis-safe.io/privacy" rel="noopener noreferrer" target="_blank">
+          <a href="https://moonbeam.foundation/privacy-policy" rel="noopener noreferrer" target="_blank">
             privacy policy
           </a>
           .
