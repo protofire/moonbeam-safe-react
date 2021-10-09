@@ -19,7 +19,6 @@ import { Errors, logError } from 'src/logic/exceptions/CodedException'
  * @returns Promise<SafeRecordProps>
  */
 export const buildSafe = async (safeAddress: string): Promise<SafeRecordProps> => {
-  console.log('buildSafe safeAddress:', safeAddress)
   const address = checksumAddress(safeAddress)
   // setting `loadedViaUrl` to false, as `buildSafe` is called on safe Load or Open flows
   const safeInfo: Partial<SafeRecordProps> = { address, loadedViaUrl: false }

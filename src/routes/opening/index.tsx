@@ -115,8 +115,6 @@ export const SafeDeployment = ({
   onSuccess,
   submittedPromise,
 }: Props): React.ReactElement => {
-  console.log('SafeDeployment creationTxHash', creationTxHash)
-  console.log('SafeDeployment submittedPromise', submittedPromise)
   const [loading, setLoading] = useState(true)
   const [stepIndex, setStepIndex] = useState(0)
   const [safeCreationTxHash, setSafeCreationTxHash] = useState('')
@@ -279,13 +277,11 @@ export const SafeDeployment = ({
     let interval
 
     const awaitUntilSafeIsDeployed = async (safeCreationTxHash: string) => {
-      console.log('awaitUntilSafeIsDeployed safeCreationTxHash', safeCreationTxHash)
       try {
         const web3 = getWeb3()
         const receipt = await web3.eth.getTransactionReceipt(safeCreationTxHash)
 
         let safeAddress
-        console.log('awaitUntilSafeIsDeployed receipt', receipt)
         if (receipt.events) {
           safeAddress = receipt.events.ProxyCreation.returnValues.proxy
         } else {
@@ -294,7 +290,6 @@ export const SafeDeployment = ({
         }
 
         setCreatedSafeAddress(safeAddress)
-        console.log('safe address', safeAddress)
 
         interval = setInterval(async () => {
           const code = await web3.eth.getCode(safeAddress)

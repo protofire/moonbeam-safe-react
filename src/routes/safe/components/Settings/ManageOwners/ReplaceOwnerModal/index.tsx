@@ -83,7 +83,6 @@ export const ReplaceOwnerModal = ({ isOpen, onClose, owner }: ReplaceOwnerProps)
     const { ownerAddress, ownerName } = newValues
 
     if (isValidAddress(ownerAddress)) {
-      console.log('valid address:', ownerAddress)
       const checksumAddr = checksumAddress(ownerAddress)
       setNewOwner({ address: checksumAddr, name: ownerName })
       setActiveScreen('reviewReplaceOwner')
