@@ -27,6 +27,8 @@ export enum EstimationStatus {
   SUCCESS = 'SUCCESS',
 }
 
+const TEMP_MULTIPLIER = 1.7
+
 export const checkIfTxIsExecution = (
   threshold: number,
   preApprovingOwner?: string,
@@ -193,7 +195,7 @@ export const useEstimateTransactionGas = ({
         const estimatedGasCosts = ethGasLimitEstimation * parseInt(gasPrice, 10)
         const gasCost = fromTokenUnit(estimatedGasCosts, nativeCoin.decimals)
         const gasCostFormatted = formatAmount(gasCost)
-        const gasLimit = manualGasLimit || ethGasLimitEstimation.toString()
+        const gasLimit = manualGasLimit || Math.round(ethGasLimitEstimation * TEMP_MULTIPLIER).toString()
 
         if (isExecution) {
           transactionCallSuccess = await checkTransactionExecution({

@@ -8,8 +8,6 @@ import { CodedException, Errors } from '../exceptions/CodedException'
 
 export const EMPTY_DATA = '0x'
 
-// const TEMP_MULTIPLIER = 1.7
-
 const fetchGasPrice = async (gasPriceOracle: GasPriceOracle): Promise<string> => {
   const { url, gasParameter, gweiFactor } = gasPriceOracle
   const { data: response } = await axios.get(url)
