@@ -8,7 +8,7 @@ import { CodedException, Errors } from '../exceptions/CodedException'
 
 export const EMPTY_DATA = '0x'
 
-const TEMP_MULTIPLIER = 1.7
+// const TEMP_MULTIPLIER = 1.7
 
 const fetchGasPrice = async (gasPriceOracle: GasPriceOracle): Promise<string> => {
   const { url, gasParameter, gweiFactor } = gasPriceOracle
@@ -51,7 +51,7 @@ export const calculateGasOf = async (txConfig: {
   try {
     const gas = await web3.eth.estimateGas(txConfig)
 
-    return gas * TEMP_MULTIPLIER
+    return gas
   } catch (err) {
     return Promise.reject(err)
   }
