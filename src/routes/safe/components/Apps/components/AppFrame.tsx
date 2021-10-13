@@ -1,6 +1,6 @@
 import { ReactElement, useState, useRef, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
-import { Loader, Title, Card } from '@gnosis.pm/safe-react-components'
+import { Loader, Card, Title } from '@gnosis.pm/safe-react-components'
 import {
   GetBalanceParams,
   GetTxBySafeTxHashParams,
@@ -40,7 +40,7 @@ import { SignMessageModal } from './SignMessageModal'
 const AppWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: calc(100% + 59px);
+  height: 100%;
   margin: 0 -16px;
 `
 
@@ -75,6 +75,7 @@ type Props = {
 
 const NETWORK_NAME = getNetworkName()
 const NETWORK_ID = getNetworkId()
+const APP_LOAD_ERROR_TIMEOUT = 30000
 
 const INITIAL_CONFIRM_TX_MODAL_STATE: ConfirmTransactionModalState = {
   isOpen: false,
@@ -108,20 +109,32 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       }),
     )
   const timer = useRef<number>()
-  const [appTimeout, setAppTimeout] = useState(false)
+  const [isLoadingSlow, setIsLoadingSlow] = useState<boolean>(false)
+
+  const errorTimer = useRef<number>()
+  const [appLoadError, setAppLoadError] = useState<boolean>(false)
 
   useEffect(() => {
+    const clearTimeouts = () => {
+      clearTimeout(timer.current)
+      clearTimeout(errorTimer.current)
+    }
+
     if (appIsLoading) {
       timer.current = window.setTimeout(() => {
-        setAppTimeout(true)
+        setIsLoadingSlow(true)
       }, TIMEOUT)
+      errorTimer.current = window.setTimeout(() => {
+        setAppLoadError(true)
+      }, APP_LOAD_ERROR_TIMEOUT)
     } else {
-      clearTimeout(timer.current)
-      setAppTimeout(false)
+      clearTimeouts()
+      setIsLoadingSlow(false)
+      setAppLoadError(false)
     }
 
     return () => {
-      clearTimeout(timer.current)
+      clearTimeouts()
     }
   }, [appIsLoading])
 
@@ -264,6 +277,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
         setSafeApp(app)
       } catch (err) {
         logError(Errors._900, `${appUrl}, ${err.message}`)
+        setAppLoadError(true)
       }
     }
     loadApp()
@@ -278,6 +292,10 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
 
   if (!appUrl) {
     throw Error('App url No provided or it is invalid.')
+  }
+
+  if (appLoadError) {
+    throw Error('There was an error loading the Safe App. There might be a problem with the App provider.')
   }
 
   if (!safeApp) {
@@ -297,11 +315,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       <StyledCard>
         {appIsLoading && (
           <LoadingContainer style={{ flexDirection: 'column' }}>
-            {appTimeout && (
-              <Title size="xs">
-                The safe app is taking longer than usual to load. There might be a problem with the app provider.
-              </Title>
-            )}
+            {isLoadingSlow && <Title size="xs">The Safe App is taking too long to load, consider refreshing.</Title>}
             <Loader size="md" />
           </LoadingContainer>
         )}
