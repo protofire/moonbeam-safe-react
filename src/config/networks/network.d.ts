@@ -56,6 +56,8 @@ export enum ETHEREUM_NETWORK {
   // VOLTA = '73799',
   MOONBASE = '1287',
   MOONRIVER = '1285',
+  // ARBITRUM = '42161',
+  VOLTA = '73799',
 }
 
 export type NetworkSettings = {
