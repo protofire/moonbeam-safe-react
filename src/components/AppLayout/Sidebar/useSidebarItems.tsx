@@ -31,7 +31,7 @@ const isSelected = ({ route, matchSafeWithAction }: IsSelectedProps): boolean =>
 
 const useSidebarItems = (): ListItemType[] => {
   const featuresEnabled = useSelector(currentSafeFeaturesEnabled)
-  const safeAppsEnabled = isFeatureEnabled(FEATURES.SAFE_APPS)
+  // const safeAppsEnabled = isFeatureEnabled(FEATURES.SAFE_APPS)
   const isCollectiblesEnabled = isFeatureEnabled(FEATURES.ERC721)
   const isSpendingLimitEnabled = isFeatureEnabled(FEATURES.SPENDING_LIMIT)
   const { address: safeAddress, needsUpdate } = useSelector(currentSafeWithNames)
@@ -124,12 +124,6 @@ const useSidebarItems = (): ListItemType[] => {
         route: SAFE_ROUTES.ADDRESS_BOOK,
       }),
       makeEntryItem({
-        disabled: !safeAppsEnabled,
-        label: 'Apps',
-        iconType: 'apps',
-        route: SAFE_ROUTES.APPS,
-      }),
-      makeEntryItem({
         label: 'Settings',
         iconType: 'settings',
         route: SAFE_ROUTES.SETTINGS_DETAILS,
@@ -146,7 +140,6 @@ const useSidebarItems = (): ListItemType[] => {
     matchSafeWithAction,
     needsUpdate,
     safeAddress,
-    safeAppsEnabled,
   ])
 }
 
