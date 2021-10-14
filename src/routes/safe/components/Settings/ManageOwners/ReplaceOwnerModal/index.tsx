@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Modal from 'src/components/Modal'
+import { userAccountSelector } from 'src/logic/wallets/store/selectors'
 import { addressBookAddOrUpdate } from 'src/logic/addressBook/store/actions'
-import { SENTINEL_ADDRESS, getGnosisSafeInstanceAt } from 'src/logic/contracts/safeContracts'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
-import { currentSafeCurrentVersion, safeAddressFromUrl } from 'src/logic/safe/store/selectors'
+import { safeAddressFromUrl } from 'src/logic/safe/store/selectors'
 import { checksumAddress } from 'src/utils/checksumAddress'
 import { makeAddressBookEntry } from 'src/logic/addressBook/model/addressBook'
-import { sameAddress } from 'src/logic/wallets/ethAddresses'
 import { Dispatch } from 'src/logic/safe/store/actions/types.d'
 
 import { OwnerForm } from 'src/routes/safe/components/Settings/ManageOwners/ReplaceOwnerModal/screens/OwnerForm'
@@ -17,6 +16,7 @@ import { ReviewReplaceOwnerModal } from 'src/routes/safe/components/Settings/Man
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { isValidAddress } from 'src/utils/isValidAddress'
 import { OwnerData } from 'src/routes/safe/components/Settings/ManageOwners/dataFetcher'
+import { getSafeSDK } from 'src/logic/wallets/getWeb3'
 
 export type OwnerValues = {
   address: string
@@ -26,16 +26,14 @@ export type OwnerValues = {
 export const sendReplaceOwner = async (
   newOwner: OwnerValues,
   safeAddress: string,
-  safeVersion: string,
   ownerAddressToRemove: string,
   dispatch: Dispatch,
   txParameters: TxParameters,
+  connectedWalletAddress: string,
 ): Promise<void> => {
-  const gnosisSafe = getGnosisSafeInstanceAt(safeAddress, safeVersion)
-  const safeOwners = await gnosisSafe.methods.getOwners().call()
-  const index = safeOwners.findIndex((ownerAddress) => sameAddress(ownerAddress, ownerAddressToRemove))
-  const prevAddress = index === 0 ? SENTINEL_ADDRESS : safeOwners[index - 1]
-  const txData = gnosisSafe.methods.swapOwner(prevAddress, ownerAddressToRemove, newOwner.address).encodeABI()
+  const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
+  const safeTx = await sdk.getSwapOwnerTx(ownerAddressToRemove, newOwner.address)
+  const txData = safeTx.data.data
 
   const txHash = await dispatch(
     createTransaction({
@@ -67,7 +65,7 @@ export const ReplaceOwnerModal = ({ isOpen, onClose, owner }: ReplaceOwnerProps)
   const [newOwner, setNewOwner] = useState({ address: '', name: '' })
   const dispatch = useDispatch()
   const safeAddress = useSelector(safeAddressFromUrl)
-  const safeVersion = useSelector(currentSafeCurrentVersion) as string
+  const connectedWalletAddress = useSelector(userAccountSelector)
 
   useEffect(
     () => () => {
@@ -92,7 +90,7 @@ export const ReplaceOwnerModal = ({ isOpen, onClose, owner }: ReplaceOwnerProps)
   const onReplaceOwner = async (txParameters: TxParameters) => {
     onClose()
     try {
-      await sendReplaceOwner(newOwner, safeAddress, safeVersion, owner.address, dispatch, txParameters)
+      await sendReplaceOwner(newOwner, safeAddress, owner.address, dispatch, txParameters, connectedWalletAddress)
       dispatch(addressBookAddOrUpdate(makeAddressBookEntry(newOwner)))
     } catch (error) {
       console.error('Error while removing an owner', error)
