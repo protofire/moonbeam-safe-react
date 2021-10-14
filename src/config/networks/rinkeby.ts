@@ -6,7 +6,6 @@ import {
   NetworkConfig,
   WALLETS,
 } from 'src/config/networks/network.d'
-import { ETHGASSTATION_API_KEY } from 'src/utils/constants'
 
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://safe-client.staging.gnosisdev.com/v1',
@@ -62,7 +61,7 @@ const rinkeby: NetworkConfig = {
       logoUri: EtherLogo,
     },
   },
-  disabledWallets: [WALLETS.FORTMATIC],
+  disabledWallets: [WALLETS.FORTMATIC, WALLETS.LATTICE],
 }
 
 export default rinkeby

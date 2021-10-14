@@ -20,6 +20,7 @@ import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
 import { checkIfOffChainSignatureIsPossible } from 'src/logic/safe/safeTxSigner'
 import { ZERO_ADDRESS } from 'src/logic/wallets/ethAddresses'
 import { sameString } from 'src/utils/strings'
+// import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
 
 export enum EstimationStatus {
   LOADING = 'LOADING',
@@ -27,7 +28,11 @@ export enum EstimationStatus {
   SUCCESS = 'SUCCESS',
 }
 
-const TEMP_MULTIPLIER = 1.7
+// How much to add to gasLimit per network
+// Defaults to x1 (i.e. no extra gas)
+// const EXTRA_GAS_FACTOR = {
+//   [ETHEREUM_NETWORK.ARBITRUM]: 1.2, // +20%
+// }
 
 export const checkIfTxIsExecution = (
   threshold: number,
@@ -195,7 +200,7 @@ export const useEstimateTransactionGas = ({
         const estimatedGasCosts = ethGasLimitEstimation * parseInt(gasPrice, 10)
         const gasCost = fromTokenUnit(estimatedGasCosts, nativeCoin.decimals)
         const gasCostFormatted = formatAmount(gasCost)
-        const gasLimit = manualGasLimit || Math.round(ethGasLimitEstimation * TEMP_MULTIPLIER).toString()
+        const gasLimit = manualGasLimit || Math.round(ethGasLimitEstimation).toString()
 
         if (isExecution) {
           transactionCallSuccess = await checkTransactionExecution({

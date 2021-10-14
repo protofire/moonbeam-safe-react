@@ -1,7 +1,7 @@
 import { Button, Text, Card, Icon } from '@gnosis.pm/safe-react-components'
 import { alpha } from '@material-ui/core/styles/colorManipulator'
 import styled from 'styled-components'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { MobileView } from 'react-device-detect'
 
 const Overlay = styled.div`
