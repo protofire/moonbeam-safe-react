@@ -1,4 +1,4 @@
-import devLogo from 'src/config/assets/token_movr.svg'
+import devLogo from 'src/config/assets/token_moonbase.svg'
 import {
   EnvironmentSettings,
   ETHEREUM_LAYER,
