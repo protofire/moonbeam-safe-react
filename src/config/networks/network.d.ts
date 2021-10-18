@@ -45,7 +45,7 @@ export enum ETHEREUM_NETWORK {
   // MAINNET = '1',
   // MORDEN = '2',
   // ROPSTEN = '3',
-  // RINKEBY = '4',
+  RINKEBY = '4',
   // GOERLI = '5',
   // KOVAN = '42',
   // BSC = '56',
