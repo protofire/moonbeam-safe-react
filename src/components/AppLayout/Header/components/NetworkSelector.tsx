@@ -82,7 +82,6 @@ const NetworkSelector = ({ open, toggle, networks, clickAway }: NetworkSelectorP
   const networkRef = useRef(null)
   const classes = useStyles()
   const networkName = getNetworkName().toLowerCase()
-  console.log('networkRef', networkRef)
   return (
     <>
       <div className={classes.root} ref={networkRef}>
