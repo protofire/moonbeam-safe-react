@@ -11,10 +11,10 @@ import {
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/v1',
   txServiceUrl: 'https://transaction.moonbase.multisig.moonbeam.network/api/v1',
-  safeUrl: './mooonbase',
+  safeUrl: '/moonbase',
   gasPrice: 1e9,
-  rpcServiceUrl: 'https://rpc.moonbase.multisig.moonbeam.network',
-  safeAppsRpcServiceUrl: 'https://rpc.moonbase.multisig.moonbeam.network',
+  rpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
+  safeAppsRpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   networkExplorerName: 'Blockscout Moonbase DEV Explorer',
   networkExplorerUrl: 'https://moonbase-blockscout.testnet.moonbeam.network',
   networkExplorerApiUrl: 'https://moonbase-blockscout.testnet.moonbeam.network/api',
