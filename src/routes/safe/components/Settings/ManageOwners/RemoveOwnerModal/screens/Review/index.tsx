@@ -10,7 +10,7 @@ import Col from 'src/components/layout/Col'
 import Hairline from 'src/components/layout/Hairline'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
-import { getGnosisSafeInstanceAt, SENTINEL_ADDRESS } from 'src/logic/contracts/safeContracts'
+import { userAccountSelector } from 'src/logic/wallets/store/selectors'
 import { currentSafeWithNames } from 'src/logic/safe/store/selectors'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
@@ -23,6 +23,9 @@ import { TransactionFees } from 'src/components/TransactionsFees'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
+import { getSafeSDK } from 'src/logic/wallets/getWeb3'
+import { logError } from 'src/logic/exceptions/CodedException'
+import ErrorCodes from 'src/logic/exceptions/registry'
 
 export const REMOVE_OWNER_REVIEW_BTN_TEST_ID = 'remove-owner-review-btn'
 
@@ -43,12 +46,8 @@ export const ReviewRemoveOwnerModal = ({
 }: ReviewRemoveOwnerProps): React.ReactElement => {
   const classes = useStyles()
   const [data, setData] = useState('')
-  const {
-    address: safeAddress,
-    name: safeName,
-    owners,
-    currentVersion: safeVersion,
-  } = useSelector(currentSafeWithNames)
+  const { address: safeAddress, name: safeName, owners } = useSelector(currentSafeWithNames)
+  const connectedWalletAddress = useSelector(userAccountSelector)
   const numOptions = owners ? owners.length - 1 : 0
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
@@ -83,19 +82,15 @@ export const ReviewRemoveOwnerModal = ({
 
     const calculateRemoveOwnerData = async () => {
       try {
-        // FixMe: if the order returned by the service is the same as in the contracts
-        //  the data lookup can be removed from here
-        const gnosisSafe = getGnosisSafeInstanceAt(safeAddress, safeVersion)
-        const safeOwners = await gnosisSafe.methods.getOwners().call()
-        const index = safeOwners.findIndex((ownerAddress) => sameAddress(ownerAddress, owner.address))
-        const prevAddress = index === 0 ? SENTINEL_ADDRESS : safeOwners[index - 1]
-        const txData = gnosisSafe.methods.removeOwner(prevAddress, owner.address, threshold).encodeABI()
+        const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
+        const safeTx = await sdk.getRemoveOwnerTx(owner.address, +threshold)
+        const txData = safeTx.data.data
 
         if (isCurrent) {
           setData(txData)
         }
       } catch (error) {
-        console.error('Error calculating ERC721 transfer data:', error.message)
+        logError(ErrorCodes._812, error.message)
       }
     }
     calculateRemoveOwnerData()
@@ -103,7 +98,7 @@ export const ReviewRemoveOwnerModal = ({
     return () => {
       isCurrent = false
     }
-  }, [safeAddress, safeVersion, owner.address, threshold])
+  }, [safeAddress, connectedWalletAddress, owner.address, threshold])
 
   const closeEditModalCallback = (txParameters: TxParameters) => {
     const oldGasPrice = gasPriceFormatted

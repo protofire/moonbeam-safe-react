@@ -3,16 +3,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { OwnerData } from 'src/routes/safe/components/Settings/ManageOwners/dataFetcher'
 
 import { CheckOwner } from './screens/CheckOwner'
+import { userAccountSelector } from 'src/logic/wallets/store/selectors'
 import { ReviewRemoveOwnerModal } from './screens/Review'
 import { ThresholdForm } from './screens/ThresholdForm'
 
 import Modal from 'src/components/Modal'
-import { SENTINEL_ADDRESS, getGnosisSafeInstanceAt } from 'src/logic/contracts/safeContracts'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
-import { currentSafe } from 'src/logic/safe/store/selectors'
+import { safeAddressFromUrl } from 'src/logic/safe/store/selectors'
 import { Dispatch } from 'src/logic/safe/store/actions/types.d'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
+import { getSafeSDK } from 'src/logic/wallets/getWeb3'
+import { Errors, logError } from 'src/logic/exceptions/CodedException'
 
 type OwnerValues = OwnerData & {
   threshold: string
@@ -21,18 +23,14 @@ type OwnerValues = OwnerData & {
 export const sendRemoveOwner = async (
   values: OwnerValues,
   safeAddress: string,
-  safeVersion: string,
   ownerAddressToRemove: string,
   dispatch: Dispatch,
   txParameters: TxParameters,
+  connectedWalletAddress: string,
 ): Promise<void> => {
-  const gnosisSafe = getGnosisSafeInstanceAt(safeAddress, safeVersion)
-  const safeOwners = await gnosisSafe.methods.getOwners().call()
-  const index = safeOwners.findIndex(
-    (ownerAddress) => ownerAddress.toLowerCase() === ownerAddressToRemove.toLowerCase(),
-  )
-  const prevAddress = index === 0 ? SENTINEL_ADDRESS : safeOwners[index - 1]
-  const txData = gnosisSafe.methods.removeOwner(prevAddress, ownerAddressToRemove, values.threshold).encodeABI()
+  const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
+  const safeTx = await sdk.getRemoveOwnerTx(ownerAddressToRemove, +values.threshold)
+  const txData = safeTx.data.data
 
   dispatch(
     createTransaction({
@@ -58,7 +56,8 @@ export const RemoveOwnerModal = ({ isOpen, onClose, owner }: RemoveOwnerProps): 
   const [activeScreen, setActiveScreen] = useState('checkOwner')
   const [values, setValues] = useState<OwnerValues>({ ...owner, threshold: '' })
   const dispatch = useDispatch()
-  const { address: safeAddress = '', currentVersion: safeVersion = '' } = useSelector(currentSafe) ?? {}
+  const safeAddress = useSelector(safeAddressFromUrl)
+  const connectedWalletAddress = useSelector(userAccountSelector)
 
   useEffect(
     () => () => {
@@ -85,9 +84,14 @@ export const RemoveOwnerModal = ({ isOpen, onClose, owner }: RemoveOwnerProps): 
     setActiveScreen('reviewRemoveOwner')
   }
 
-  const onRemoveOwner = (txParameters: TxParameters) => {
+  const onRemoveOwner = async (txParameters: TxParameters) => {
     onClose()
-    sendRemoveOwner(values, safeAddress, safeVersion, owner.address, dispatch, txParameters)
+
+    try {
+      await sendRemoveOwner(values, safeAddress, owner.address, dispatch, txParameters, connectedWalletAddress)
+    } catch (error) {
+      logError(Errors._809, error.message)
+    }
   }
 
   return (
