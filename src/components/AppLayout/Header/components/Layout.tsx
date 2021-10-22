@@ -15,7 +15,7 @@ import Row from 'src/components/layout/Row'
 import { headerHeight, md, screenSm, sm } from 'src/theme/variables'
 import { useStateHandler } from 'src/logic/hooks/useStateHandler'
 
-import SafeLogo from '../assets/moonbeam_logo.svg'
+import SafeLogo from '../assets/moonbase_logo.svg'
 import { getNetworks } from 'src/config'
 import { shouldSwitchNetwork } from 'src/logic/wallets/utils/network'
 
