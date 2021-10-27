@@ -23,6 +23,7 @@
     "build-mainnet": "cross-env REACT_APP_NETWORK=mainnet yarn build",
     "build-moonbase": "cross-env REACT_APP_NETWORK=moonbase yarn build",
     "build-moonriver": "cross-env REACT_APP_NETWORK=moonriver yarn build",
+    "build-staging" : "cross-env REACT_APP_APP_VERSION=$npm_package_version REACT_APP_ENV=staging rescripts --max-old-space-size=8192 build",
     "build": "cross-env REACT_APP_APP_VERSION=$npm_package_version rescripts --max-old-space-size=8192 build",
     "compile-electron": "tsc --project tsconfig.electron.json",
     "eject": "rescripts eject",
