@@ -1,0 +1,17 @@
+diff --git a/node_modules/@gnosis.pm/safe-core-sdk/dist/src/configuration/contracts.js b/node_modules/@gnosis.pm/safe-core-sdk/dist/src/configuration/contracts.js
+index 9783512..5689e65 100644
+--- a/node_modules/@gnosis.pm/safe-core-sdk/dist/src/configuration/contracts.js
++++ b/node_modules/@gnosis.pm/safe-core-sdk/dist/src/configuration/contracts.js
+@@ -38,6 +38,12 @@ exports.defaultContractNetworks = {
+         safeMasterCopyAddress: '0x6851D6fDFAfD08c0295C392436245E5bc78B0185',
+         safeProxyFactoryAddress: '0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F9B'
+     },
++    // moonbase
++    1287: {
++        multiSendAddress: '0x40A2aCCbd92BCA938b02010E17A5b8929b49130D',
++        safeMasterCopyAddress: '0x3E5c63644E683549055b9Be8653de26E0B4CD36E',
++        safeProxyFactoryAddress: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2'
++    },
+     // energy web volta
+     73799: {
+         multiSendAddress: '0x8D29bE29923b68abfDD21e541b9374737B49cdAD',
