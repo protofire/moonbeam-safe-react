@@ -3,6 +3,7 @@ import {
   EnvironmentSettings,
   ETHEREUM_LAYER,
   ETHEREUM_NETWORK,
+  SHORT_NAME,
   FEATURES,
   NetworkConfig,
   WALLETS,
@@ -11,7 +12,6 @@ import {
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/v1',
   txServiceUrl: 'https://transaction.moonbase.multisig.moonbeam.network/api/v1',
-  safeUrl: '/moonbase',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   safeAppsRpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
@@ -38,6 +38,7 @@ const moonbase: NetworkConfig = {
   },
   network: {
     id: ETHEREUM_NETWORK.MOONBASE,
+    shortName: SHORT_NAME.MOONBASE,
     backgroundColor: '#222B60',
     textColor: '#ffffff',
     label: 'Moonbase',

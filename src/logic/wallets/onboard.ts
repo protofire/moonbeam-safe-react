@@ -41,7 +41,7 @@ const getOnboardConfiguration = () => {
       },
     },
     walletSelect: {
-      description: 'Please select a wallet to connect to Gnosis Safe',
+      description: 'Please select a wallet to connect to Moonbeam Safe',
       wallets: getSupportedWallets(),
     },
     walletCheck: [

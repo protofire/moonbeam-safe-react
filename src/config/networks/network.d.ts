@@ -42,7 +42,7 @@ export enum ETHEREUM_LAYER {
 
 export enum ETHEREUM_NETWORK {
   UNKNOWN = '0',
-  // MAINNET = '1',
+  MAINNET = '1',
   // MORDEN = '2',
   // ROPSTEN = '3',
   RINKEBY = '4',
@@ -72,6 +72,9 @@ export enum SHORT_NAME {
   LOCAL = 'local',
   ARBITRUM = 'arb1',
   VOLTA = 'vt',
+  MOONBEAM = 'mbeam',
+  MOONRIVER = 'mriver',
+  MOONBASE = 'mbase',
 }
 
 export type NetworkSettings = {

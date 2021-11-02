@@ -3,8 +3,8 @@ import { default as networks } from 'src/config/networks'
 
 const { moonbase, moonriver } = networks
 
-const mainnetShortName = mainnet.network.shortName
-const xDaiShortName = xdai.network.shortName
+const mainnetShortName = moonbase.network.shortName
+const xDaiShortName = moonriver.network.shortName
 
 const validSafeAddress = '0x57CB13cbef735FbDD65f5f2866638c546464E45F'
 

@@ -37,7 +37,7 @@ export const getNetworks = (): NetworkInfo[] => {
   }))
 }
 
-export const DEFAULT_NETWORK = IS_PRODUCTION ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.RINKEBY
+export const DEFAULT_NETWORK = IS_PRODUCTION ? ETHEREUM_NETWORK.MOONRIVER : ETHEREUM_NETWORK.MOONBASE
 
 const isNetworkId = (id: unknown): id is ETHEREUM_NETWORK => {
   return Object.values(ETHEREUM_NETWORK).some((network) => network === id)
@@ -142,7 +142,7 @@ export const getGasPrice = (): number | undefined => getConfig()?.gasPrice
 export const getGasPriceOracles = (): GasPriceOracle[] | undefined => getConfig()?.gasPriceOracles
 
 const useInfuraRPC = () => {
-  return [ETHEREUM_NETWORK.MAINNET, ETHEREUM_NETWORK.RINKEBY, ETHEREUM_NETWORK.POLYGON].includes(getNetworkId())
+  return [ETHEREUM_NETWORK.RINKEBY].includes(getNetworkId())
 }
 
 export const getSafeAppsRpcServiceUrl = (): string =>

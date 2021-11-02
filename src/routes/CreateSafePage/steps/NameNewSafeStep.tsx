@@ -35,9 +35,9 @@ function NameNewSafeStep(): ReactElement {
     <BlockWithPadding data-testid={'create-safe-name-step'}>
       <Block margin="md">
         <Paragraph color="primary" noMargin size="lg">
-          You are about to create a new Gnosis Safe wallet with one or more owners. First, let&apos;s give your new
-          wallet a name. This name is only stored locally and will never be shared with Gnosis or any third parties. The
-          new Safe will ONLY be available on <NetworkLabel />
+          You are about to create a new Moonbeam Safe wallet with one or more owners. First, let&apos;s give your new
+          wallet a name. This name is only stored locally and will never be shared with Moonbeam or any third parties.
+          The new Safe will ONLY be available on <NetworkLabel />
         </Paragraph>
       </Block>
       <label htmlFor={FIELD_CREATE_CUSTOM_SAFE_NAME}>Name of the new Safe</label>
@@ -60,11 +60,11 @@ function NameNewSafeStep(): ReactElement {
             terms of use
           </Link>{' '}
           and{' '}
-          <Link href="https://gnosis-safe.io/privacy" rel="noopener noreferrer" target="_blank">
+          <Link href="https://moonbeam.foundation/privacy-policy" rel="noopener noreferrer" target="_blank">
             privacy policy
           </Link>
-          . Most importantly, you confirm that your funds are held securely in the Gnosis Safe, a smart contract on the
-          Ethereum blockchain. These funds cannot be accessed by Gnosis at any point.
+          . Most importantly, you confirm that your funds are held securely in the Moonbeam Safe, a smart contract on
+          the Ethereum blockchain. These funds cannot be accessed by Moonbeam at any point.
         </Paragraph>
       </Block>
     </BlockWithPadding>
