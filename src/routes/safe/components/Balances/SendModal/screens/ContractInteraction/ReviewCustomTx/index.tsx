@@ -1,8 +1,6 @@
-import { ReactElement } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import IconButton from '@material-ui/core/IconButton'
+import { ReactElement, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
-import Close from '@material-ui/icons/Close'
 import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 
 import { getExplorerInfo, getNetworkInfo } from 'src/config'
@@ -15,7 +13,6 @@ import Img from 'src/components/layout/Img'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
-import { safeAddressFromUrl } from 'src/logic/safe/store/selectors'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { getEthAsToken } from 'src/logic/tokens/utils/tokenHelpers'
 import SafeInfo from 'src/routes/safe/components/Balances/SendModal/SafeInfo'
@@ -26,9 +23,11 @@ import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { ButtonStatus, Modal } from 'src/components/Modal'
 import { TransactionFees } from 'src/components/TransactionsFees'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
-
 import { styles } from './style'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
+import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
+import { extractSafeAddress } from 'src/routes/routes'
+import ExecuteCheckbox from 'src/components/ExecuteCheckbox'
 
 export type ReviewCustomTxProps = {
   contractAddress: string
@@ -45,12 +44,12 @@ type Props = {
 
 const useStyles = makeStyles(styles)
 
-const { nativeCoin } = getNetworkInfo()
-
 const ReviewCustomTx = ({ onClose, onPrev, tx }: Props): ReactElement => {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const safeAddress = useSelector(safeAddressFromUrl)
+  const safeAddress = extractSafeAddress()
+  const { nativeCoin } = getNetworkInfo()
+  const [executionApproved, setExecutionApproved] = useState<boolean>(true)
 
   const {
     gasLimit,
@@ -67,6 +66,7 @@ const ReviewCustomTx = ({ onClose, onPrev, tx }: Props): ReactElement => {
     txAmount: tx.value ? toTokenUnit(tx.value, nativeCoin.decimals) : '0',
   })
 
+  const doExecute = isExecution && executionApproved
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
   const submitTx = (txParameters: TxParameters) => {
@@ -85,6 +85,7 @@ const ReviewCustomTx = ({ onClose, onPrev, tx }: Props): ReactElement => {
           safeTxGas: txParameters.safeTxGas,
           ethParameters: txParameters,
           notifiedTransaction: TX_NOTIFICATION_TYPES.STANDARD_TX,
+          delayExecution: !executionApproved,
         }),
       )
     } else {
@@ -96,22 +97,14 @@ const ReviewCustomTx = ({ onClose, onPrev, tx }: Props): ReactElement => {
   return (
     <EditableTxParameters
       isOffChainSignature={isOffChainSignature}
-      isExecution={isExecution}
+      isExecution={doExecute}
       ethGasLimit={gasLimit}
       ethGasPrice={gasPriceFormatted}
       safeTxGas={gasEstimation.toString()}
     >
       {(txParameters, toggleEditMode) => (
         <>
-          <Row align="center" className={classes.heading} grow>
-            <Paragraph className={classes.headingText} noMargin weight="bolder">
-              Contract interaction
-            </Paragraph>
-            <Paragraph className={classes.annotation}>2 of 2</Paragraph>
-            <IconButton disableRipple onClick={onClose}>
-              <Close className={classes.closeIcon} />
-            </IconButton>
-          </Row>
+          <ModalHeader onClose={onClose} subTitle="2 of 2" title="Contract interaction" />
           <Hairline />
           <Block className={classes.container}>
             <SafeInfo />
@@ -158,12 +151,14 @@ const ReviewCustomTx = ({ onClose, onPrev, tx }: Props): ReactElement => {
               </Col>
             </Row>
 
+            {isExecution && <ExecuteCheckbox onChange={setExecutionApproved} />}
+
             {/* Tx Parameters */}
             <TxParametersDetail
               txParameters={txParameters}
               onEdit={toggleEditMode}
               isTransactionCreation={isCreation}
-              isTransactionExecution={isExecution}
+              isTransactionExecution={doExecute}
               isOffChainSignature={isOffChainSignature}
             />
           </Block>
@@ -171,7 +166,7 @@ const ReviewCustomTx = ({ onClose, onPrev, tx }: Props): ReactElement => {
             <Block className={classes.gasCostsContainer}>
               <TransactionFees
                 gasCostFormatted={gasCostFormatted}
-                isExecution={isExecution}
+                isExecution={doExecute}
                 isCreation={isCreation}
                 isOffChainSignature={isOffChainSignature}
                 txEstimationExecutionStatus={txEstimationExecutionStatus}

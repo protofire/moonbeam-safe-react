@@ -3,6 +3,7 @@ import {
   EnvironmentSettings,
   ETHEREUM_LAYER,
   ETHEREUM_NETWORK,
+  SHORT_NAME,
   FEATURES,
   NetworkConfig,
   WALLETS,
@@ -11,7 +12,6 @@ import {
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonriver.multisig.moonbeam.network/v1',
   txServiceUrl: 'https://transaction.moonriver.multisig.moonbeam.network/api/v1',
-  safeUrl: '/moonriver',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.moonriver.moonbeam.network',
   safeAppsRpcServiceUrl: 'https://rpc.moonriver.moonbeam.network',
@@ -34,6 +34,7 @@ const moonriver: NetworkConfig = {
   },
   network: {
     id: ETHEREUM_NETWORK.MOONRIVER,
+    shortName: SHORT_NAME.MOONRIVER,
     backgroundColor: ' #F2A007',
     textColor: '#ffffff',
     label: 'Moonriver',

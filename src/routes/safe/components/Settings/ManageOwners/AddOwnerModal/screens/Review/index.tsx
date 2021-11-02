@@ -1,6 +1,4 @@
-import IconButton from '@material-ui/core/IconButton'
 import { makeStyles } from '@material-ui/core/styles'
-import Close from '@material-ui/icons/Close'
 import { ReactElement, useEffect, useState, Fragment } from 'react'
 import { useSelector } from 'react-redux'
 import { EthHashInfo } from '@gnosis.pm/safe-react-components'
@@ -11,7 +9,7 @@ import Col from 'src/components/layout/Col'
 import Hairline from 'src/components/layout/Hairline'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
-import { userAccountSelector } from 'src/logic/wallets/store/selectors'
+import { getGnosisSafeInstanceAt } from 'src/logic/contracts/safeContracts'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { currentSafeWithNames } from 'src/logic/safe/store/selectors'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
@@ -23,8 +21,7 @@ import { TransactionFees } from 'src/components/TransactionsFees'
 import { OwnerValues } from '../..'
 import { styles } from './style'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
-import { getSafeSDK } from 'src/logic/wallets/getWeb3'
-import { Errors, logError } from 'src/logic/exceptions/CodedException'
+import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
 
 export const ADD_OWNER_SUBMIT_BTN_TEST_ID = 'add-owner-submit-btn'
 
@@ -40,8 +37,12 @@ type ReviewAddOwnerProps = {
 export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: ReviewAddOwnerProps): ReactElement => {
   const classes = useStyles()
   const [data, setData] = useState('')
-  const { address: safeAddress, name: safeName, owners } = useSelector(currentSafeWithNames)
-  const connectedWalletAddress = useSelector(userAccountSelector)
+  const {
+    address: safeAddress,
+    name: safeName,
+    owners,
+    currentVersion: safeVersion,
+  } = useSelector(currentSafeWithNames)
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
@@ -68,17 +69,16 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
   useEffect(() => {
     let isCurrent = true
 
-    const calculateAddOwnerData = async () => {
+    const calculateAddOwnerData = () => {
       try {
-        const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
-        const safeTx = await sdk.getAddOwnerTx(values.ownerAddress, +values.threshold)
-        const txData = safeTx.data.data
+        const safeInstance = getGnosisSafeInstanceAt(safeAddress, safeVersion)
+        const txData = safeInstance.methods.addOwnerWithThreshold(values.ownerAddress, values.threshold).encodeABI()
 
         if (isCurrent) {
           setData(txData)
         }
       } catch (error) {
-        logError(Errors._811, error.message)
+        console.error('Error calculating ERC721 transfer data:', error.message)
       }
     }
     calculateAddOwnerData()
@@ -86,7 +86,7 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
     return () => {
       isCurrent = false
     }
-  }, [connectedWalletAddress, safeAddress, values.ownerAddress, values.threshold])
+  }, [safeAddress, safeVersion, values.ownerAddress, values.threshold])
 
   const closeEditModalCallback = (txParameters: TxParameters) => {
     const oldGasPrice = gasPriceFormatted
@@ -118,15 +118,7 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
     >
       {(txParameters, toggleEditMode) => (
         <>
-          <Row align="center" className={classes.heading} grow>
-            <Paragraph className={classes.manage} noMargin weight="bolder">
-              Add new owner
-            </Paragraph>
-            <Paragraph className={classes.annotation}>3 of 3</Paragraph>
-            <IconButton disableRipple onClick={onClose}>
-              <Close className={classes.closeIcon} />
-            </IconButton>
-          </Row>
+          <ModalHeader onClose={onClose} title="Add new owner" subTitle="3 of 3" />
           <Hairline />
           <Block>
             <Row className={classes.root}>
