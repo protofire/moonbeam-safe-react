@@ -83,7 +83,6 @@ export type NetworkSettings = {
   backgroundColor: string
   textColor: string
   label: string
-  isTestNet: boolean
   ethereumLayer: ETHEREUM_LAYER
   nativeCoin: Token
 }
@@ -133,7 +132,7 @@ type SafeEnvironments = {
   production: EnvironmentSettings
 }
 
-export type NetworkInfo = Omit<NetworkSettings, 'isTestNet' | 'ethereumLayer' | 'nativeCoin'>
+export type NetworkInfo = Omit<NetworkSettings, 'ethereumLayer' | 'nativeCoin'>
 
 export interface NetworkConfig {
   network: NetworkSettings

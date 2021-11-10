@@ -5,16 +5,16 @@ import {
   ETHEREUM_NETWORK,
   SHORT_NAME,
   NetworkConfig,
-  WALLETS,
 } from 'src/config/networks/network.d'
+import { WALLETS } from 'src/config/networks/network.d'
 import { ETHGASSTATION_API_KEY, ETHERSCAN_API_KEY } from 'src/utils/constants'
 
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://safe-client.staging.gnosisdev.com/v1',
-  txServiceUrl: 'https://safe-transaction.rinkeby.staging.gnosisdev.com/api/v1',
+  txServiceUrl: 'https://safe-transaction.mainnet.staging.gnosisdev.com/api/v1',
   gasPriceOracles: [
     {
-      url: `https://api-rinkeby.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`,
+      url: `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`,
       gasParameter: 'FastGasPrice',
       gweiFactor: '1e9',
     },
@@ -24,14 +24,14 @@ const baseConfig: EnvironmentSettings = {
       gweiFactor: '1e8',
     },
   ],
-  rpcServiceUrl: 'https://rinkeby.infura.io:443/v3',
-  safeAppsRpcServiceUrl: 'https://rinkeby.infura.io:443/v3',
+  safeAppsRpcServiceUrl: 'https://mainnet.infura.io:443/v3',
+  rpcServiceUrl: 'https://mainnet.infura.io:443/v3',
   networkExplorerName: 'Etherscan',
-  networkExplorerUrl: 'https://rinkeby.etherscan.io',
-  networkExplorerApiUrl: 'https://api-rinkeby.etherscan.io/api',
+  networkExplorerUrl: 'https://etherscan.io',
+  networkExplorerApiUrl: 'https://api.etherscan.io/api',
 }
 
-const rinkeby: NetworkConfig = {
+const mainnet: NetworkConfig = {
   environment: {
     test: baseConfig,
     dev: baseConfig,
@@ -39,15 +39,15 @@ const rinkeby: NetworkConfig = {
     production: {
       ...baseConfig,
       clientGatewayUrl: 'https://safe-client.gnosis.io/v1',
-      txServiceUrl: 'https://safe-transaction.rinkeby.gnosis.io/api/v1',
+      txServiceUrl: 'https://safe-transaction.mainnet.gnosis.io/api/v1',
     },
   },
   network: {
-    id: ETHEREUM_NETWORK.RINKEBY,
-    shortName: SHORT_NAME.RINKEBY,
-    backgroundColor: '#E8673C',
-    textColor: '#ffffff',
-    label: 'Rinkeby',
+    id: ETHEREUM_NETWORK.MAINNET,
+    shortName: SHORT_NAME.MAINNET,
+    backgroundColor: '#E8E7E6',
+    textColor: '#001428',
+    label: 'Mainnet',
     ethereumLayer: ETHEREUM_LAYER.L1,
     nativeCoin: {
       address: '0x0000000000000000000000000000000000000000',
@@ -57,7 +57,7 @@ const rinkeby: NetworkConfig = {
       logoUri: EtherLogo,
     },
   },
-  disabledWallets: [WALLETS.FORTMATIC, WALLETS.LATTICE],
+  disabledWallets: [WALLETS.LATTICE],
 }
 
-export default rinkeby
+export default mainnet

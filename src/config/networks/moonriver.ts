@@ -38,7 +38,6 @@ const moonriver: NetworkConfig = {
     backgroundColor: ' #F2A007',
     textColor: '#ffffff',
     label: 'Moonriver',
-    isTestNet: false,
     ethereumLayer: ETHEREUM_LAYER.L2,
     nativeCoin: {
       address: '0x0000000000000000000000000000000000000000',

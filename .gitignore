@@ -20,3 +20,4 @@ public/**/*.js
 /moonriver
 /moonriver_prd
 jest.results.json
+*.#*
