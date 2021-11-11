@@ -3,7 +3,7 @@ import { List } from 'immutable'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { getNetworkInfo } from 'src/config'
+import { getNetworkId, getNetworkInfo } from 'src/config'
 import {
   checkTransactionExecution,
   estimateSafeTxGas,
@@ -20,7 +20,7 @@ import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
 import { checkIfOffChainSignatureIsPossible } from 'src/logic/safe/safeTxSigner'
 import { ZERO_ADDRESS } from 'src/logic/wallets/ethAddresses'
 import { sameString } from 'src/utils/strings'
-// import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
+import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
 
 export enum EstimationStatus {
   LOADING = 'LOADING',
@@ -30,9 +30,9 @@ export enum EstimationStatus {
 
 // How much to add to gasLimit per network
 // Defaults to x1 (i.e. no extra gas)
-// const EXTRA_GAS_FACTOR = {
-//   [ETHEREUM_NETWORK.ARBITRUM]: 1.2, // +20%
-// }
+const EXTRA_GAS_FACTOR = {
+  [ETHEREUM_NETWORK.ARBITRUM]: 1.2, // +20%
+}
 
 export const checkIfTxIsExecution = (
   threshold: number,

@@ -42,7 +42,6 @@ const moonbase: NetworkConfig = {
     backgroundColor: '#222B60',
     textColor: '#ffffff',
     label: 'Moonbase',
-    isTestNet: true,
     ethereumLayer: ETHEREUM_LAYER.L2,
     nativeCoin: {
       address: '0x0000000000000000000000000000000000000000',
