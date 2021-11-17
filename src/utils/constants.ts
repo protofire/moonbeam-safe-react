@@ -25,7 +25,7 @@ export const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY || ''
 export const ETHGASSTATION_API_KEY = process.env.REACT_APP_ETHGASSTATION_API_KEY
 export const CONFIG_SERVICE_URL =
   process.env.CONFIG_SERVICE_URL || IS_PRODUCTION
-    ? 'https://config.moonbase.multisig.moonbeam.network/api/v1'
+    ? 'https://config.moonriver.multisig.moonbeam.network/api/v1'
     : 'https://config.moonbase.multisig.moonbeam.network/api/v1'
 export const IPFS_GATEWAY = process.env.REACT_APP_IPFS_GATEWAY
 export const SPENDING_LIMIT_MODULE_ADDRESS =

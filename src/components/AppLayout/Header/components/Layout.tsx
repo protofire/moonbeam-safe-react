@@ -5,6 +5,7 @@ import Popper from '@material-ui/core/Popper'
 import { withStyles } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 
+import { getNetworkInfo } from 'src/config'
 import Provider from './Provider'
 import NetworkSelector from './NetworkSelector'
 import Spacer from 'src/components/Spacer'
@@ -13,7 +14,8 @@ import Img from 'src/components/layout/Img'
 import Row from 'src/components/layout/Row'
 import { headerHeight, md, screenSm, sm } from 'src/theme/variables'
 import { useStateHandler } from 'src/logic/hooks/useStateHandler'
-import SafeLogo from '../assets/moonbase_logo.svg'
+import SafeLogoMVR from '../assets/moonriver_logo.svg'
+import SafeLogoMBASE from '../assets/moonbase_logo.svg'
 import { WELCOME_ROUTE } from 'src/routes/routes'
 
 const styles = () => ({
@@ -88,13 +90,19 @@ const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) =
   const { clickAway, open, toggle } = useStateHandler()
   const { clickAway: clickAwayNetworks, open: openNetworks, toggle: toggleNetworks } = useStateHandler()
   const { isDesktop } = window
+  const chainName = getNetworkInfo().label
   const isOpen = open || shouldSwitchChain
 
   return (
     <Row className={classes.summary}>
       <Col className={classes.logo} middle="xs" start="xs">
         <Link to={WELCOME_ROUTE}>
-          <Img alt="Moonbeam Safe" height={36} src={SafeLogo} testId="heading-gnosis-logo" />
+          <Img
+            alt="Moonbeam Safe"
+            height={chainName == 'Moonriver' ? '96' : '36'}
+            src={chainName == 'Moonriver' ? SafeLogoMVR : SafeLogoMBASE}
+            testId="heading-gnosis-logo"
+          />
         </Link>
       </Col>
       <Spacer />
