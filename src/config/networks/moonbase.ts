@@ -17,7 +17,7 @@ const baseConfig: EnvironmentSettings = {
   safeAppsRpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   networkExplorerName: 'Blockscout Moonbase DEV Explorer',
   networkExplorerUrl: 'https://moonbase.moonscan.io',
-  networkExplorerApiUrl: 'https://moonbase.moonscan.io/api',
+  networkExplorerApiUrl: 'https://api-moonbase.moonscan.io/api',
 }
 
 const moonbase: NetworkConfig = {

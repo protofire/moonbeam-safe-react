@@ -17,7 +17,7 @@ const baseConfig: EnvironmentSettings = {
   safeAppsRpcServiceUrl: 'https://rpc.moonriver.moonbeam.network',
   networkExplorerName: 'Blockscout Moonriver MOVR Explorer',
   networkExplorerUrl: 'https://moonriver.moonscan.io',
-  networkExplorerApiUrl: 'https://moonriver.moonscan.io/api',
+  networkExplorerApiUrl: 'https://api-moonriver.moonscan.io/api',
 }
 
 const moonriver: NetworkConfig = {
