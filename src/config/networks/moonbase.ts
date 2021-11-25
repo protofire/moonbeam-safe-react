@@ -16,21 +16,21 @@ const baseConfig: EnvironmentSettings = {
   rpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   safeAppsRpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
   networkExplorerName: 'Blockscout Moonbase DEV Explorer',
-  networkExplorerUrl: 'https://moonbase-blockscout.testnet.moonbeam.network',
-  networkExplorerApiUrl: 'https://moonbase-blockscout.testnet.moonbeam.network/api',
+  networkExplorerUrl: 'https://moonbase.moonscan.io',
+  networkExplorerApiUrl: 'https://moonbase.moonscan.io/api',
 }
 
 const moonbase: NetworkConfig = {
   environment: {
     dev: {
       ...baseConfig,
-      // clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network/v1',
-      // txServiceUrl: 'https://transaction.staging.moonbase.multisig.moonbeam.network/api/v1',
+      clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network/v1',
+      txServiceUrl: 'https://transaction.staging.moonbase.multisig.moonbeam.network/api/v1',
     },
     staging: {
       ...baseConfig,
-      // clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network/v1',
-      // txServiceUrl: 'https://transaction.staging.moonbase.multisig.moonbeam.network/api/v1',
+      clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network/v1',
+      txServiceUrl: 'https://transaction.staging.moonbase.multisig.moonbeam.network/api/v1',
     },
     production: {
       ...baseConfig,
