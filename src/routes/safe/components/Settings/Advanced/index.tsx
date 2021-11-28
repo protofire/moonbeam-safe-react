@@ -2,6 +2,7 @@ import { Text, theme, Title } from '@gnosis.pm/safe-react-components'
 import { ReactElement, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
+import semverSatisfies from 'semver/functions/satisfies'
 
 import { getModuleData } from './dataFetcher'
 import { useStyles } from './style'
@@ -9,7 +10,7 @@ import { ModulesTable } from './ModulesTable'
 
 import Block from 'src/components/layout/Block'
 import { currentSafe } from 'src/logic/safe/store/selectors'
-import { useAnalytics, SAFE_NAVIGATION_EVENT } from 'src/utils/googleAnalytics'
+import { useAnalytics, SETTINGS_EVENTS } from 'src/utils/googleAnalytics'
 import { TransactionGuard } from './TransactionGuard'
 
 const InfoText = styled(Text)`
@@ -32,15 +33,18 @@ const NoTransactionGuardLegend = (): ReactElement => (
   </InfoText>
 )
 
+// const DOCS_LINK = 'https://docs.gnosis-safe.io/contracts/modules-1'
+
 const Advanced = (): ReactElement => {
   const classes = useStyles()
-  const { nonce, modules, guard } = useSelector(currentSafe) ?? {}
+  const { nonce, modules, guard, currentVersion } = useSelector(currentSafe) ?? {}
 
   const moduleData = modules ? getModuleData(modules) ?? null : null
+  const isVersionWithGuards = semverSatisfies(currentVersion, '>=1.3.0')
   const { trackEvent } = useAnalytics()
 
   useEffect(() => {
-    trackEvent({ category: SAFE_NAVIGATION_EVENT, action: 'Settings', label: 'Advanced' })
+    trackEvent(SETTINGS_EVENTS.ADVANCED)
   }, [trackEvent])
 
   return (
@@ -55,7 +59,7 @@ const Advanced = (): ReactElement => {
           which transaction will be executed next. You can find the nonce for a transaction in the transaction details.
         </InfoText>
         <InfoText color="secondaryLight" size="xl">
-          Current Nonce: <Bold>{nonce}</Bold>
+          Current Nonce: <Bold data-testid={'current-nonce'}>{nonce}</Bold>
         </InfoText>
       </Block>
 
@@ -73,17 +77,19 @@ const Advanced = (): ReactElement => {
       </Block>
 
       {/* Transaction guard */}
-      <Block className={classes.container}>
-        <Title size="xs" withoutMargin>
-          Transaction guard
-        </Title>
-        <InfoText size="lg">
-          Transaction guards impose additional constraints that are checked prior to executing a Safe transaction.
-          Transaction guards are potentially risky, so make sure to only use modules from trusted sources.
-        </InfoText>
+      {isVersionWithGuards && (
+        <Block className={classes.container}>
+          <Title size="xs" withoutMargin>
+            Transaction Guard
+          </Title>
+          <InfoText size="lg">
+            Transaction guards impose additional constraints that are checked prior to executing a Safe transaction.
+            Transaction guards are potentially risky, so make sure to only use modules from trusted sources.
+          </InfoText>
 
-        {!guard ? <NoTransactionGuardLegend /> : <TransactionGuard address={guard} />}
-      </Block>
+          {!guard ? <NoTransactionGuardLegend /> : <TransactionGuard address={guard} />}
+        </Block>
+      )}
     </>
   )
 }

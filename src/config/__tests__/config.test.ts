@@ -3,6 +3,11 @@ import { default as networks } from 'src/config/networks'
 
 const { moonbase, moonriver } = networks
 
+const mainnetShortName = moonbase.network.shortName
+const xDaiShortName = moonriver.network.shortName
+
+const validSafeAddress = '0x57CB13cbef735FbDD65f5f2866638c546464E45F'
+
 describe('Config Services', () => {
   beforeEach(() => {
     jest.resetModules()
@@ -10,16 +15,13 @@ describe('Config Services', () => {
 
   it(`should load 'test' network config`, () => {
     // Given
-    jest.mock('src/utils/constants', () => ({
-      NODE_ENV: 'test',
-    }))
     const { getNetworkInfo } = require('src/config')
 
     // When
     const networkInfo = getNetworkInfo()
 
     // Then
-    expect(networkInfo.id).toBe(ETHEREUM_NETWORK.LOCAL)
+    expect(networkInfo.id).toBe(ETHEREUM_NETWORK.RINKEBY)
   })
 
   it(`should load 'moonriver' network config`, () => {
@@ -28,6 +30,7 @@ describe('Config Services', () => {
       NODE_ENV: '',
       NETWORK: 'MOONRIVER',
     }))
+    window.history.pushState(null, '', `${window.location.origin}/app/${mainnetShortName}:${validSafeAddress}`)
     const { getNetworkInfo } = require('src/config')
 
     // When
@@ -59,6 +62,7 @@ describe('Config Services', () => {
       NODE_ENV: 'production',
       NETWORK: 'MOONRIVER',
     }))
+    window.history.pushState(null, '', `${window.location.origin}/app/${mainnetShortName}:${validSafeAddress}`)
     const { getTxServiceUrl } = require('src/config')
     const TX_SERVICE_URL = moonriver.environment.staging?.txServiceUrl
 

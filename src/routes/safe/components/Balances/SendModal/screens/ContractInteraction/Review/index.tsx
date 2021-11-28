@@ -15,13 +15,10 @@ import { AbiItemExtended } from 'src/logic/contractInteraction/sources/ABIServic
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { getEthAsToken } from 'src/logic/tokens/utils/tokenHelpers'
 import { styles } from 'src/routes/safe/components/Balances/SendModal/screens/ContractInteraction/style'
-import { Header } from 'src/routes/safe/components/Balances/SendModal/screens/ContractInteraction/Header'
 import { setImageToPlaceholder } from 'src/routes/safe/components/Balances/utils'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
-
-import { safeAddressFromUrl } from 'src/logic/safe/store/selectors'
 import {
   generateFormFieldKey,
   getValueFromTxInputs,
@@ -32,6 +29,9 @@ import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { ButtonStatus, Modal } from 'src/components/Modal'
 import { TransactionFees } from 'src/components/TransactionsFees'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
+import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
+import { extractSafeAddress } from 'src/routes/routes'
+import ExecuteCheckbox from 'src/components/ExecuteCheckbox'
 
 const useStyles = makeStyles(styles)
 
@@ -51,16 +51,16 @@ type Props = {
   txParameters: TxParameters
 }
 
-const { nativeCoin } = getNetworkInfo()
-
 const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactElement => {
   const explorerUrl = getExplorerInfo(tx.contractAddress as string)
   const classes = useStyles()
   const dispatch = useDispatch()
-  const safeAddress = useSelector(safeAddressFromUrl)
+  const safeAddress = extractSafeAddress()
+  const { nativeCoin } = getNetworkInfo()
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
+  const [executionApproved, setExecutionApproved] = useState<boolean>(true)
   const addressName = useSelector((state) => addressBookEntryName(state, { address: tx.contractAddress as string }))
 
   const [txInfo, setTxInfo] = useState<{
@@ -87,6 +87,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
     manualGasLimit,
   })
 
+  const doExecute = isExecution && executionApproved
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
   useEffect(() => {
@@ -95,7 +96,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
       txAmount: tx.value ? toTokenUnit(tx.value, nativeCoin.decimals) : '0',
       txData: tx.data ? tx.data.trim() : '',
     })
-  }, [tx.contractAddress, tx.value, tx.data, safeAddress])
+  }, [tx.contractAddress, tx.value, tx.data, safeAddress, nativeCoin.decimals])
 
   const submitTx = (txParameters: TxParameters) => {
     if (safeAddress && txInfo) {
@@ -109,6 +110,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
           safeTxGas: txParameters.safeTxGas,
           ethParameters: txParameters,
           notifiedTransaction: TX_NOTIFICATION_TYPES.STANDARD_TX,
+          delayExecution: !executionApproved,
         }),
       )
     } else {
@@ -139,7 +141,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
   return (
     <EditableTxParameters
       isOffChainSignature={isOffChainSignature}
-      isExecution={isExecution}
+      isExecution={doExecute}
       ethGasLimit={gasLimit}
       ethGasPrice={gasPriceFormatted}
       safeTxGas={gasEstimation}
@@ -147,7 +149,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
     >
       {(txParameters, toggleEditMode) => (
         <>
-          <Header onClose={onClose} subTitle="2 of 2" title="Contract interaction" />
+          <ModalHeader onClose={onClose} subTitle="2 of 2" title="Contract interaction" />
           <Hairline />
           <Block className={classes.formContainer}>
             <Row margin="xs">
@@ -224,19 +226,21 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
               </Col>
             </Row>
 
+            {isExecution && <ExecuteCheckbox onChange={setExecutionApproved} />}
+
             {/* Tx Parameters */}
             <TxParametersDetail
               txParameters={txParameters}
               onEdit={toggleEditMode}
               isTransactionCreation={isCreation}
-              isTransactionExecution={isExecution}
+              isTransactionExecution={doExecute}
               isOffChainSignature={isOffChainSignature}
             />
           </Block>
           <div className={classes.gasCostsContainer}>
             <TransactionFees
               gasCostFormatted={gasCostFormatted}
-              isExecution={isExecution}
+              isExecution={doExecute}
               isCreation={isCreation}
               isOffChainSignature={isOffChainSignature}
               txEstimationExecutionStatus={txEstimationExecutionStatus}

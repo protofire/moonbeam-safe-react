@@ -6,7 +6,6 @@ import { userAccountSelector } from 'src/logic/wallets/store/selectors'
 import { addressBookAddOrUpdate } from 'src/logic/addressBook/store/actions'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
-import { safeAddressFromUrl } from 'src/logic/safe/store/selectors'
 import { checksumAddress } from 'src/utils/checksumAddress'
 import { makeAddressBookEntry } from 'src/logic/addressBook/model/addressBook'
 import { Dispatch } from 'src/logic/safe/store/actions/types.d'
@@ -16,6 +15,7 @@ import { ReviewReplaceOwnerModal } from 'src/routes/safe/components/Settings/Man
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { isValidAddress } from 'src/utils/isValidAddress'
 import { OwnerData } from 'src/routes/safe/components/Settings/ManageOwners/dataFetcher'
+import { extractSafeAddress } from 'src/routes/routes'
 import { getSafeSDK } from 'src/logic/wallets/getWeb3'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
 
@@ -33,7 +33,10 @@ export const sendReplaceOwner = async (
   connectedWalletAddress: string,
 ): Promise<void> => {
   const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
-  const safeTx = await sdk.getSwapOwnerTx(ownerAddressToRemove, newOwner.address)
+  const safeTx = await sdk.getSwapOwnerTx(
+    { oldOwnerAddress: ownerAddressToRemove, newOwnerAddress: newOwner.address },
+    { safeTxGas: 0 },
+  )
   const txData = safeTx.data.data
 
   const txHash = await dispatch(
@@ -64,7 +67,7 @@ export const ReplaceOwnerModal = ({ isOpen, onClose, owner }: ReplaceOwnerProps)
   const [activeScreen, setActiveScreen] = useState('checkOwner')
   const [newOwner, setNewOwner] = useState({ address: '', name: '' })
   const dispatch = useDispatch()
-  const safeAddress = useSelector(safeAddressFromUrl)
+  const safeAddress = extractSafeAddress()
   const connectedWalletAddress = useSelector(userAccountSelector)
 
   useEffect(

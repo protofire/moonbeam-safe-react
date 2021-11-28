@@ -1,6 +1,6 @@
 import { Record, RecordOf } from 'immutable'
 
-import { FEATURES } from 'src/config/networks/network.d'
+import { ETHEREUM_NETWORK, FEATURES } from 'src/config/networks/network.d'
 import { BalanceRecord } from 'src/logic/tokens/store/actions/fetchSafeTokens'
 
 export type SafeOwner = string
@@ -24,6 +24,7 @@ export type SpendingLimit = {
 
 export type SafeRecordProps = {
   address: string
+  chainId?: ETHEREUM_NETWORK
   threshold: number
   ethBalance: string
   totalFiatBalance: string
@@ -43,8 +44,12 @@ export type SafeRecordProps = {
   txHistoryTag: string
 }
 
+/**
+ * Create a safe record defaulting to these values
+ */
 const makeSafe = Record<SafeRecordProps>({
   address: '',
+  chainId: undefined,
   threshold: 0,
   ethBalance: '0',
   totalFiatBalance: '0',

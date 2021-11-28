@@ -3,7 +3,7 @@ import { List } from 'immutable'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { getNetworkInfo } from 'src/config'
+import { getNetworkId, getNetworkInfo } from 'src/config'
 import {
   checkTransactionExecution,
   estimateSafeTxGas,
@@ -13,14 +13,14 @@ import { fromTokenUnit } from 'src/logic/tokens/utils/humanReadableValue'
 import { formatAmount } from 'src/logic/tokens/utils/formatAmount'
 import { calculateGasPrice } from 'src/logic/wallets/ethTransactions'
 import { currentSafe } from 'src/logic/safe/store/selectors'
-import { web3ReadOnly as web3 } from 'src/logic/wallets/getWeb3'
+import { getWeb3ReadOnly } from 'src/logic/wallets/getWeb3'
 import { providerSelector } from 'src/logic/wallets/store/selectors'
 
 import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
 import { checkIfOffChainSignatureIsPossible } from 'src/logic/safe/safeTxSigner'
 import { ZERO_ADDRESS } from 'src/logic/wallets/ethAddresses'
 import { sameString } from 'src/utils/strings'
-// import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
+import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
 
 export enum EstimationStatus {
   LOADING = 'LOADING',
@@ -30,9 +30,9 @@ export enum EstimationStatus {
 
 // How much to add to gasLimit per network
 // Defaults to x1 (i.e. no extra gas)
-// const EXTRA_GAS_FACTOR = {
-//   [ETHEREUM_NETWORK.ARBITRUM]: 1.2, // +20%
-// }
+const EXTRA_GAS_FACTOR = {
+  [ETHEREUM_NETWORK.ARBITRUM]: 1.2, // +20%
+}
 
 export const checkIfTxIsExecution = (
   threshold: number,
@@ -142,6 +142,7 @@ export const useEstimateTransactionGas = ({
   const { address: safeAddress = '', threshold = 1, currentVersion: safeVersion = '' } = useSelector(currentSafe) ?? {}
   const { account: from, smartContractWallet, name: providerName } = useSelector(providerSelector)
   useEffect(() => {
+    const web3 = getWeb3ReadOnly()
     const estimateGas = async () => {
       if (!txData.length) {
         return
@@ -197,10 +198,11 @@ export const useEstimateTransactionGas = ({
 
         const gasPrice = manualGasPrice ? web3.utils.toWei(manualGasPrice, 'gwei') : await calculateGasPrice()
         const gasPriceFormatted = web3.utils.fromWei(gasPrice, 'gwei')
-        const estimatedGasCosts = ethGasLimitEstimation * parseInt(gasPrice, 10)
+        const extraGasMult = EXTRA_GAS_FACTOR[getNetworkId()] || 1
+        const gasLimit = manualGasLimit || Math.round(ethGasLimitEstimation * extraGasMult).toString()
+        const estimatedGasCosts = parseInt(gasLimit, 10) * parseInt(gasPrice, 10)
         const gasCost = fromTokenUnit(estimatedGasCosts, nativeCoin.decimals)
         const gasCostFormatted = formatAmount(gasCost)
-        const gasLimit = manualGasLimit || Math.round(ethGasLimitEstimation).toString()
 
         if (isExecution) {
           transactionCallSuccess = await checkTransactionExecution({
