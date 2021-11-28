@@ -1,29 +1,24 @@
-import ReactGA from 'react-ga'
 import { Dispatch } from 'redux'
 
 import addProvider from './addProvider'
 
-import { getNetworkInfo } from 'src/config'
 import { NOTIFICATIONS, enhanceSnackbarForAction } from 'src/logic/notifications'
 import enqueueSnackbar from 'src/logic/notifications/store/actions/enqueueSnackbar'
 import { getProviderInfo, getWeb3 } from 'src/logic/wallets/getWeb3'
-import { makeProvider } from 'src/logic/wallets/store/model/provider'
+import { makeProvider, ProviderProps } from 'src/logic/wallets/store/model/provider'
+import { trackAnalyticsEvent, WALLET_EVENTS } from 'src/utils/googleAnalytics'
 
-export const processProviderResponse = (dispatch, provider) => {
+export const processProviderResponse = (dispatch: Dispatch, provider: ProviderProps): void => {
   const walletRecord = makeProvider(provider)
   dispatch(addProvider(walletRecord))
 }
 
-const handleProviderNotification = (provider, dispatch) => {
+const handleProviderNotification = (provider: ProviderProps, dispatch: Dispatch<any>): void => {
   const { available, loaded } = provider
 
   if (!loaded) {
     dispatch(enqueueSnackbar(enhanceSnackbarForAction(NOTIFICATIONS.CONNECT_WALLET_ERROR_MSG)))
     return
-  }
-
-  if (getNetworkInfo().isTestNet) {
-    dispatch(enqueueSnackbar(enhanceSnackbarForAction(NOTIFICATIONS.TESTNET_VERSION_MSG)))
   }
 
   if (available) {
@@ -32,9 +27,9 @@ const handleProviderNotification = (provider, dispatch) => {
     // you SHOULD pass your own `key` in the options. `key` can be any sequence
     // of number or characters, but it has to be unique to a given snackbar.
 
-    ReactGA.event({
-      category: 'Wallets',
-      action: 'Connect a wallet',
+    // Cannot import from useAnalytics here, so using fn directly
+    trackAnalyticsEvent({
+      ...WALLET_EVENTS.CONNECT_WALLET,
       label: provider.name,
     })
   } else {
@@ -42,10 +37,10 @@ const handleProviderNotification = (provider, dispatch) => {
   }
 }
 
-export default (providerName: string) =>
-  async (dispatch: Dispatch): Promise<void> => {
+export default (providerName: string): ((dispatch: Dispatch<any>) => Promise<void>) =>
+  async (dispatch: Dispatch<any>) => {
     const web3 = getWeb3()
     const providerInfo = await getProviderInfo(web3, providerName)
-    await handleProviderNotification(providerInfo, dispatch)
+    handleProviderNotification(providerInfo, dispatch)
     processProviderResponse(dispatch, providerInfo)
   }

@@ -11,7 +11,7 @@ import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import { grantedSelector } from 'src/routes/safe/container/selector'
 import { currentSafe } from 'src/logic/safe/store/selectors'
-import { useAnalytics, SAFE_NAVIGATION_EVENT } from 'src/utils/googleAnalytics'
+import { useAnalytics, SETTINGS_EVENTS } from 'src/utils/googleAnalytics'
 
 import { ChangeThresholdModal } from './ChangeThreshold'
 import { styles } from './style'
@@ -31,13 +31,13 @@ const ThresholdSettings = (): React.ReactElement => {
   const { trackEvent } = useAnalytics()
 
   useEffect(() => {
-    trackEvent({ category: SAFE_NAVIGATION_EVENT, action: 'Settings', label: 'Owners' })
+    trackEvent(SETTINGS_EVENTS.OWNERS)
   }, [trackEvent])
 
   return (
     <>
       <Block className={classes.container}>
-        <Heading tag="h2">Required confirmations</Heading>
+        <Heading tag="h2">Required Confirmations</Heading>
         <Paragraph>Any transaction requires the confirmation of:</Paragraph>
         <Paragraph className={classes.ownersText} size="lg">
           <Bold>{threshold}</Bold> out of <Bold>{owners?.length || 0}</Bold> owners

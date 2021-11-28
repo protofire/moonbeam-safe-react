@@ -3,6 +3,7 @@ import {
   EnvironmentSettings,
   ETHEREUM_LAYER,
   ETHEREUM_NETWORK,
+  SHORT_NAME,
   FEATURES,
   NetworkConfig,
   WALLETS,
@@ -11,13 +12,12 @@ import {
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonriver.multisig.moonbeam.network/v1',
   txServiceUrl: 'https://transaction.moonriver.multisig.moonbeam.network/api/v1',
-  safeUrl: '/moonriver',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.moonriver.moonbeam.network',
   safeAppsRpcServiceUrl: 'https://rpc.moonriver.moonbeam.network',
   networkExplorerName: 'Blockscout Moonriver MOVR Explorer',
-  networkExplorerUrl: 'https://blockscout.moonriver.moonbeam.network',
-  networkExplorerApiUrl: 'https://blockscout.moonriver.moonbeam.network/api',
+  networkExplorerUrl: 'https://moonriver.moonscan.io',
+  networkExplorerApiUrl: 'https://api-moonriver.moonscan.io/api',
 }
 
 const moonriver: NetworkConfig = {
@@ -34,10 +34,10 @@ const moonriver: NetworkConfig = {
   },
   network: {
     id: ETHEREUM_NETWORK.MOONRIVER,
+    shortName: SHORT_NAME.MOONRIVER,
     backgroundColor: ' #F2A007',
     textColor: '#ffffff',
     label: 'Moonriver',
-    isTestNet: false,
     ethereumLayer: ETHEREUM_LAYER.L2,
     nativeCoin: {
       address: '0x0000000000000000000000000000000000000000',
@@ -60,6 +60,8 @@ const moonriver: NetworkConfig = {
     WALLETS.AUTHEREUM,
     WALLETS.LATTICE,
     WALLETS.PORTIS,
+    WALLETS.KEYSTONE,
+    WALLETS.WALLET_CONNECT,
   ],
   disabledFeatures: [FEATURES.DOMAIN_LOOKUP, FEATURES.SPENDING_LIMIT],
 }

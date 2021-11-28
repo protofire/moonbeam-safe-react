@@ -1,9 +1,9 @@
 {
   "name": "safe-react",
-  "version": "3.14.2",
+  "version": "3.15.1",
   "description": "Allowing crypto users manage funds in a safer way",
   "website": "https://github.com/gnosis/safe-react#readme",
-  "homepage": "./",
+  "homepage": "/",
   "bugs": {
     "url": "https://github.com/gnosis/safe-react/issues"
   },
@@ -23,6 +23,7 @@
     "build-mainnet": "cross-env REACT_APP_NETWORK=mainnet yarn build",
     "build-moonbase": "cross-env REACT_APP_NETWORK=moonbase yarn build",
     "build-moonriver": "cross-env REACT_APP_NETWORK=moonriver yarn build",
+    "build-staging": "cross-env REACT_APP_APP_VERSION=$npm_package_version REACT_APP_ENV=staging rescripts --max-old-space-size=8192 build",
     "build": "cross-env REACT_APP_APP_VERSION=$npm_package_version rescripts --max-old-space-size=8192 build",
     "compile-electron": "tsc --project tsconfig.electron.json",
     "eject": "rescripts eject",
@@ -175,7 +176,7 @@
   "dependencies": {
     "@gnosis.pm/safe-apps-sdk": "4.3.0-next.2",
     "@gnosis.pm/safe-apps-sdk-v1": "npm:@gnosis.pm/safe-apps-sdk@0.4.2",
-    "@gnosis.pm/safe-core-sdk": "^0.3.1",
+    "@gnosis.pm/safe-core-sdk": "^1.0.0",
     "@gnosis.pm/safe-deployments": "^1.2.0",
     "@gnosis.pm/safe-react-components": "^0.8.0",
     "@gnosis.pm/safe-react-gateway-sdk": "^2.3.0",
@@ -186,11 +187,12 @@
     "@openzeppelin/contracts": "3.4.2",
     "@sentry/react": "^6.10.0",
     "@sentry/tracing": "^6.10.0",
+    "@testing-library/react-hooks": "^7.0.2",
     "@unstoppabledomains/resolution": "^1.17.0",
     "abi-decoder": "^2.4.0",
     "axios": "0.21.4",
     "bignumber.js": "9.0.1",
-    "bnc-onboard": "^1.35.1",
+    "bnc-onboard": "~1.35.3",
     "classnames": "^2.2.6",
     "connected-react-router": "6.8.0",
     "currency-flags": "3.2.1",
