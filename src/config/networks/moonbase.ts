@@ -24,8 +24,8 @@ const moonbase: NetworkConfig = {
   environment: {
     dev: {
       ...baseConfig,
-      clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network/v1',
-      txServiceUrl: 'https://transaction.staging.moonbase.multisig.moonbeam.network/api/v1',
+      clientGatewayUrl: 'http://localhost:8001/v1',
+      txServiceUrl: 'http://localhost:8000/api/v1',
     },
     staging: {
       ...baseConfig,
