@@ -95,10 +95,13 @@ export const getNetworkIdByShortChainName = (shortName: string): ETHEREUM_NETWOR
   return getNetworks().find((network) => network.shortName === shortName)?.id || DEFAULT_NETWORK
 }
 
-export const getCurrentEnvironment = (): 'test' | 'production' | 'dev' => {
+export const getCurrentEnvironment = (): 'test' | 'local' | 'production' | 'dev' => {
   switch (APP_ENV) {
     case 'test': {
       return 'test'
+    }
+    case 'local': {
+      return 'local'
     }
     case 'production': {
       return 'production'
