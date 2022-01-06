@@ -1,11 +1,11 @@
 import { useMemo, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { useRouteMatch } from 'react-router-dom'
+import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
 import { getCurrentShortChainName, isFeatureEnabled } from 'src/config'
 import { ListItemType } from 'src/components/List'
 import ListIcon from 'src/components/List/ListIcon'
-import { FEATURES } from 'src/config/networks/network.d'
 import { currentSafeFeaturesEnabled, currentSafeWithNames } from 'src/logic/safe/store/selectors'
 import { grantedSelector } from 'src/routes/safe/container/selector'
 import {
@@ -14,7 +14,6 @@ import {
   SAFE_SUBSECTION_ROUTE,
   generatePrefixedAddressRoutes,
 } from 'src/routes/routes'
-import { IS_PRODUCTION } from 'src/utils/constants'
 
 const useSidebarItems = (): ListItemType[] => {
   const featuresEnabled = useSelector(currentSafeFeaturesEnabled)
@@ -74,13 +73,11 @@ const useSidebarItems = (): ListItemType[] => {
         iconType: 'info',
         href: currentSafeRoutes.SETTINGS_DETAILS,
       }),
-      IS_PRODUCTION
-        ? null
-        : makeEntryItem({
-            label: 'Appearance',
-            iconType: 'eye',
-            href: currentSafeRoutes.SETTINGS_APPEARANCE,
-          }),
+      makeEntryItem({
+        label: 'Appearance',
+        iconType: 'eye',
+        href: currentSafeRoutes.SETTINGS_APPEARANCE,
+      }),
       makeEntryItem({
         label: 'Owners',
         iconType: 'owners',

@@ -2,11 +2,19 @@ import memoize from 'lodash.memoize'
 
 import networks from 'src/config/networks'
 import {
+  ChainInfo,
+  GasPriceFixed,
+  GasPriceOracle,
+  RpcUri,
+  GAS_PRICE_TYPE,
+  RPC_AUTHENTICATION,
+  FEATURES,
+} from '@gnosis.pm/safe-react-gateway-sdk'
+
+import {
   EnvironmentSettings,
   ETHEREUM_NETWORK,
   SHORT_NAME,
-  FEATURES,
-  GasPriceOracle,
   NetworkConfig,
   NetworkInfo,
   NetworkSettings,
@@ -18,12 +26,21 @@ import {
   APP_ENV,
   ETHERSCAN_API_KEY,
   GOOGLE_ANALYTICS_ID,
+  DEFAULT_CHAIN_ID,
   INFURA_TOKEN,
   IS_PRODUCTION,
   NODE_ENV,
   SAFE_APPS_RPC_TOKEN,
+  TX_SERVICE_VERSION,
 } from 'src/utils/constants'
 import { loadFromSessionStorage } from 'src/utils/storage/session'
+import { ChainId, ChainName, ShortName } from './chain.d'
+import { emptyChainInfo, getChains } from './cache/chains'
+import { evalTemplate } from './utils'
+import local from 'src/utils/storage/local'
+import { ConfigState } from 'src/logic/config/store/reducer/reducer.d'
+
+export const LOCAL_CONFIG_KEY = 'config'
 
 export const getNetworks = (): NetworkInfo[] => {
   // NETWORK_ROOT_ROUTES follows the same destructuring
@@ -63,9 +80,138 @@ export const getInitialNetworkId = (): ETHEREUM_NETWORK => {
 // May be able to make extraction of the shortName in URL a bit better
 let networkId = getInitialNetworkId()
 
-export const setNetworkId = (id: ETHEREUM_NETWORK): void => {
-  networkId = id
+/**
+ * Determine the initial chain id
+ */
+const getInitialChainId = (): ChainId => {
+  const localItem = local.getItem<ConfigState>(LOCAL_CONFIG_KEY)
+  return localItem?.chainId || DEFAULT_CHAIN_ID
 }
+
+export const getChainById = (chainId: ChainId): ChainInfo => {
+  return getChains().find((chain) => chain.chainId === chainId) || emptyChainInfo
+}
+
+let _chainId = getInitialChainId()
+
+export const _setChainId = (newChainId: ChainId) => {
+  _chainId = newChainId
+}
+
+export const _getChainId = (): ChainId => {
+  return _chainId
+}
+
+export const isValidChainId = (chainId: unknown): chainId is ChainId =>
+  getChains().some((chain) => chain.chainId === chainId)
+
+export const getChainInfo = (): ChainInfo => {
+  return getChainById(_getChainId())
+}
+
+export const getChainName = (): ChainName => {
+  return getChainInfo().chainName
+}
+
+export const getDisabledWallets = (): ChainInfo['disabledWallets'] => {
+  return getChainInfo().disabledWallets
+}
+
+export const getExplorerUrl = (): string => {
+  const { address } = getExplorerUriTemplate()
+  return new URL(address).origin
+}
+
+const getExplorerUriTemplate = (): ChainInfo['blockExplorerUriTemplate'] => {
+  return getChainInfo().blockExplorerUriTemplate
+}
+
+export const getFixedGasPrice = (): Extract<ChainInfo['gasPrice'][number], GasPriceFixed> => {
+  const isFixed = (gasPrice: ChainInfo['gasPrice'][number]): gasPrice is GasPriceFixed => {
+    return gasPrice.type === GAS_PRICE_TYPE.FIXED
+  }
+  return getChainInfo().gasPrice.filter(isFixed)[0]
+}
+
+export const getHashedExplorerUrl = (hash: string): string => {
+  const isTx = hash.length > 42
+  const param = isTx ? 'txHash' : 'address'
+  const uri = getExplorerUriTemplate()[param]
+  return evalTemplate(uri, { [param]: hash })
+}
+
+// CGW does not return `nativeCurrency.address` as it is `ZERO_ADDRESS`
+export const getNativeCurrency = (): ChainInfo['nativeCurrency'] => {
+  return getChainInfo().nativeCurrency
+}
+
+const formatRpcServiceUrl = ({ authentication, value }: RpcUri, TOKEN: string): string => {
+  const needsToken = authentication === RPC_AUTHENTICATION.API_KEY_PATH
+  return needsToken ? `${value}${TOKEN}` : value
+}
+
+export const getRpcServiceUrl = (): string => {
+  const { rpcUri } = getChainInfo()
+  return formatRpcServiceUrl(rpcUri, INFURA_TOKEN)
+}
+
+export const getPublicRpcUrl = (): string => {
+  const { publicRpcUri } = getChainInfo()
+  // Don't pass any auth token because this RPC is for user's wallet
+  return formatRpcServiceUrl(publicRpcUri, '')
+}
+
+/**
+ * Checks if a particular feature is enabled in the current network configuration
+ * @params {FEATURES} feature
+ * @returns boolean
+ */
+export const isFeatureEnabled = (feature: FEATURES): boolean => {
+  const { disabledFeatures } = getConfig()
+  return !disabledFeatures?.some((disabledFeature) => disabledFeature === feature)
+}
+
+export const getShortName = (): ShortName => {
+  return getChainInfo().shortName
+}
+
+export const getSafeAppsRpcServiceUrl = (): string => {
+  const { safeAppsRpcUri } = getChainInfo()
+  return formatRpcServiceUrl(safeAppsRpcUri, SAFE_APPS_RPC_TOKEN)
+}
+
+export const getNetworkInfo = (): NetworkSettings => getConfig().network
+
+export const getGasPriceOracles = (): Extract<ChainInfo['gasPrice'][number], GasPriceOracle>[] => {
+  const isOracleType = (gasPrice: ChainInfo['gasPrice'][number]): gasPrice is GasPriceOracle => {
+    return gasPrice.type === GAS_PRICE_TYPE.ORACLE
+  }
+  return getChainInfo().gasPrice.filter(isOracleType)
+}
+
+const fetchContractABI = memoize(
+  async (url: string, contractAddress: string, apiKey?: string) => {
+    let params: Record<string, string> = {
+      module: 'contract',
+      action: 'getAbi',
+      address: contractAddress,
+    }
+
+    if (apiKey) {
+      params = { ...params, apiKey }
+    }
+
+    const response = await fetch(`${url}?${new URLSearchParams(params)}`)
+
+    if (!response.ok) {
+      return { status: 0, result: [] }
+    }
+
+    return response.json()
+  },
+  (url, contractAddress) => `${url}_${contractAddress}`,
+)
+
 export const getNetworkId = (): ETHEREUM_NETWORK => networkId
 
 export const getNetworkName = (networkId: ETHEREUM_NETWORK = getNetworkId()): string => {
@@ -76,6 +222,24 @@ export const getNetworkName = (networkId: ETHEREUM_NETWORK = getNetworkId()): st
 
 export const getNetworkConfigById = (id: ETHEREUM_NETWORK): NetworkConfig | undefined => {
   return Object.values(networks).find((cfg) => cfg.network.id === id)
+}
+
+// @TODO: Remove after Safe Apps reliance
+export const getTxServiceUrl = (): ChainInfo['transactionService'] => {
+  const { transactionService } = getChainInfo()
+  // To avoid breaking changes, we define the version the web uses manually
+  return `${transactionService}/api/v${TX_SERVICE_VERSION}`
+}
+
+const getNetworkExplorerApiKey = (networkExplorerName: string): string | undefined => {
+  switch (networkExplorerName.toLowerCase()) {
+    case 'etherscan': {
+      return ETHERSCAN_API_KEY
+    }
+    default: {
+      return undefined
+    }
+  }
 }
 
 export const getNetworkLabel = (id: ETHEREUM_NETWORK = getNetworkId()): string => {
@@ -120,6 +284,15 @@ export type NetworkSpecificConfiguration = EnvironmentSettings & {
   disabledWallets?: Wallets
 }
 
+// Matches return type of ExplorerInfo from SRC
+export const getExplorerInfo = (hash: string): (() => { url: string; alt: string }) => {
+  const url = getHashedExplorerUrl(hash)
+
+  const { hostname } = new URL(url)
+  const alt = `View on ${hostname}` // Not returned by CGW
+  return () => ({ url, alt })
+}
+
 export const getConfig = (): NetworkSpecificConfiguration => {
   const currentEnvironment = getCurrentEnvironment()
 
@@ -138,73 +311,27 @@ export const getConfig = (): NetworkSpecificConfiguration => {
 
 export const getClientGatewayUrl = (): string => getConfig().clientGatewayUrl
 
-export const getTxServiceUrl = (): string => getConfig().txServiceUrl
-
-export const getGasPrice = (): number | undefined => getConfig()?.gasPrice
-
-export const getGasPriceOracles = (): GasPriceOracle[] | undefined => getConfig()?.gasPriceOracles
-
-const useInfuraRPC = () => {
-  return [ETHEREUM_NETWORK.RINKEBY].includes(getNetworkId())
+const getExplorerApiKey = (apiUrl: string): string | undefined => {
+  return apiUrl.includes('etherscan') && ETHERSCAN_API_KEY ? ETHERSCAN_API_KEY : undefined
 }
 
-export const getSafeAppsRpcServiceUrl = (): string =>
-  useInfuraRPC() ? `${getConfig().safeAppsRpcServiceUrl}/${SAFE_APPS_RPC_TOKEN}` : getConfig().safeAppsRpcServiceUrl
+const fetchContractAbi = async (contractAddress: string) => {
+  const apiUri = getExplorerUriTemplate().api
+  const apiKey = getExplorerApiKey(apiUri)
 
-export const getRpcServiceUrl = (): string =>
-  useInfuraRPC() ? `${getConfig().rpcServiceUrl}/${INFURA_TOKEN}` : getConfig().rpcServiceUrl
+  const params = {
+    module: 'contract',
+    action: 'getAbi',
+    address: contractAddress,
+    ...(apiKey && { apiKey }),
+  }
 
-export const getSafeServiceBaseUrl = (safeAddress: string) => `${getTxServiceUrl()}/safes/${safeAddress}`
+  const finalUrl = evalTemplate(apiUri, params)
 
-export const getTokensServiceBaseUrl = () => `${getTxServiceUrl()}/tokens`
+  const response = await fetch(finalUrl)
 
-/**
- * Checks if a particular feature is enabled in the current network configuration
- * @params {FEATURES} feature
- * @returns boolean
- */
-export const isFeatureEnabled = (feature: FEATURES): boolean => {
-  const { disabledFeatures } = getConfig()
-  return !disabledFeatures?.some((disabledFeature) => disabledFeature === feature)
-}
-
-export const getNetworkConfigDisabledWallets = (): Wallets => getConfig()?.disabledWallets || []
-
-export const getNetworkInfo = (): NetworkSettings => getConfig().network
-
-export const getGoogleAnalyticsTrackingID = (): string => GOOGLE_ANALYTICS_ID
-
-const fetchContractABI = memoize(
-  async (url: string, contractAddress: string, apiKey?: string) => {
-    let params: Record<string, string> = {
-      module: 'contract',
-      action: 'getAbi',
-      address: contractAddress,
-    }
-
-    if (apiKey) {
-      params = { ...params, apiKey }
-    }
-
-    const response = await fetch(`${url}?${new URLSearchParams(params)}`)
-
-    if (!response.ok) {
-      return { status: 0, result: [] }
-    }
-
-    return response.json()
-  },
-  (url, contractAddress) => `${url}_${contractAddress}`,
-)
-
-const getNetworkExplorerApiKey = (networkExplorerName: string): string | undefined => {
-  switch (networkExplorerName.toLowerCase()) {
-    case 'etherscan': {
-      return ETHERSCAN_API_KEY
-    }
-    default: {
-      return undefined
-    }
+  if (!response.ok) {
+    return { status: 0, result: [] }
   }
 }
 
@@ -239,19 +366,4 @@ export const getContractABI = async (contractAddress: string) => {
 export type BlockScanInfo = () => {
   alt: string
   url: string
-}
-
-export const getExplorerInfo = (hash: string): BlockScanInfo => {
-  const { name, url } = getNetworkExplorerInfo()
-  const networkInfo = getNetworkInfo()
-
-  switch (networkInfo.id) {
-    default: {
-      const type = hash.length > 42 ? 'tx' : 'address'
-      return () => ({
-        url: `${url}/${type}/${hash}`,
-        alt: name || '',
-      })
-    }
-  }
 }

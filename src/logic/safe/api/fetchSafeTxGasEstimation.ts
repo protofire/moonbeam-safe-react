@@ -1,6 +1,11 @@
-import { postSafeGasEstimation, SafeTransactionEstimationRequest } from '@gnosis.pm/safe-react-gateway-sdk'
+import {
+  postSafeGasEstimation,
+  SafeTransactionEstimationRequest,
+  SafeTransactionEstimation,
+  Operation,
+} from '@gnosis.pm/safe-react-gateway-sdk'
 
-import { getClientGatewayUrl, getNetworkId } from 'src/config'
+import { _getChainId, getClientGatewayUrl } from 'src/config'
 import { checksumAddress } from 'src/utils/checksumAddress'
 
 type FetchSafeTxGasEstimationProps = {
@@ -10,11 +15,18 @@ type FetchSafeTxGasEstimationProps = {
 export const fetchSafeTxGasEstimation = async ({
   safeAddress,
   ...body
-}: FetchSafeTxGasEstimationProps): Promise<string> => {
-  return postSafeGasEstimation(
-    getClientGatewayUrl(),
-    getNetworkId().toString(),
-    checksumAddress(safeAddress),
-    body,
-  ).then(({ safeTxGas }) => safeTxGas)
+}: FetchSafeTxGasEstimationProps): Promise<SafeTransactionEstimation> => {
+  return postSafeGasEstimation(getClientGatewayUrl(), _getChainId(), checksumAddress(safeAddress), body)
+}
+
+export const getRecommendedNonce = async (safeAddress: string): Promise<number> => {
+  const { recommendedNonce } = await fetchSafeTxGasEstimation({
+    safeAddress,
+    value: '0',
+    operation: Operation.CALL,
+    // Workaround: use a cancellation transaction to fetch only the recommendedNonce
+    to: safeAddress,
+    data: '0x',
+  })
+  return recommendedNonce
 }

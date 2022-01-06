@@ -1,4 +1,5 @@
 // matches src/logic/tokens/store/model/token.ts `TokenProps` type
+import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
 export enum WALLETS {
   METAMASK = 'metamask',
@@ -16,15 +17,6 @@ export enum WALLETS {
   OPERA_TOUCH = 'operaTouch',
   LATTICE = 'lattice',
   KEYSTONE = 'keystone',
-}
-
-export enum FEATURES {
-  ERC721 = 'ERC721',
-  ERC1155 = 'ERC1155',
-  SAFE_APPS = 'SAFE_APPS',
-  CONTRACT_INTERACTION = 'CONTRACT_INTERACTION',
-  DOMAIN_LOOKUP = 'DOMAIN_LOOKUP',
-  SPENDING_LIMIT = 'SPENDING_LIMIT',
 }
 
 type Token = {
@@ -93,16 +85,6 @@ export type NetworkSettings = {
 export type SafeFeatures = FEATURES[]
 
 export type Wallets = WALLETS[]
-
-export type GasPriceOracle = {
-  url: string
-  // Different gas api providers can use a different name to reflect different gas levels based on tx speed
-  // For example in ethGasStation for ETHEREUM_MAINNET = safeLow | average | fast
-  gasParameter: string
-  // Some providers may not use the most common standard, gwei to return the gas price value
-  // This is the case of Ethgasstation that returns price as gwei x 10.
-  gweiFactor: string
-}
 
 type GasPrice =
   | {

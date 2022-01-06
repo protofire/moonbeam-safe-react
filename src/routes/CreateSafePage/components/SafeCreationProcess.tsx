@@ -11,7 +11,6 @@ import { userAccountSelector } from 'src/logic/wallets/store/selectors'
 import { SafeDeployment } from 'src/routes/opening'
 import { useAnalytics, USER_EVENTS } from 'src/utils/googleAnalytics'
 import { loadFromStorage, removeFromStorage, saveToStorage } from 'src/utils/storage'
-import { sleep } from 'src/utils/timer'
 import { addOrUpdateSafe } from 'src/logic/safe/store/actions/addOrUpdateSafe'
 import {
   SAFE_PENDING_CREATION_STORAGE_KEY,
@@ -23,6 +22,7 @@ import {
   FIELD_CREATE_SUGGESTED_SAFE_NAME,
   FIELD_CREATE_CUSTOM_SAFE_NAME,
   FIELD_NEW_SAFE_PROXY_SALT,
+  FIELD_NEW_SAFE_GAS_PRICE,
 } from '../fields/createSafeFields'
 import { getSafeInfo } from 'src/logic/safe/utils/safeInformation'
 import { buildSafe } from 'src/logic/safe/store/actions/fetchSafe'
@@ -33,7 +33,14 @@ import NetworkLabel from 'src/components/NetworkLabel/NetworkLabel'
 import Button from 'src/components/layout/Button'
 import { boldFont } from 'src/theme/variables'
 import { WELCOME_ROUTE, history, generateSafeRoute, SAFE_ROUTES } from 'src/routes/routes'
-import { getCurrentShortChainName } from 'src/config'
+import { getExplorerInfo, getShortName } from 'src/config'
+import { getGasParam } from 'src/logic/safe/transactions/gas'
+import { currentChainId } from 'src/logic/config/store/selectors'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
+
+export const InlinePrefixedEthHashInfo = styled(PrefixedEthHashInfo)`
+  display: inline-flex;
+`
 
 type ModalDataType = {
   safeAddress: string
@@ -45,6 +52,8 @@ const goToWelcomePage = () => {
   history.push(WELCOME_ROUTE)
 }
 
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
+
 function SafeCreationProcess(): ReactElement {
   const [safeCreationTxHash, setSafeCreationTxHash] = useState<string | undefined>()
   const [creationTxPromise, setCreationTxPromise] = useState<Promise<TransactionReceipt>>()
@@ -52,12 +61,15 @@ function SafeCreationProcess(): ReactElement {
   const { trackEvent } = useAnalytics()
   const dispatch = useDispatch()
   const userAddressAccount = useSelector(userAccountSelector)
+  const chainId = useSelector(currentChainId)
 
   const [showModal, setShowModal] = useState(false)
   const [modalData, setModalData] = useState<ModalDataType>({ safeAddress: '' })
+  const [showCouldNotLoadModal, setShowCouldNotLoadModal] = useState(false)
+  const [newSafeAddress, setNewSafeAddress] = useState<string>('')
 
-  const createNewSafe = useCallback(async () => {
-    const safeCreationFormValues = (await loadFromStorage(SAFE_PENDING_CREATION_STORAGE_KEY)) as CreateSafeFormValues
+  const createNewSafe = useCallback(() => {
+    const safeCreationFormValues = loadFromStorage<CreateSafeFormValues>(SAFE_PENDING_CREATION_STORAGE_KEY)
 
     if (!safeCreationFormValues) {
       goToWelcomePage()
@@ -73,12 +85,14 @@ function SafeCreationProcess(): ReactElement {
         const ownerAddresses = ownerFields.map(({ addressFieldName }) => safeCreationFormValues[addressFieldName])
         const safeCreationSalt = safeCreationFormValues[FIELD_NEW_SAFE_PROXY_SALT]
         const gasLimit = safeCreationFormValues[FIELD_NEW_SAFE_GAS_LIMIT]
+        const gasPrice = safeCreationFormValues[FIELD_NEW_SAFE_GAS_PRICE]
         const deploymentTx = getSafeDeploymentTransaction(ownerAddresses, confirmations, safeCreationSalt)
 
         deploymentTx
           .send({
             from: userAddressAccount,
             gas: gasLimit,
+            [getGasParam()]: gasPrice,
           })
           .once('transactionHash', (txHash) => {
             saveToStorage(SAFE_PENDING_CREATION_STORAGE_KEY, {
@@ -108,27 +122,22 @@ function SafeCreationProcess(): ReactElement {
   }, [userAddressAccount])
 
   useEffect(() => {
-    const load = async () => {
-      const safeCreationFormValues = (await loadFromStorage(SAFE_PENDING_CREATION_STORAGE_KEY)) as CreateSafeFormValues
-
-      if (!safeCreationFormValues) {
-        goToWelcomePage()
-        return
-      }
-
-      const safeCreationTxHash = safeCreationFormValues[FIELD_NEW_SAFE_CREATION_TX_HASH]
-      if (safeCreationTxHash) {
-        setSafeCreationTxHash(safeCreationTxHash)
-      } else {
-        createNewSafe()
-      }
+    const safeCreationFormValues = loadFromStorage<CreateSafeFormValues>(SAFE_PENDING_CREATION_STORAGE_KEY)
+    if (!safeCreationFormValues) {
+      goToWelcomePage()
+      return
     }
 
-    load()
+    const safeCreationTxHash = safeCreationFormValues[FIELD_NEW_SAFE_CREATION_TX_HASH]
+    if (safeCreationTxHash) {
+      setSafeCreationTxHash(safeCreationTxHash)
+    } else {
+      createNewSafe()
+    }
   }, [createNewSafe])
 
   const onSafeCreated = async (newSafeAddress: string): Promise<void> => {
-    const createSafeFormValues = (await loadFromStorage(SAFE_PENDING_CREATION_STORAGE_KEY)) as CreateSafeFormValues
+    const createSafeFormValues = loadFromStorage<CreateSafeFormValues>(SAFE_PENDING_CREATION_STORAGE_KEY)
 
     if (!createSafeFormValues) {
       goToWelcomePage()
@@ -145,9 +154,10 @@ function SafeCreationProcess(): ReactElement {
       makeAddressBookEntry({
         address: createSafeFormValues[addressFieldName],
         name: createSafeFormValues[nameFieldName],
+        chainId,
       }),
     )
-    const safeAddressBookEntry = makeAddressBookEntry({ address: newSafeAddress, name: safeName })
+    const safeAddressBookEntry = makeAddressBookEntry({ address: newSafeAddress, name: safeName, chainId })
     await dispatch(addressBookSafeLoad([...ownersAddressBookEntry, safeAddressBookEntry]))
 
     trackEvent(USER_EVENTS.CREATE_SAFE)
@@ -155,13 +165,22 @@ function SafeCreationProcess(): ReactElement {
     // a default 5s wait before starting to request safe information
     await sleep(5000)
 
-    await backOff(() => getSafeInfo(newSafeAddress), {
-      startingDelay: 750,
-      retry: (e) => {
-        console.info('waiting for client-gateway to provide safe information', e)
-        return true
-      },
-    })
+    try {
+      // exponential delay between attempts for around 4 min
+      await backOff(() => getSafeInfo(newSafeAddress), {
+        startingDelay: 750,
+        maxDelay: 20000,
+        numOfAttempts: 19,
+        retry: (e) => {
+          console.info('waiting for client-gateway to provide safe information', e)
+          return true
+        },
+      })
+    } catch (e) {
+      setNewSafeAddress(newSafeAddress)
+      setShowCouldNotLoadModal(true)
+      return
+    }
 
     const safeProps = await buildSafe(newSafeAddress)
     await dispatch(addOrUpdateSafe(safeProps))
@@ -174,8 +193,8 @@ function SafeCreationProcess(): ReactElement {
     })
   }
 
-  const onRetry = async () => {
-    const safeCreationFormValues = (await loadFromStorage(SAFE_PENDING_CREATION_STORAGE_KEY)) as CreateSafeFormValues
+  const onRetry = (): void => {
+    const safeCreationFormValues = loadFromStorage<CreateSafeFormValues>(SAFE_PENDING_CREATION_STORAGE_KEY)
 
     if (!safeCreationFormValues) {
       goToWelcomePage()
@@ -184,7 +203,7 @@ function SafeCreationProcess(): ReactElement {
 
     setSafeCreationTxHash(undefined)
     delete safeCreationFormValues.safeCreationTxHash
-    await saveToStorage(SAFE_PENDING_CREATION_STORAGE_KEY, safeCreationFormValues)
+    saveToStorage(SAFE_PENDING_CREATION_STORAGE_KEY, safeCreationFormValues)
     createNewSafe()
   }
 
@@ -193,12 +212,13 @@ function SafeCreationProcess(): ReactElement {
     goToWelcomePage()
   }
 
-  async function onClickModalButton() {
-    await removeFromStorage(SAFE_PENDING_CREATION_STORAGE_KEY)
+  function onClickModalButton() {
+    removeFromStorage(SAFE_PENDING_CREATION_STORAGE_KEY)
+
     const { safeName, safeCreationTxHash, safeAddress } = modalData
     history.push({
       pathname: generateSafeRoute(SAFE_ROUTES.ASSETS_BALANCES, {
-        shortName: getCurrentShortChainName(),
+        shortName: getShortName(),
         safeAddress,
       }),
       state: {
@@ -246,6 +266,32 @@ function SafeCreationProcess(): ReactElement {
                 variant="contained"
               >
                 Continue
+              </Button>
+            </ButtonContainer>
+          }
+        />
+      )}
+      {showCouldNotLoadModal && newSafeAddress && (
+        <GenericModal
+          onClose={onCancel}
+          title="Unable to load the new Safe"
+          body={
+            <div>
+              <Paragraph>
+                We are currently unable to load the Safe but it was successfully created and can be found <br />
+                under the following address{' '}
+                <InlinePrefixedEthHashInfo
+                  hash={newSafeAddress}
+                  showCopyBtn
+                  explorerUrl={getExplorerInfo(newSafeAddress)}
+                />
+              </Paragraph>
+            </div>
+          }
+          footer={
+            <ButtonContainer>
+              <Button onClick={onCancel} color="primary" type="button" size="small" variant="contained">
+                OK
               </Button>
             </ButtonContainer>
           }

@@ -20,21 +20,22 @@ import enqueueSnackbar from 'src/logic/notifications/store/actions/enqueueSnackb
 import closeSnackbarAction from 'src/logic/notifications/store/actions/closeSnackbar'
 import { fetchSafe } from 'src/logic/safe/store/actions/fetchSafe'
 import fetchTransactions from 'src/logic/safe/store/actions/transactions/fetchTransactions'
-import { getLastTx, getNewTxNonce, shouldExecuteTransaction } from 'src/logic/safe/store/actions/utils'
+import { shouldExecuteTransaction } from 'src/logic/safe/store/actions/utils'
 import { AppReduxState } from 'src/store'
-import { getErrorMessage } from 'src/test/utils/ethereumErrors'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
-
 import { Dispatch, DispatchReturn } from './types'
 import { PayableTx } from 'src/types/contracts/types'
-
 import { updateTransactionStatus } from 'src/logic/safe/store/actions/updateTransactionStatus'
 import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
-import { Operation, TransactionStatus } from '@gnosis.pm/safe-react-gateway-sdk'
+import { Operation } from '@gnosis.pm/safe-react-gateway-sdk'
 import { isTxPendingError } from 'src/logic/wallets/getWeb3'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
-import { getNetworkId } from 'src/config'
-import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
+import { getContractErrorMessage } from 'src/logic/contracts/safeContractErrors'
+import { onboardUser } from 'src/components/ConnectButton'
+import { getGasParam } from '../../transactions/gas'
+import { getLastTransaction } from '../selectors/gatewayTransactions'
+import { getRecommendedNonce } from '../../api/fetchSafeTxGasEstimation'
+import { LocalTransactionStatus } from '../models/types/gateway.d'
 
 interface ProcessTransactionArgs {
   approveAndExecute: boolean
@@ -74,6 +75,9 @@ export const processTransaction =
     thresholdReached,
   }: ProcessTransactionArgs): ProcessTransactionAction =>
   async (dispatch: Dispatch, getState: () => AppReduxState): Promise<DispatchReturn> => {
+    const ready = await onboardUser()
+    if (!ready) return
+
     const state = getState()
 
     const { account: from, hardwareWallet, smartContractWallet } = providerSelector(state)
@@ -81,8 +85,14 @@ export const processTransaction =
     const safeVersion = currentSafeCurrentVersion(state) as string
     const safeInstance = getGnosisSafeInstanceAt(safeAddress, safeVersion)
 
-    const lastTx = await getLastTx(safeAddress)
-    const nonce = await getNewTxNonce(lastTx, safeInstance)
+    const lastTx = getLastTransaction(state)
+    let nonce: string
+    try {
+      nonce = (await getRecommendedNonce(safeAddress)).toString()
+    } catch (e) {
+      logError(Errors._616, e.message)
+      nonce = await safeInstance.methods.nonce().call()
+    }
     const isExecution = approveAndExecute || (await shouldExecuteTransaction(safeInstance, nonce, lastTx))
 
     const preApprovingOwner = approveAndExecute && !thresholdReached ? userAddress : undefined
@@ -126,15 +136,6 @@ export const processTransaction =
         if (signature) {
           dispatch(closeSnackbarAction({ key: beforeExecutionKey }))
 
-          dispatch(
-            updateTransactionStatus({
-              chainId,
-              txStatus: TransactionStatus.PENDING,
-              safeAddress,
-              nonce: tx.nonce,
-              id: tx.id,
-            }),
-          )
           await saveTxToHistory({ ...txArgs, signature })
 
           dispatch(fetchTransactions(chainId, safeAddress))
@@ -144,12 +145,11 @@ export const processTransaction =
 
       transaction = isExecution ? getExecutionTransaction(txArgs) : getApprovalTransaction(safeInstance, tx.safeTxHash)
 
-      const gasParam = getNetworkId() === ETHEREUM_NETWORK.MAINNET ? 'maxFeePerGas' : 'gasPrice'
       const sendParams: PayableTx = {
         from,
         value: 0,
         gas: ethParameters?.ethGasLimit,
-        [gasParam]: ethParameters?.ethGasPriceInGWei,
+        [getGasParam()]: ethParameters?.ethGasPriceInGWei,
         nonce: ethParameters?.ethNonce,
       }
 
@@ -159,17 +159,9 @@ export const processTransaction =
           txHash = hash
           dispatch(closeSnackbarAction({ key: beforeExecutionKey }))
 
-          dispatch(
-            updateTransactionStatus({
-              chainId,
-              txStatus: TransactionStatus.PENDING,
-              safeAddress,
-              nonce: tx.nonce,
-              // if we provide the tx ID that sole tx will have the _pending_ status.
-              // if not, all the txs that share the same nonce will have the _pending_ status.
-              id: tx.id,
-            }),
-          )
+          if (isExecution) {
+            dispatch(updateTransactionStatus({ safeTxHash: tx.safeTxHash, status: LocalTransactionStatus.PENDING }))
+          }
 
           try {
             await saveTxToHistory({ ...txArgs })
@@ -182,17 +174,6 @@ export const processTransaction =
             logError(Errors._804, e.message)
           }
         })
-        .on('error', () => {
-          dispatch(
-            updateTransactionStatus({
-              chainId,
-              txStatus: TransactionStatus.PENDING_FAILED,
-              safeAddress,
-              nonce: tx.nonce,
-              id: tx.id,
-            }),
-          )
-        })
         .then(async (receipt) => {
           dispatch(fetchTransactions(chainId, safeAddress))
 
@@ -203,37 +184,35 @@ export const processTransaction =
           return receipt.transactionHash
         })
     } catch (err) {
+      logError(Errors._804, err.message)
+
+      dispatch(closeSnackbarAction({ key: beforeExecutionKey }))
+
+      if (isExecution) {
+        dispatch(updateTransactionStatus({ safeTxHash: tx.safeTxHash, status: LocalTransactionStatus.PENDING_FAILED }))
+      }
+
+      const executeData = safeInstance.methods.approveHash(txHash || '').encodeABI()
+      const contractErrorMessage = await getContractErrorMessage({
+        safeInstance,
+        from,
+        data: executeData,
+      })
+
+      if (contractErrorMessage) {
+        logError(Errors._804, contractErrorMessage)
+      }
+
       const notification = isTxPendingError(err)
         ? NOTIFICATIONS.TX_PENDING_MSG
         : {
             ...notificationsQueue.afterExecutionError,
-            message: `${notificationsQueue.afterExecutionError.message} - ${err.message}`,
+            ...(contractErrorMessage && {
+              message: `${notificationsQueue.afterExecutionError.message} - ${contractErrorMessage}`,
+            }),
           }
 
-      dispatch(closeSnackbarAction({ key: beforeExecutionKey }))
       dispatch(enqueueSnackbar({ key: err.code, ...notification }))
-
-      dispatch(
-        updateTransactionStatus({
-          chainId,
-          txStatus: TransactionStatus.PENDING_FAILED,
-          safeAddress,
-          nonce: tx.nonce,
-          id: tx.id,
-        }),
-      )
-
-      logError(Errors._804, err.message)
-
-      if (txHash) {
-        const executeData = safeInstance.methods.approveHash(txHash).encodeABI()
-        try {
-          const errMsg = await getErrorMessage(safeInstance.options.address, 0, executeData, from)
-          logError(Errors._804, errMsg)
-        } catch (e) {
-          logError(Errors._804, e.message)
-        }
-      }
     }
 
     return txHash

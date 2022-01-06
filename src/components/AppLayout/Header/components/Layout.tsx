@@ -49,6 +49,9 @@ const styles = () => ({
       paddingRight: md,
     },
   },
+  wallet: {
+    paddingRight: md,
+  },
   popper: {
     zIndex: 1301,
   },
@@ -122,6 +125,7 @@ const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) =
           )
         }
       />
+
       {!isDesktop && <NetworkSelector open={openNetworks} toggle={toggleNetworks} clickAway={clickAwayNetworks} />}
     </Row>
   )

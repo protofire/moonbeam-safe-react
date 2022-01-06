@@ -5,9 +5,9 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 
 import { currentSafeFeaturesEnabled, currentSafeOwners } from 'src/logic/safe/store/selectors'
 import { wrapInSuspense } from 'src/utils/wrapInSuspense'
-import { FEATURES } from 'src/config/networks/network.d'
 import { LoadingContainer } from 'src/components/LoaderContainer'
 import { generateSafeRoute, extractPrefixedSafeAddress, SAFE_ROUTES } from 'src/routes/routes'
+import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
 export const BALANCES_TAB_BTN_TEST_ID = 'balances-tab-btn'
 export const SETTINGS_TAB_BTN_TEST_ID = 'settings-tab-btn'
@@ -68,12 +68,12 @@ const Container = (): React.ReactElement => {
         />
         <Route
           exact
-          path={SAFE_ROUTES.TRANSACTIONS}
-          render={() => <Redirect to={SAFE_ROUTES.TRANSACTIONS_HISTORY} />}
-        />
-        <Route
-          exact
-          path={[SAFE_ROUTES.TRANSACTIONS_HISTORY, SAFE_ROUTES.TRANSACTIONS_QUEUE]}
+          path={[
+            SAFE_ROUTES.TRANSACTIONS,
+            SAFE_ROUTES.TRANSACTIONS_HISTORY,
+            SAFE_ROUTES.TRANSACTIONS_QUEUE,
+            SAFE_ROUTES.TRANSACTIONS_SINGULAR,
+          ]}
           render={() => wrapInSuspense(<TxList />, null)}
         />
         <Route exact path={SAFE_ROUTES.ADDRESS_BOOK} render={() => wrapInSuspense(<AddressBookTable />, null)} />

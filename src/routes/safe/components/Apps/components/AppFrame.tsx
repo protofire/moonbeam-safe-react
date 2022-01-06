@@ -16,21 +16,20 @@ import { INTERFACE_MESSAGES, Transaction, LowercaseNetworks } from '@gnosis.pm/s
 import Web3 from 'web3'
 
 import { currentSafe } from 'src/logic/safe/store/selectors'
-import { getNetworkName, getSafeAppsRpcServiceUrl, getTxServiceUrl } from 'src/config'
+import { getChainInfo, getChainName, getSafeAppsRpcServiceUrl, getTxServiceUrl } from 'src/config'
 import { isSameURL } from 'src/utils/url'
 import { useAnalytics, SAFE_EVENTS } from 'src/utils/googleAnalytics'
 import { LoadingContainer } from 'src/components/LoaderContainer/index'
-import { TIMEOUT } from 'src/utils/constants'
+import { SAFE_POLLING_INTERVAL } from 'src/utils/constants'
 import { ConfirmTxModal } from './ConfirmTxModal'
 import { useIframeMessageHandler } from '../hooks/useIframeMessageHandler'
-import { getAppInfoFromUrl } from '../utils'
+import { getAppInfoFromUrl, getEmptySafeApp } from '../utils'
 import { SafeApp } from '../types'
 import { useAppCommunicator } from '../communicator'
 import { fetchTokenCurrenciesBalances } from 'src/logic/safe/api/fetchTokenCurrenciesBalances'
 import { fetchSafeTransaction } from 'src/logic/safe/transactions/api/fetchSafeTransaction'
 import { logError, Errors } from 'src/logic/exceptions/CodedException'
 import { addressBookEntryName } from 'src/logic/addressBook/store/selectors'
-import { currentChainId } from 'src/logic/config/store/selectors'
 import { useSignMessageModal } from '../hooks/useSignMessageModal'
 import { SignMessageModal } from './SignMessageModal'
 
@@ -88,14 +87,14 @@ const APP_LOAD_ERROR = 'There was an error loading the Safe App. There might be 
 
 const AppFrame = ({ appUrl }: Props): ReactElement => {
   const { address: safeAddress, ethBalance, owners, threshold } = useSelector(currentSafe)
-  const networkId = useSelector(currentChainId)
+  const { nativeCurrency, chainId, chainName, shortName } = getChainInfo()
   const safeName = useSelector((state) => addressBookEntryName(state, { address: safeAddress }))
   const { trackEvent } = useAnalytics()
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [confirmTransactionModal, setConfirmTransactionModal] =
     useState<ConfirmTransactionModalState>(INITIAL_CONFIRM_TX_MODAL_STATE)
   const [appIsLoading, setAppIsLoading] = useState<boolean>(true)
-  const [safeApp, setSafeApp] = useState<SafeApp | undefined>()
+  const [safeApp, setSafeApp] = useState<SafeApp>(() => getEmptySafeApp(appUrl))
   const [signMessageModalState, openSignMessageModal, closeSignMessageModal] = useSignMessageModal()
   const timer = useRef<number>()
   const [isLoadingSlow, setIsLoadingSlow] = useState<boolean>(false)
@@ -111,7 +110,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
     if (appIsLoading) {
       timer.current = window.setTimeout(() => {
         setIsLoadingSlow(true)
-      }, TIMEOUT)
+      }, SAFE_POLLING_INTERVAL)
       errorTimer.current = window.setTimeout(() => {
         setAppLoadError(() => {
           throw Error(APP_LOAD_ERROR)
@@ -160,7 +159,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       messageId: INTERFACE_MESSAGES.ON_SAFE_INFO,
       data: {
         safeAddress: safeAddress as string,
-        network: getNetworkName().toLowerCase() as LowercaseNetworks,
+        network: getChainName().toLowerCase() as LowercaseNetworks,
         ethBalance: ethBalance as string,
       },
     })
@@ -183,8 +182,8 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
 
     communicator?.on(Methods.getSafeInfo, () => ({
       safeAddress,
-      network: getNetworkName(),
-      chainId: parseInt(networkId, 10),
+      network: chainName,
+      chainId: parseInt(chainId, 10),
       owners,
       threshold,
     }))
@@ -235,7 +234,27 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
 
       openSignMessageModal(message, msg.data.id)
     })
-  }, [communicator, openConfirmationModal, safeAddress, owners, threshold, openSignMessageModal, networkId])
+
+    communicator?.on(Methods.getChainInfo, async () => {
+      return {
+        chainName,
+        chainId,
+        shortName,
+        nativeCurrency,
+      }
+    })
+  }, [
+    communicator,
+    openConfirmationModal,
+    safeAddress,
+    owners,
+    threshold,
+    openSignMessageModal,
+    nativeCurrency,
+    chainId,
+    chainName,
+    shortName,
+  ])
 
   const onUserTxConfirm = (safeTxHash: string, requestId: RequestId) => {
     // Safe Apps SDK V1 Handler
@@ -282,19 +301,6 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
       trackEvent({ ...SAFE_EVENTS.SAFE_APP, label: safeApp.name })
     }
   }, [safeApp, trackEvent])
-
-  if (!safeApp) {
-    return (
-      <LoadingContainer style={{ flexDirection: 'column' }}>
-        {isLoadingSlow && (
-          <Title size="xs">
-            The Safe App is taking too long to load. There might be a problem with the App provider.
-          </Title>
-        )}
-        <Loader size="md" />
-      </LoadingContainer>
-    )
-  }
 
   return (
     <AppWrapper>

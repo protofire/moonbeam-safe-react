@@ -1,11 +1,13 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Text, ButtonLink, Accordion, AccordionSummary, AccordionDetails } from '@gnosis.pm/safe-react-components'
 
+import { currentSafe, currentSafeThreshold } from 'src/logic/safe/store/selectors'
+import { getLastTxNonce } from 'src/logic/safe/store/selectors/gatewayTransactions'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { ParametersStatus, areEthereumParamsVisible, areSafeParamsEnabled, ethereumTxParametersTitle } from '../utils'
-import { useSelector } from 'react-redux'
-import { currentSafeThreshold } from 'src/logic/safe/store/selectors'
+import useSafeTxGas from '../useSafeTxGas'
 
 const TxParameterWrapper = styled.div`
   display: flex;
@@ -19,6 +21,10 @@ const AccordionDetailsWrapper = styled.div`
 `
 const StyledText = styled(Text)`
   margin: 8px 0 0 0;
+`
+
+const ColoredText = styled(Text)<{ isOutOfOrder: boolean }>`
+  color: ${(props) => (props.isOutOfOrder ? props.theme.colors.error : props.color)};
 `
 
 const StyledButtonLink = styled(ButtonLink)`
@@ -49,15 +55,41 @@ export const TxParametersDetail = ({
   isTransactionExecution,
   isOffChainSignature,
 }: Props): ReactElement | null => {
+  const { nonce } = useSelector(currentSafe)
   const threshold = useSelector(currentSafeThreshold) || 1
   const defaultParameterStatus = isOffChainSignature && threshold > 1 ? 'ETH_HIDDEN' : 'ENABLED'
+
+  const [isTxNonceOutOfOrder, setIsTxNonceOutOfOrder] = useState(false)
+  const [isAccordionExpanded, setIsAccordionExpanded] = useState(false)
+
+  const { safeNonce = '' } = txParameters
+  const safeNonceNumber = parseInt(safeNonce, 10)
+  const lastQueuedTxNonce = useSelector(getLastTxNonce)
+  const showSafeTxGas = useSafeTxGas()
+
+  useEffect(() => {
+    if (Number.isNaN(safeNonceNumber)) return
+    if (safeNonceNumber === nonce) return
+    if (lastQueuedTxNonce === undefined && safeNonceNumber !== nonce) {
+      setIsAccordionExpanded(true)
+      setIsTxNonceOutOfOrder(true)
+    }
+    if (lastQueuedTxNonce && safeNonceNumber !== lastQueuedTxNonce + 1) {
+      setIsAccordionExpanded(true)
+      setIsTxNonceOutOfOrder(true)
+    }
+  }, [lastQueuedTxNonce, nonce, safeNonceNumber])
 
   if (!isTransactionExecution && !isTransactionCreation && isOffChainSignature) {
     return null
   }
 
+  const onChangeExpand = () => {
+    setIsAccordionExpanded(!isAccordionExpanded)
+  }
+
   return (
-    <Accordion compact={compact}>
+    <Accordion compact={compact} expanded={isAccordionExpanded} onChange={onChangeExpand}>
       <AccordionSummary>
         <Text size="lg">Advanced options</Text>
       </AccordionSummary>
@@ -68,34 +100,38 @@ export const TxParametersDetail = ({
           </StyledText>
 
           <TxParameterWrapper>
-            <Text
+            <ColoredText
               size="lg"
+              isOutOfOrder={isTxNonceOutOfOrder}
               color={areSafeParamsEnabled(parametersStatus || defaultParameterStatus) ? 'text' : 'secondaryLight'}
             >
               Safe nonce
-            </Text>
-            <Text
+            </ColoredText>
+            <ColoredText
               size="lg"
+              isOutOfOrder={isTxNonceOutOfOrder}
               color={areSafeParamsEnabled(parametersStatus || defaultParameterStatus) ? 'text' : 'secondaryLight'}
             >
               {txParameters.safeNonce}
-            </Text>
+            </ColoredText>
           </TxParameterWrapper>
 
-          <TxParameterWrapper>
-            <Text
-              size="lg"
-              color={areSafeParamsEnabled(parametersStatus || defaultParameterStatus) ? 'text' : 'secondaryLight'}
-            >
-              SafeTxGas
-            </Text>
-            <Text
-              size="lg"
-              color={areSafeParamsEnabled(parametersStatus || defaultParameterStatus) ? 'text' : 'secondaryLight'}
-            >
-              {txParameters.safeTxGas}
-            </Text>
-          </TxParameterWrapper>
+          {showSafeTxGas && (
+            <TxParameterWrapper>
+              <Text
+                size="lg"
+                color={areSafeParamsEnabled(parametersStatus || defaultParameterStatus) ? 'text' : 'secondaryLight'}
+              >
+                SafeTxGas
+              </Text>
+              <Text
+                size="lg"
+                color={areSafeParamsEnabled(parametersStatus || defaultParameterStatus) ? 'text' : 'secondaryLight'}
+              >
+                {txParameters.safeTxGas}
+              </Text>
+            </TxParameterWrapper>
+          )}
 
           {areEthereumParamsVisible(parametersStatus || defaultParameterStatus) && (
             <>

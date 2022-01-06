@@ -3,6 +3,8 @@ import { Divider, IconText } from '@gnosis.pm/safe-react-components'
 
 import List, { ListItemType } from 'src/components/List'
 import SafeHeader from './SafeHeader'
+import DebugToggle from './DebugToggle'
+import { IS_PRODUCTION } from 'src/utils/constants'
 
 const StyledDivider = styled(Divider)`
   margin: 16px -8px 0;
@@ -76,6 +78,8 @@ const Sidebar = ({
     ) : null}
 
     <HelpContainer>
+      {!IS_PRODUCTION && <DebugToggle />}
+
       <StyledDivider />
       <HelpCenterLink href="https://docs.moonbeam.network/" target="_blank" title="Help Center of Moonbeam">
         <IconText text="HELP CENTER" iconSize="md" textSize="md" color="placeHolder" iconType="question" />

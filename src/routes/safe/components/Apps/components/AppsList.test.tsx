@@ -1,6 +1,6 @@
 import AppsList, { PINNED_APPS_LIST_TEST_ID, ALL_APPS_LIST_TEST_ID } from './AppsList'
 import { render, screen, fireEvent, within, act, waitFor } from 'src/utils/test-utils'
-import * as configServiceApi from 'src/logic/configService'
+
 import * as appUtils from 'src/routes/safe/components/Apps/utils'
 import { FETCH_STATUS } from 'src/utils/requests'
 import { loadFromStorage, saveToStorage } from 'src/utils/storage'
@@ -14,36 +14,11 @@ jest.mock('src/routes/routes', () => {
   }
 })
 
-const customState = {
-  router: {
-    location: {
-      pathname: '/safes/0x75096d02718d1B56BEaE4273b178d34F6695F097/balances',
-    },
-    // had to include this because of checks in connected-react-router
-    // https://github.com/supasate/connected-react-router/issues/312#issuecomment-500968504
-    action: 'truthy',
-  },
-}
-
 const spyTrackEventGA = jest.fn()
 
-beforeEach(async () => {
-  // Includes an id that doesn't exist in the remote apps to check that there's no error
-  await saveToStorage(appUtils.PINNED_SAFE_APP_IDS, ['14', '24', '228'])
-
-  // populate custom app
-  await saveToStorage(appUtils.APPS_STORAGE_KEY, [
-    {
-      url: 'https://apps.gnosis-safe.io/drain-safe',
-    },
-  ])
-
-  jest.spyOn(googleAnalytics, 'useAnalytics').mockImplementation(() => ({
-    trackPage: jest.fn(),
-    trackEvent: spyTrackEventGA,
-  }))
-
-  jest.spyOn(configServiceApi, 'fetchSafeAppsList').mockImplementation(() =>
+jest.mock('@gnosis.pm/safe-react-gateway-sdk', () => ({
+  __esModule: true,
+  getSafeApps: () =>
     Promise.resolve([
       {
         id: 13,
@@ -53,7 +28,7 @@ beforeEach(async () => {
         error: false,
         description: 'Money markets on the Ethereum blockchain',
         fetchStatus: 'SUCCESS',
-        chainIds: [1, 4],
+        chainIds: ['1', '4'],
         provider: null,
       },
       {
@@ -64,7 +39,7 @@ beforeEach(async () => {
 
         description: 'Decentralised naming for wallets, websites, & more.',
         fetchStatus: 'SUCCESS',
-        chainIds: [1, 4],
+        chainIds: ['1', '4'],
         provider: null,
       },
       {
@@ -74,7 +49,7 @@ beforeEach(async () => {
         iconUrl: 'https://cloudflare-ipfs.com/ipfs/QmXLxxczMH4MBEYDeeN9zoiHDzVkeBmB5rBjA3UniPEFcA/Synthetix.png',
         description: 'Trade synthetic assets on Ethereum',
         fetchStatus: 'SUCCESS',
-        chainIds: [1, 4],
+        chainIds: ['1', '4'],
         provider: null,
       },
       {
@@ -84,11 +59,27 @@ beforeEach(async () => {
         iconUrl: 'https://cloudflare-ipfs.com/ipfs/QmdVaZxDov4bVARScTLErQSRQoxgqtBad8anWuw3YPQHCs/tx-builder.png',
         description: 'A Safe app to compose custom transactions',
         fetchStatus: 'SUCCESS',
-        chainIds: [1, 4, 56, 100, 137, 246, 73799],
+        chainIds: ['1', '4', '56', '100', '137', '246', '73799'],
         provider: null,
       },
     ]),
-  )
+}))
+
+beforeEach(() => {
+  // Includes an id that doesn't exist in the remote apps to check that there's no error
+  saveToStorage(appUtils.PINNED_SAFE_APP_IDS, ['14', '24', '228'])
+
+  // populate custom app
+  saveToStorage(appUtils.APPS_STORAGE_KEY, [
+    {
+      url: 'https://apps.gnosis-safe.io/drain-safe',
+    },
+  ])
+
+  jest.spyOn(googleAnalytics, 'useAnalytics').mockImplementation(() => ({
+    trackPage: jest.fn(),
+    trackEvent: spyTrackEventGA,
+  }))
 
   jest.spyOn(appUtils, 'getAppInfoFromUrl').mockReturnValueOnce(
     Promise.resolve({
@@ -98,8 +89,8 @@ beforeEach(async () => {
       iconUrl: 'https://apps.gnosis-safe.io/drain-safe/logo.svg',
       error: false,
       description: 'Transfer all your assets in batch',
-      chainIds: [4],
-      provider: null,
+      chainIds: ['4'],
+      provider: undefined,
       fetchStatus: FETCH_STATUS.SUCCESS,
     }),
   )
@@ -107,7 +98,7 @@ beforeEach(async () => {
 
 describe('Safe Apps -> AppsList', () => {
   it('Shows apps from the Remote app list', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     await waitFor(() => {
       expect(screen.getByText('Compound')).toBeInTheDocument()
@@ -116,7 +107,7 @@ describe('Safe Apps -> AppsList', () => {
   })
 
   it('Shows apps from the Custom app list', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     await waitFor(() => {
       expect(screen.getByText('Drain safe')).toBeInTheDocument()
@@ -124,7 +115,7 @@ describe('Safe Apps -> AppsList', () => {
   })
 
   it('Shows different app sections', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     await waitFor(() => {
       expect(screen.getByText('ALL APPS')).toBeInTheDocument()
@@ -136,7 +127,7 @@ describe('Safe Apps -> AppsList', () => {
 
 describe('Safe Apps -> AppsList -> Search', () => {
   it('Shows apps matching the search query', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     const searchInput = await waitFor(() => screen.getByPlaceholderText('e.g Compound'))
 
@@ -147,7 +138,7 @@ describe('Safe Apps -> AppsList -> Search', () => {
   })
 
   it('Shows app matching the name first for a query that matches in name and description of multiple apps', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     const searchInput = await waitFor(() => screen.getByPlaceholderText('e.g Compound'))
 
@@ -165,7 +156,7 @@ describe('Safe Apps -> AppsList -> Search', () => {
   })
 
   it('Shows "no apps found" message when not able to find apps matching the query and a button to search for the WalletConnect Safe app', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     const query = 'not-a-real-app'
     const searchInput = await waitFor(() => screen.getByPlaceholderText('e.g Compound'))
@@ -181,7 +172,7 @@ describe('Safe Apps -> AppsList -> Search', () => {
   })
 
   it('Clears the search result when you press on clear button and shows all apps again', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     const searchInput = await waitFor(() => screen.getByPlaceholderText('e.g Compound'))
     fireEvent.input(searchInput, { target: { value: 'Compound' } })
@@ -193,7 +184,7 @@ describe('Safe Apps -> AppsList -> Search', () => {
   })
 
   it("Doesn't display custom/pinned apps irrelevant to the search (= hides pinned/custom sections)", async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     const searchInput = await waitFor(() => screen.getByPlaceholderText('e.g Compound'))
 
@@ -204,7 +195,7 @@ describe('Safe Apps -> AppsList -> Search', () => {
   })
 
   it('Hides pinned/custom sections when you search', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     const searchInput = await waitFor(() => screen.getByPlaceholderText('e.g Compound'))
 
@@ -217,9 +208,9 @@ describe('Safe Apps -> AppsList -> Search', () => {
 
 describe('Safe Apps -> AppsList -> Pinning apps', () => {
   it('Shows a tutorial message when there are no pinned apps', async () => {
-    await saveToStorage(appUtils.PINNED_SAFE_APP_IDS, [])
+    saveToStorage(appUtils.PINNED_SAFE_APP_IDS, [])
 
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     const tut = await waitFor(() =>
       screen.getByText(
@@ -232,7 +223,7 @@ describe('Safe Apps -> AppsList -> Pinning apps', () => {
   })
 
   it('allows to pin and unpin an app', async () => {
-    render(<AppsList />, customState)
+    render(<AppsList />)
 
     // check the app is not pinned
     await waitFor(() => {
@@ -279,7 +270,7 @@ describe('Safe Apps -> AppsList -> Pinning apps', () => {
     expect(defaultPinnedAppsInLocalStorage).toContain('24')
     expect(defaultPinnedAppsInLocalStorage).toContain('228')
 
-    render(<AppsList />, customState)
+    render(<AppsList />)
     await waitFor(() => {
       expect(screen.getByText('ALL APPS')).toBeInTheDocument()
       expect(screen.getByText('BOOKMARKED APPS')).toBeInTheDocument()

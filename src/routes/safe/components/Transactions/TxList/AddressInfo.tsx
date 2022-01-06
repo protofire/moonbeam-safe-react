@@ -1,11 +1,11 @@
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import { ReactElement } from 'react'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 
 import { getExplorerInfo } from 'src/config'
 import { useKnownAddress } from './hooks/useKnownAddress'
 
 type EthHashInfoRestProps = Omit<
-  Parameters<typeof EthHashInfo>[0],
+  Parameters<typeof PrefixedEthHashInfo>[0],
   'hash' | 'name' | 'showAvatar' | 'customAvatar' | 'showCopyBtn' | 'explorerUrl'
 >
 
@@ -16,18 +16,18 @@ type Props = EthHashInfoRestProps & {
 }
 
 export const AddressInfo = ({ address, name, avatarUrl, ...rest }: Props): ReactElement | null => {
-  const toInfo = useKnownAddress(address, { name, image: avatarUrl })
+  const toInfo = useKnownAddress({ value: address, name: name || null, logoUri: avatarUrl || null })
 
   if (address === '') {
     return null
   }
 
   return (
-    <EthHashInfo
+    <PrefixedEthHashInfo
       hash={address}
-      name={toInfo.name}
+      name={toInfo.name || undefined}
       showAvatar
-      customAvatar={toInfo.image}
+      customAvatar={toInfo.logoUri || undefined}
       showCopyBtn
       explorerUrl={getExplorerInfo(address)}
       {...rest}

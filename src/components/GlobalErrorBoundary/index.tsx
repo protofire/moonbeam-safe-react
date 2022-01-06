@@ -46,7 +46,7 @@ const LinkContent = styled.div`
 
 //  When loading app during release, chunk load failure may occur
 export const handleChunkError = (error: Error): boolean => {
-  const LAST_CHUNK_FAILURE_RELOAD_KEY = 'SAFE__lastChunkFailureReload'
+  const LAST_CHUNK_FAILURE_RELOAD_KEY = 'lastChunkFailureReload'
   const MIN_RELOAD_TIME = 10_000
 
   const chunkFailedMessage = /Loading chunk [\d]+ failed/
@@ -92,16 +92,7 @@ const GlobalErrorBoundaryFallback: FallbackRender = ({ error, componentStack }) 
               In case the problem persists, please reach out to us via{' '}
             </Text>
             <LinkWrapper>
-              <a target="_blank" href="email: mailto:safe@gnosis.io" rel="noopener noreferrer">
-                <Text color="primary" size="lg" as="span">
-                  Email
-                </Text>
-              </a>
-              <Icon type="externalLink" color="primary" size="sm" />
-            </LinkWrapper>
-            or{' '}
-            <LinkWrapper>
-              <a target="_blank" href="https://discordapp.com/invite/FPMRAwK" rel="noopener noreferrer">
+              <a target="_blank" href="https://chat.gnosis-safe.io" rel="noopener noreferrer">
                 <Text color="primary" size="lg" as="span">
                   Discord
                 </Text>

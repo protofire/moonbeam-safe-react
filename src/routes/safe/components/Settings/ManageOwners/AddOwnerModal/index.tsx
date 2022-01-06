@@ -17,6 +17,9 @@ import { ReviewAddOwner } from './screens/Review'
 import { ThresholdForm } from './screens/ThresholdForm'
 import { getSafeSDK } from 'src/logic/wallets/getWeb3'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
+import { currentSafeCurrentVersion } from 'src/logic/safe/store/selectors'
+import { currentChainId } from 'src/logic/config/store/selectors'
+import { _getChainId } from 'src/config'
 
 export type OwnerValues = {
   ownerAddress: string
@@ -27,11 +30,12 @@ export type OwnerValues = {
 export const sendAddOwner = async (
   values: OwnerValues,
   safeAddress: string,
+  safeVersion: string,
   txParameters: TxParameters,
   dispatch: Dispatch,
   connectedWalletAddress: string,
 ): Promise<void> => {
-  const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
+  const sdk = await getSafeSDK(connectedWalletAddress, safeAddress, safeVersion)
   const safeTx = await sdk.getAddOwnerTx(
     { ownerAddress: values.ownerAddress, threshold: +values.threshold },
     { safeTxGas: 0 },
@@ -52,7 +56,11 @@ export const sendAddOwner = async (
   )
 
   if (txHash) {
-    dispatch(addressBookAddOrUpdate(makeAddressBookEntry({ address: values.ownerAddress, name: values.ownerName })))
+    dispatch(
+      addressBookAddOrUpdate(
+        makeAddressBookEntry({ address: values.ownerAddress, name: values.ownerName, chainId: _getChainId() }),
+      ),
+    )
   }
 }
 
@@ -66,7 +74,9 @@ export const AddOwnerModal = ({ isOpen, onClose }: Props): React.ReactElement =>
   const [values, setValues] = useState<OwnerValues>({ ownerName: '', ownerAddress: '', threshold: '' })
   const dispatch = useDispatch()
   const safeAddress = extractSafeAddress()
+  const safeVersion = useSelector(currentSafeCurrentVersion)
   const connectedWalletAddress = useSelector(userAccountSelector)
+  const chainId = useSelector(currentChainId)
 
   useEffect(
     () => () => {
@@ -105,8 +115,10 @@ export const AddOwnerModal = ({ isOpen, onClose }: Props): React.ReactElement =>
     onClose()
 
     try {
-      await sendAddOwner(values, safeAddress, txParameters, dispatch, connectedWalletAddress)
-      dispatch(addressBookAddOrUpdate(makeAddressBookEntry({ name: values.ownerName, address: values.ownerAddress })))
+      await sendAddOwner(values, safeAddress, safeVersion, txParameters, dispatch, connectedWalletAddress)
+      dispatch(
+        addressBookAddOrUpdate(makeAddressBookEntry({ name: values.ownerName, address: values.ownerAddress, chainId })),
+      )
     } catch (error) {
       logError(Errors._808, error.message)
     }

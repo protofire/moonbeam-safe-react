@@ -1,7 +1,6 @@
 import React, { ReactElement, useEffect } from 'react'
 import { useForm } from 'react-final-form'
 import { useSelector } from 'react-redux'
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import styled from 'styled-components'
 import TableContainer from '@material-ui/core/TableContainer'
 
@@ -15,13 +14,15 @@ import {
   FIELD_CREATE_CUSTOM_SAFE_NAME,
   FIELD_CREATE_SUGGESTED_SAFE_NAME,
   FIELD_NEW_SAFE_GAS_LIMIT,
+  FIELD_NEW_SAFE_GAS_PRICE,
   FIELD_NEW_SAFE_PROXY_SALT,
   FIELD_NEW_SAFE_THRESHOLD,
   FIELD_SAFE_OWNERS_LIST,
 } from '../fields/createSafeFields'
-import { getExplorerInfo, getNetworkInfo } from 'src/config'
+import { getExplorerInfo, getNativeCurrency } from 'src/config'
 import { useEstimateSafeCreationGas } from 'src/logic/hooks/useEstimateSafeCreationGas'
 import NetworkLabel from 'src/components/NetworkLabel/NetworkLabel'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { useStepper } from 'src/components/Stepper/stepperContext'
 import { providerNameSelector } from 'src/logic/wallets/store/selectors'
 
@@ -49,16 +50,17 @@ function ReviewNewSafeStep(): ReactElement | null {
   const safeCreationSalt = createSafeFormValues[FIELD_NEW_SAFE_PROXY_SALT]
   const ownerAddresses = owners.map(({ addressFieldName }) => createSafeFormValues[addressFieldName])
 
-  const { gasCostFormatted, gasLimit } = useEstimateSafeCreationGas({
+  const { gasCostFormatted, gasLimit, gasPrice } = useEstimateSafeCreationGas({
     addresses: ownerAddresses,
     numOwners: numberOfOwners,
     safeCreationSalt,
   })
-  const { nativeCoin } = getNetworkInfo()
+  const nativeCurrency = getNativeCurrency()
 
   useEffect(() => {
     createSafeForm.change(FIELD_NEW_SAFE_GAS_LIMIT, gasLimit)
-  }, [gasLimit, createSafeForm])
+    createSafeForm.change(FIELD_NEW_SAFE_GAS_PRICE, gasPrice)
+  }, [gasLimit, gasPrice, createSafeForm])
 
   return (
     <Row data-testid={'create-safe-review-step'}>
@@ -114,7 +116,7 @@ function ReviewNewSafeStep(): ReactElement | null {
               <React.Fragment key={`owner-${addressFieldName}`}>
                 <OwnersAddressesContainer>
                   <Col align="center" xs={12} data-testid={`create-safe-owner-details-${ownerAddress}`}>
-                    <EthHashInfo
+                    <PrefixedEthHashInfo
                       hash={ownerAddress}
                       name={ownerName}
                       showAvatar
@@ -132,8 +134,8 @@ function ReviewNewSafeStep(): ReactElement | null {
       <DescriptionContainer align="center">
         <Paragraph color="primary" noMargin size="lg">
           You&apos;re about to create a new Safe on <NetworkLabel /> and will have to confirm a transaction with your
-          currently connected wallet. The creation will cost approximately {gasCostFormatted} {nativeCoin.name}. The
-          exact amount will be determined by your wallet.
+          currently connected wallet. The creation will cost approximately {gasCostFormatted} {nativeCurrency.symbol}.
+          The exact amount will be determined by your wallet.
         </Paragraph>
       </DescriptionContainer>
     </Row>
@@ -163,7 +165,7 @@ const OwnersAddressesContainer = styled(Row)`
   padding-left: ${lg};
 `
 const DescriptionContainer = styled(Row)`
-  background-colo: ${background};
+  background-color: ${background};
   padding: ${lg};
   text-align: center;
 `

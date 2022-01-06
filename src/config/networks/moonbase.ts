@@ -4,10 +4,10 @@ import {
   ETHEREUM_LAYER,
   ETHEREUM_NETWORK,
   SHORT_NAME,
-  FEATURES,
   NetworkConfig,
   WALLETS,
 } from 'src/config/networks/network.d'
+import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
 const baseConfig: EnvironmentSettings = {
   clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/v1',

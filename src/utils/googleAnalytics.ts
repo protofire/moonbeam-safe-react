@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import ReactGA, { EventArgs } from 'react-ga'
 import { useSelector } from 'react-redux'
-import { getNetworkInfo, getNetworkId } from 'src/config'
+import { getChainInfo, _getChainId } from 'src/config'
 
-import { getGoogleAnalyticsTrackingID } from 'src/config'
 import { currentChainId } from 'src/logic/config/store/selectors'
 import { COOKIES_KEY } from 'src/logic/cookies/model/cookie'
 import { loadFromCookie, removeCookie } from 'src/logic/cookies/utils'
-import { IS_PRODUCTION } from './constants'
+import { GOOGLE_ANALYTICS_ID, IS_PRODUCTION } from './constants'
 import { capitalize } from './css'
 
 const USER_EVENT = 'User'
@@ -69,6 +68,7 @@ export const SAFE_APP_EVENTS: Record<string, EventArgs> = {
 
 export const SETTINGS_EVENTS: Record<string, EventArgs> = {
   ADVANCED: { ...SAFE_EVENTS.SETTINGS, label: 'Advanced' },
+  APPEARANCE: { ...SAFE_EVENTS.SETTINGS, label: 'Appearance' },
   DETAILS: { ...SAFE_EVENTS.SETTINGS, label: 'Details' },
   OWNERS: { ...SAFE_EVENTS.SETTINGS, label: 'Owners' },
 }
@@ -82,7 +82,7 @@ export const COOKIES_LIST = [
 const shouldUseGoogleAnalytics = IS_PRODUCTION
 
 export const trackAnalyticsEvent = (event: Parameters<typeof ReactGA.event>[0]): void => {
-  const chainName = getNetworkInfo().label
+  const { chainName } = getChainInfo()
 
   // action, category, label, etc. => eventAction, eventCategory, eventLabel, etc.
   const fieldsObject: Parameters<typeof ReactGA.ga>[1] = Object.entries(event).reduce(
@@ -110,14 +110,14 @@ export const loadGoogleAnalytics = (): void => {
       : 'Google Analytics will not load in the development environment, but instead log.',
   )
 
-  const gaTrackingId = getGoogleAnalyticsTrackingID()
-
   const customDimensions: ReactGA.FieldsObject = {
     anonymizeIp: true,
     appName: `Gnosis Safe Web`,
     appVersion: process.env.REACT_APP_APP_VERSION,
-    dimension1: getNetworkId(),
+    dimension1: _getChainId(),
   }
+
+  const gaTrackingId = GOOGLE_ANALYTICS_ID
 
   if (shouldUseGoogleAnalytics) {
     if (!gaTrackingId) {

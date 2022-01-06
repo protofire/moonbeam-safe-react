@@ -1,9 +1,8 @@
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import { useEffect, useState, Fragment } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { getNetworkInfo, getExplorerInfo } from 'src/config'
+import { getExplorerInfo, getNativeCurrency } from 'src/config'
 import { toTokenUnit } from 'src/logic/tokens/utils/humanReadableValue'
 import Block from 'src/components/layout/Block'
 import Col from 'src/components/layout/Col'
@@ -11,6 +10,7 @@ import Hairline from 'src/components/layout/Hairline'
 import Img from 'src/components/layout/Img'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { AbiItemExtended } from 'src/logic/contractInteraction/sources/ABIService'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { getEthAsToken } from 'src/logic/tokens/utils/tokenHelpers'
@@ -27,7 +27,7 @@ import { useEstimateTransactionGas, EstimationStatus } from 'src/logic/hooks/use
 import { addressBookEntryName } from 'src/logic/addressBook/store/selectors'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { ButtonStatus, Modal } from 'src/components/Modal'
-import { TransactionFees } from 'src/components/TransactionsFees'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
 import { extractSafeAddress } from 'src/routes/routes'
@@ -56,7 +56,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
   const classes = useStyles()
   const dispatch = useDispatch()
   const safeAddress = extractSafeAddress()
-  const { nativeCoin } = getNetworkInfo()
+  const nativeCurrency = getNativeCurrency()
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
@@ -93,10 +93,10 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
   useEffect(() => {
     setTxInfo({
       txRecipient: tx.contractAddress as string,
-      txAmount: tx.value ? toTokenUnit(tx.value, nativeCoin.decimals) : '0',
+      txAmount: tx.value ? toTokenUnit(tx.value, nativeCurrency.decimals) : '0',
       txData: tx.data ? tx.data.trim() : '',
     })
-  }, [tx.contractAddress, tx.value, tx.data, safeAddress, nativeCoin.decimals])
+  }, [tx.contractAddress, tx.value, tx.data, safeAddress, nativeCurrency.decimals])
 
   const submitTx = (txParameters: TxParameters) => {
     if (safeAddress && txInfo) {
@@ -158,7 +158,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
               </Paragraph>
             </Row>
             <Row align="center" margin="md">
-              <EthHashInfo
+              <PrefixedEthHashInfo
                 hash={tx.contractAddress as string}
                 name={addressName}
                 showAvatar
@@ -179,7 +179,7 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
                 <Block justify="left">
                   <Paragraph className={classes.value} noMargin size="md" style={{ margin: 0 }}>
                     {tx.value || 0}
-                    {' ' + nativeCoin.name}
+                    {' ' + nativeCurrency.symbol}
                   </Paragraph>
                 </Block>
               </Col>
@@ -237,15 +237,14 @@ const ContractInteractionReview = ({ onClose, onPrev, tx }: Props): React.ReactE
               isOffChainSignature={isOffChainSignature}
             />
           </Block>
-          <div className={classes.gasCostsContainer}>
-            <TransactionFees
-              gasCostFormatted={gasCostFormatted}
-              isExecution={doExecute}
-              isCreation={isCreation}
-              isOffChainSignature={isOffChainSignature}
-              txEstimationExecutionStatus={txEstimationExecutionStatus}
-            />
-          </div>
+          <ReviewInfoText
+            gasCostFormatted={gasCostFormatted}
+            isCreation={isCreation}
+            isExecution={doExecute}
+            isOffChainSignature={isOffChainSignature}
+            safeNonce={txParameters.safeNonce}
+            txEstimationExecutionStatus={txEstimationExecutionStatus}
+          />
 
           <Modal.Footer withoutBorder={buttonStatus !== ButtonStatus.LOADING}>
             <Modal.Footer.Buttons

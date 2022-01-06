@@ -11,29 +11,29 @@ import Typography from '@material-ui/core/Typography'
 import styled from 'styled-components'
 
 import Block from 'src/components/layout/Block'
-import { getNetworks } from 'src/config'
+import { ChainId } from 'src/config/chain.d'
+import { setChainId } from 'src/logic/config/utils'
 import { lg } from 'src/theme/variables'
 import NetworkLabel from 'src/components/NetworkLabel/NetworkLabel'
 import Paragraph from 'src/components/layout/Paragraph'
-import { providerNameSelector } from 'src/logic/wallets/store/selectors'
+import { providerNameSelector, shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
 import ConnectButton from 'src/components/ConnectButton'
-import { ETHEREUM_NETWORK } from 'src/config/networks/network'
-import { setNetwork } from 'src/logic/config/utils'
+import WalletSwitch from 'src/components/WalletSwitch'
+import { getChains } from 'src/config/cache/chains'
 
 export const selectWalletAndNetworkStepLabel = 'Connect wallet & select network'
 
 function SelectWalletAndNetworkStep(): ReactElement {
   const [isNetworkSelectorPopupOpen, setIsNetworkSelectorPopupOpen] = useState(false)
   const isWalletConnected = !!useSelector(providerNameSelector)
+  const isWrongNetwork = useSelector(shouldSwitchWalletChain)
 
   function openNetworkSelectorPopup() {
     setIsNetworkSelectorPopupOpen(true)
   }
 
-  const networks = getNetworks()
-
-  const onNetworkSwitch = useCallback((networkId: ETHEREUM_NETWORK) => {
-    setNetwork(networkId)
+  const onNetworkSwitch = useCallback((chainId: ChainId) => {
+    setChainId(chainId)
     setIsNetworkSelectorPopupOpen(false)
   }, [])
 
@@ -41,7 +41,7 @@ function SelectWalletAndNetworkStep(): ReactElement {
     <Container data-testid={'select-network-step'}>
       {isWalletConnected ? (
         <Paragraph color="primary" noMargin size="lg">
-          Select network on which to create your Safe. You are currently connected to{' '}
+          Select network on which to create your Safe. The app is currently pointing to{' '}
           <NetworkLabel onClick={openNetworkSelectorPopup} />
         </Paragraph>
       ) : (
@@ -64,6 +64,13 @@ function SelectWalletAndNetworkStep(): ReactElement {
           <ConnectButton data-testid="heading-connect-btn" />
         )}
       </SwitchNetworkContainer>
+
+      {isWalletConnected && isWrongNetwork && (
+        <Paragraph color="primary" size="lg">
+          Your wallet connection must match the selected network. <WalletSwitch />
+        </Paragraph>
+      )}
+
       <Dialog
         onClose={() => setIsNetworkSelectorPopupOpen(false)}
         aria-labelledby="select-network"
@@ -78,8 +85,8 @@ function SelectWalletAndNetworkStep(): ReactElement {
         </StyledDialogTitle>
         <StyledDialogContent dividers>
           <List component="div">
-            {networks.map((network) => (
-              <NetworkLabelItem key={network.id} role="button" onClick={() => onNetworkSwitch(network.id)}>
+            {getChains().map((network) => (
+              <NetworkLabelItem key={network.chainId} role="button" onClick={() => onNetworkSwitch(network.chainId)}>
                 <NetworkLabel networkInfo={network} flexGrow />
               </NetworkLabelItem>
             ))}

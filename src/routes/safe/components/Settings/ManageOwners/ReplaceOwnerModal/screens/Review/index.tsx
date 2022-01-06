@@ -1,6 +1,5 @@
 import { useEffect, useState, Fragment } from 'react'
 import { useSelector } from 'react-redux'
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 
 import { getExplorerInfo } from 'src/config'
 import Block from 'src/components/layout/Block'
@@ -9,13 +8,14 @@ import Hairline from 'src/components/layout/Hairline'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import { userAccountSelector } from 'src/logic/wallets/store/selectors'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { currentSafeWithNames } from 'src/logic/safe/store/selectors'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { Modal } from 'src/components/Modal'
-import { TransactionFees } from 'src/components/TransactionsFees'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
 import { OwnerData } from 'src/routes/safe/components/Settings/ManageOwners/dataFetcher'
@@ -47,7 +47,13 @@ export const ReviewReplaceOwnerModal = ({
 }: ReplaceOwnerProps): React.ReactElement => {
   const classes = useStyles()
   const [data, setData] = useState('')
-  const { address: safeAddress, name: safeName, owners, threshold = 1 } = useSelector(currentSafeWithNames)
+  const {
+    address: safeAddress,
+    name: safeName,
+    owners,
+    threshold = 1,
+    currentVersion: safeVersion,
+  } = useSelector(currentSafeWithNames)
   const connectedWalletAddress = useSelector(userAccountSelector)
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
@@ -77,7 +83,7 @@ export const ReviewReplaceOwnerModal = ({
 
     const calculateReplaceOwnerData = async () => {
       try {
-        const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
+        const sdk = await getSafeSDK(connectedWalletAddress, safeAddress, safeVersion)
         const safeTx = await sdk.getSwapOwnerTx(
           { oldOwnerAddress: owner.address, newOwnerAddress: newOwner.address },
           { safeTxGas: 0 },
@@ -96,7 +102,7 @@ export const ReviewReplaceOwnerModal = ({
     return () => {
       isCurrent = false
     }
-  }, [safeAddress, connectedWalletAddress, owner.address, newOwner.address])
+  }, [safeAddress, safeVersion, connectedWalletAddress, owner.address, newOwner.address])
 
   const closeEditModalCallback = (txParameters: TxParameters) => {
     const oldGasPrice = gasPriceFormatted
@@ -170,7 +176,7 @@ export const ReviewReplaceOwnerModal = ({
                       <Fragment key={safeOwner.address}>
                         <Row className={classes.owner}>
                           <Col align="center" xs={12}>
-                            <EthHashInfo
+                            <PrefixedEthHashInfo
                               hash={safeOwner.address}
                               name={safeOwner.name}
                               showCopyBtn
@@ -191,7 +197,7 @@ export const ReviewReplaceOwnerModal = ({
                 <Hairline />
                 <Row className={classes.selectedOwnerRemoved} data-testid="remove-owner-review">
                   <Col align="center" xs={12}>
-                    <EthHashInfo
+                    <PrefixedEthHashInfo
                       hash={owner.address}
                       name={owner.name}
                       showCopyBtn
@@ -208,7 +214,7 @@ export const ReviewReplaceOwnerModal = ({
                 <Hairline />
                 <Row className={classes.selectedOwnerAdded} data-testid="add-owner-review">
                   <Col align="center" xs={12}>
-                    <EthHashInfo
+                    <PrefixedEthHashInfo
                       hash={newOwner.address}
                       name={newOwner.name}
                       showCopyBtn
@@ -233,15 +239,14 @@ export const ReviewReplaceOwnerModal = ({
             isOffChainSignature={isOffChainSignature}
           />
 
-          <Block className={classes.gasCostsContainer}>
-            <TransactionFees
-              gasCostFormatted={gasCostFormatted}
-              isExecution={isExecution}
-              isCreation={isCreation}
-              isOffChainSignature={isOffChainSignature}
-              txEstimationExecutionStatus={txEstimationExecutionStatus}
-            />
-          </Block>
+          <ReviewInfoText
+            gasCostFormatted={gasCostFormatted}
+            isCreation={isCreation}
+            isExecution={isExecution}
+            isOffChainSignature={isOffChainSignature}
+            safeNonce={txParameters.safeNonce}
+            txEstimationExecutionStatus={txEstimationExecutionStatus}
+          />
           <Modal.Footer withoutBorder>
             <Modal.Footer.Buttons
               cancelButtonProps={{ onClick: onClickBack, text: 'Back' }}
