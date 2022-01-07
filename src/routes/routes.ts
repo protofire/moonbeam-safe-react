@@ -6,6 +6,7 @@ import { ChainId, ShortName } from 'src/config/chain.d'
 import { checksumAddress } from 'src/utils/checksumAddress'
 import { PUBLIC_URL } from 'src/utils/constants'
 import { parsePrefixedAddress } from 'src/utils/prefixedAddress'
+import { getCurrentShortChainName } from 'src/config'
 
 export const history = createBrowserHistory({
   basename: PUBLIC_URL,
@@ -81,6 +82,7 @@ export const extractPrefixedSafeAddress = (
   path = history.location.pathname,
   route = ADDRESSED_ROUTE,
 ): SafeRouteParams => {
+  const currentChainShortName = getCurrentShortChainName()
   const match = matchPath<SafeRouteSlugs>(path, {
     path: route,
   })
@@ -89,8 +91,8 @@ export const extractPrefixedSafeAddress = (
   const { prefix, address } = parsePrefixedAddress(prefixedSafeAddress || '')
 
   return {
-    shortName: prefix,
-    safeAddress: checksumAddress(address),
+    shortName: prefix || currentChainShortName,
+    safeAddress: address.length == 0 ? '' : checksumAddress(address),
   }
 }
 
