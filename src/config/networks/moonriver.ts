@@ -10,7 +10,7 @@ import {
 import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
 const baseConfig: EnvironmentSettings = {
-  clientGatewayUrl: 'https://gateway.moonriver.multisig.moonbeam.network/v1',
+  clientGatewayUrl: 'https://gateway.moonriver.multisig.moonbeam.network',
   txServiceUrl: 'https://transaction.moonriver.multisig.moonbeam.network/api/v1',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.moonriver.moonbeam.network',

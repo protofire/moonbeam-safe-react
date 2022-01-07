@@ -10,7 +10,7 @@ import {
 import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
 const baseConfig: EnvironmentSettings = {
-  clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network/v1',
+  clientGatewayUrl: 'https://gateway.moonbase.multisig.moonbeam.network',
   txServiceUrl: 'https://transaction.moonbase.multisig.moonbeam.network/api/v1',
   gasPrice: 1e9,
   rpcServiceUrl: 'https://rpc.testnet.moonbeam.network',
@@ -24,17 +24,17 @@ const moonbase: NetworkConfig = {
   environment: {
     local: {
       ...baseConfig,
-      clientGatewayUrl: 'http://localhost:8001/v1',
+      clientGatewayUrl: 'http://localhost:8001',
       txServiceUrl: 'http://localhost:8000/api/v1',
     },
     dev: {
       ...baseConfig,
-      clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network/v1',
+      clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network',
       txServiceUrl: 'https://transaction.staging.moonbase.multisig.moonbeam.network/api/v1',
     },
     staging: {
       ...baseConfig,
-      clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network/v1',
+      clientGatewayUrl: 'https://gateway.staging.moonbase.multisig.moonbeam.network',
       txServiceUrl: 'https://transaction.staging.moonbase.multisig.moonbeam.network/api/v1',
     },
     production: {
