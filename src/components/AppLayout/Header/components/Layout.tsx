@@ -12,11 +12,15 @@ import Spacer from 'src/components/Spacer'
 import Col from 'src/components/layout/Col'
 import Img from 'src/components/layout/Img'
 import Row from 'src/components/layout/Row'
+import WalletSwitch from 'src/components/WalletSwitch'
+import Divider from 'src/components/layout/Divider'
 import { headerHeight, md, screenSm, sm } from 'src/theme/variables'
 import { useStateHandler } from 'src/logic/hooks/useStateHandler'
 import SafeLogoMVR from '../assets/moonriver_logo.svg'
 import SafeLogoMBASE from '../assets/moonbase_logo.svg'
 import { WELCOME_ROUTE } from 'src/routes/routes'
+import { shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
+import { useSelector } from 'react-redux'
 
 const styles = () => ({
   root: {
@@ -95,6 +99,7 @@ const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) =
   const { isDesktop } = window
   const chainName = getNetworkInfo().label
   const isOpen = open || shouldSwitchChain
+  const isWrongChain = useSelector(shouldSwitchWalletChain)
 
   return (
     <Row className={classes.summary}>
@@ -108,7 +113,16 @@ const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) =
           />
         </Link>
       </Col>
+
       <Spacer />
+
+      {isWrongChain && (
+        <div className={classes.wallet}>
+          <WalletSwitch />
+          <Divider />
+        </div>
+      )}
+
       <Provider
         info={providerInfo}
         open={isOpen}
