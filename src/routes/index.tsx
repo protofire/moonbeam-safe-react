@@ -2,7 +2,7 @@ import React from 'react'
 import { Loader } from '@gnosis.pm/safe-react-components'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+import { matchPath, Redirect, Route, Switch, useLocation } from 'react-router-dom'
 
 import { LoadingContainer } from 'src/components/LoaderContainer'
 import { useAnalytics } from 'src/utils/googleAnalytics'
@@ -18,11 +18,13 @@ import {
   hasPrefixedSafeAddressInUrl,
   ROOT_ROUTE,
   LOAD_SAFE_ROUTE,
-  NETWORK_ROOT_ROUTES,
+  getNetworkRootRoutes,
+  TRANSACTION_ID_SLUG,
 } from './routes'
-import { getCurrentShortChainName } from 'src/config'
+import { getShortName } from 'src/config'
+import { setChainId } from 'src/logic/config/utils'
 import { switchNetworkWithUrl } from 'src/utils/history'
-import { setNetwork } from 'src/logic/config/utils'
+import { isDeeplinkedTx } from './safe/components/Transactions/TxList/utils'
 
 const Welcome = React.lazy(() => import('./welcome/Welcome'))
 const CreateSafePage = React.lazy(() => import('./CreateSafePage/CreateSafePage'))
@@ -31,23 +33,35 @@ const Safe = React.lazy(() => import('./safe/container'))
 
 const Routes = (): React.ReactElement => {
   const location = useLocation()
-  const history = useHistory()
+  const { pathname, search } = location
   const defaultSafe = useSelector(lastViewedSafe)
   const { trackPage } = useAnalytics()
 
   useEffect(() => {
-    const unsubscribe = history.listen(switchNetworkWithUrl)
-    return unsubscribe
-  }, [history])
+    let trackedPath = pathname
 
-  useEffect(() => {
-    // Anonymize safe address when tracking page views
-    // ADDRESSED_ROUTES have [SAFE_ADDRESS_SLUG]
-    const pathname = hasPrefixedSafeAddressInUrl()
-      ? location.pathname.replace(getPrefixedSafeAddressSlug(), 'SAFE_ADDRESS')
-      : location.pathname
-    trackPage(pathname + location.search)
-  }, [location, trackPage])
+    // Anonymize safe address
+    if (hasPrefixedSafeAddressInUrl()) {
+      trackedPath = trackedPath.replace(getPrefixedSafeAddressSlug(), 'SAFE_ADDRESS')
+    }
+
+    // Anonymize deeplinked transaction
+    if (isDeeplinkedTx()) {
+      const match = matchPath(pathname, {
+        path: SAFE_ROUTES.TRANSACTIONS_SINGULAR,
+      })
+
+      trackedPath = trackedPath.replace(match?.params[TRANSACTION_ID_SLUG], 'TRANSACTION_ID')
+    }
+
+    trackPage(trackedPath + search)
+
+    // Set the initial network id from the URL.
+    // It depends on the chains
+    switchNetworkWithUrl({ pathname })
+
+    // Track when pathname changes
+  }, [pathname, search, trackPage])
 
   return (
     <Switch>
@@ -58,12 +72,12 @@ const Routes = (): React.ReactElement => {
       />
       {
         // Redirection to open network specific welcome pages
-        NETWORK_ROOT_ROUTES.map(({ id, route }) => (
+        getNetworkRootRoutes().map(({ chainId, route }) => (
           <Route
-            key={id}
+            key={chainId}
             path={route}
             render={() => {
-              setNetwork(id)
+              setChainId(chainId)
               return <Redirect to={ROOT_ROUTE} />
             }}
           />
@@ -85,7 +99,7 @@ const Routes = (): React.ReactElement => {
             return (
               <Redirect
                 to={generateSafeRoute(SAFE_ROUTES.ASSETS_BALANCES, {
-                  shortName: getCurrentShortChainName(),
+                  shortName: getShortName(),
                   safeAddress: defaultSafe,
                 })}
               />

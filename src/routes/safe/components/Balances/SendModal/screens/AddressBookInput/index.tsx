@@ -1,12 +1,9 @@
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import MuiTextField from '@material-ui/core/TextField'
 import Autocomplete, { AutocompleteProps } from '@material-ui/lab/Autocomplete'
 import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { mustBeEthereumAddress, mustBeEthereumContractAddress } from 'src/components/forms/validator'
-import { isFeatureEnabled } from 'src/config'
-import { FEATURES } from 'src/config/networks/network.d'
 import { AddressBookEntry } from 'src/logic/addressBook/model/addressBook'
 import { currentNetworkAddressBook } from 'src/logic/addressBook/store/selectors'
 import { filterContractAddressBookEntries, filterAddressEntries } from 'src/logic/addressBook/utils'
@@ -16,10 +13,14 @@ import {
   useTextFieldInputStyle,
   useTextFieldLabelStyle,
 } from 'src/routes/safe/components/Balances/SendModal/screens/AddressBookInput/style'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { trimSpaces } from 'src/utils/strings'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
 import { checksumAddress } from 'src/utils/checksumAddress'
 import { currentChainId } from 'src/logic/config/store/selectors'
+import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
+import { parsePrefixedAddress } from 'src/utils/prefixedAddress'
+import { hasFeature } from 'src/logic/safe/utils/safeVersion'
 
 export interface AddressBookProps {
   fieldMutator: (address: string) => void
@@ -54,8 +55,8 @@ const BaseAddressBookInput = ({
     fieldMutator(addressEntry.address)
   }
 
-  const validateAddress = (address: string): AddressBookEntry | string | undefined => {
-    const addressErrorMessage = mustBeEthereumAddress(address)
+  const validateAddress = (fullAddress: string): AddressBookEntry | string | undefined => {
+    const addressErrorMessage = mustBeEthereumAddress(fullAddress)
     setIsValidAddress(!addressErrorMessage)
 
     if (addressErrorMessage) {
@@ -64,13 +65,8 @@ const BaseAddressBookInput = ({
     }
 
     // Automatically checksum valid addresses
-    let checkedAddr: string
-    try {
-      checkedAddr = checksumAddress(address)
-    } catch (err) {
-      checkedAddr = address
-    }
-
+    const { address } = parsePrefixedAddress(fullAddress)
+    const checkedAddr = checksumAddress(address) || address
     const filteredEntries = filterAddressEntries(addressBookEntries, { inputValue: checkedAddr })
     return filteredEntries.length === 1 ? filteredEntries[0] : checkedAddr
   }
@@ -100,7 +96,7 @@ const BaseAddressBookInput = ({
 
         // ENS-enabled resolve/validation
         if (
-          isFeatureEnabled(FEATURES.DOMAIN_LOOKUP) &&
+          hasFeature(FEATURES.DOMAIN_LOOKUP) &&
           (isValidEnsName(normalizedValue) || isValidCryptoDomainName(normalizedValue))
         ) {
           let address = ''
@@ -177,10 +173,11 @@ const BaseAddressBookInput = ({
           label={validationText ? validationText : label}
           InputLabelProps={{ shrink: true, required: true, classes: labelStyles }}
           InputProps={{ ...params.InputProps, classes: inputStyles }}
+          inputProps={{ ...params.inputProps, 'data-testid': 'address-book-input' }}
         />
       )}
       getOptionLabel={({ address }) => address}
-      renderOption={({ address, name }) => <EthHashInfo hash={address} name={name} showAvatar />}
+      renderOption={({ address, name }) => <PrefixedEthHashInfo hash={address} name={name} showAvatar />}
       role="listbox"
       style={{ display: 'flex', flexGrow: 1 }}
     />

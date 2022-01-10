@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { makeStyles } from '@material-ui/core/styles'
-import { EthHashInfo, Identicon, Card } from '@gnosis.pm/safe-react-components'
+import { Identicon, Card } from '@gnosis.pm/safe-react-components'
 import { createStyles } from '@material-ui/core'
 
 import Spacer from 'src/components/Spacer'
@@ -11,14 +11,13 @@ import Hairline from 'src/components/layout/Hairline'
 import Img from 'src/components/layout/Img'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { background, connected as connectedBg, lg, md, sm, warning, xs } from 'src/theme/variables'
 import { getExplorerInfo } from 'src/config'
 import { KeyRing } from 'src/components/AppLayout/Header/components/KeyRing'
 import WalletIcon from '../../assets/wallet.svg'
 import { useSelector } from 'react-redux'
 import { networkSelector } from 'src/logic/wallets/store/selectors'
-import { shouldSwitchNetwork } from 'src/logic/wallets/utils/network'
-import { currentChainId } from 'src/logic/config/store/selectors'
 import ChainIndicator from 'src/components/ChainIndicator'
 
 const styles = createStyles({
@@ -96,7 +95,6 @@ const StyledCard = styled(Card)`
 type Props = {
   connected: boolean
   onDisconnect: () => void
-  onNetworkChange?: () => unknown
   openDashboard?: (() => void | null) | boolean
   provider?: string
   userAddress: string
@@ -107,14 +105,11 @@ const useStyles = makeStyles(styles)
 export const UserDetails = ({
   connected,
   onDisconnect,
-  onNetworkChange,
   openDashboard,
   provider,
   userAddress,
 }: Props): React.ReactElement => {
-  const explorerUrl = getExplorerInfo(userAddress)
   const connectedNetwork = useSelector(networkSelector)
-  const desiredNetwork = useSelector(currentChainId)
   const classes = useStyles()
 
   return (
@@ -129,7 +124,12 @@ export const UserDetails = ({
         </Row>
         <Block className={classes.user} justify="center">
           {userAddress ? (
-            <EthHashInfo hash={userAddress} showCopyBtn explorerUrl={explorerUrl} shortenHash={4} />
+            <PrefixedEthHashInfo
+              hash={userAddress}
+              showCopyBtn
+              explorerUrl={getExplorerInfo(userAddress)}
+              shortenHash={4}
+            />
           ) : (
             'Address not available'
           )}
@@ -160,15 +160,6 @@ export const UserDetails = ({
           <Button color="primary" fullWidth onClick={openDashboard} size="medium" variant="contained">
             <Paragraph className={classes.dashboardText} color="white" noMargin size="md">
               {provider} Wallet
-            </Paragraph>
-          </Button>
-        </Row>
-      )}
-      {shouldSwitchNetwork() && onNetworkChange && (
-        <Row className={classes.buttonRow}>
-          <Button fullWidth onClick={onNetworkChange} size="medium" variant="outlined" color="primary">
-            <Paragraph noMargin size="lg">
-              Switch to <ChainIndicator chainId={desiredNetwork} />
             </Paragraph>
           </Button>
         </Row>

@@ -26,13 +26,13 @@ enum ErrorCodes {
   _611 = '611: Error fetching gasPrice',
   _612 = '612: Error estimating gas',
   _613 = '613: Error fetching safe info',
-  _700 = '700: Failed to load a localStorage item',
-  _701 = '701: Failed to save a localStorage item',
-  _702 = '702: Failed to remove a localStorage item',
+  _614 = '614: Error fetching transaction by id',
+  _615 = '615: Failed to retrieve last transaction from server',
+  _616 = '616: Failed to retrieve recommended nonce',
+  _700 = '700: Failed to read from local/session storage',
+  _701 = '701: Failed to write to local/session storage',
+  _702 = '702: Failed to remove from local/session storage',
   _703 = '703: Error migrating localStorage',
-  _704 = '704: Failed to load a sessionStorage item',
-  _705 = '705: Failed to save a sessionStorage item',
-  _706 = '706: Failed to remove a sessionStorage item',
   _800 = '800: Safe creation tx failed',
   _801 = '801: Failed to send a tx with a spending limit',
   _802 = '802: Error submitting a transaction, safeAddress not found',
@@ -51,6 +51,7 @@ enum ErrorCodes {
   _901 = '901: Error processing Safe Apps SDK request',
   _902 = '902: Error loading Safe Apps list',
   _903 = '903: Error loading Safe App manifest',
+  _904 = '904: Error loading chains',
 }
 
 export default ErrorCodes

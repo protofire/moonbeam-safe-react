@@ -1,36 +1,44 @@
-import * as utils from 'src/logic/config/utils'
+import { getShortName } from 'src/config'
+import * as configUtils from 'src/logic/config/utils'
 import { ZERO_ADDRESS } from 'src/logic/wallets/ethAddresses'
-import { history } from 'src/routes/routes'
+import { history, WELCOME_ROUTE } from 'src/routes/routes'
 import { switchNetworkWithUrl } from '../history'
 
 describe('switchNetworkWithUrl', () => {
   it('does not switch the network when there is no shortName in the url', () => {
-    const setNetworkMock = jest.spyOn(utils, 'setNetwork')
+    const setChainIdMock = jest.spyOn(configUtils, 'setChainId')
 
     history.push(`/rin:${ZERO_ADDRESS}`)
 
     switchNetworkWithUrl({ pathname: '/welcome' })
 
-    expect(setNetworkMock).not.toHaveBeenCalled()
+    expect(setChainIdMock).not.toHaveBeenCalled()
   })
   it('does not switch the network when the shortName has not changed', () => {
-    const setNetworkMock = jest.spyOn(utils, 'setNetwork')
+    // chainId defaults to RINKEBY in non-production environments if it can't be read from LS
+    const setChainIdMock = jest.spyOn(configUtils, 'setChainId')
 
-    const pathname = `/rin:${ZERO_ADDRESS}`
+    history.push(`/rin:${ZERO_ADDRESS}`)
 
-    history.push(pathname)
+    switchNetworkWithUrl(history.location)
 
-    switchNetworkWithUrl({ pathname })
-
-    expect(setNetworkMock).not.toHaveBeenCalled()
+    expect(setChainIdMock).not.toHaveBeenCalled()
   })
   it('switches the network when the shortName changes', () => {
-    const setNetworkMock = jest.spyOn(utils, 'setNetwork')
+    // chainId defaults to RINKEBY in non-production environments if it can't be read from LS
+    const setChainIdMock = jest.spyOn(configUtils, 'setChainId')
 
     history.push(`/eth:${ZERO_ADDRESS}`)
 
-    switchNetworkWithUrl({ pathname: `/xdai:${ZERO_ADDRESS}` })
+    switchNetworkWithUrl(history.location)
 
-    expect(setNetworkMock).toHaveBeenCalled()
+    expect(setChainIdMock).toHaveBeenCalled()
+  })
+  it('redirects to the Welcome page when incorrect shortName is in the URL', () => {
+    history.push(`/fakechain:${ZERO_ADDRESS}`)
+
+    switchNetworkWithUrl(history.location)
+
+    expect(history.location.pathname).toBe(WELCOME_ROUTE)
   })
 })

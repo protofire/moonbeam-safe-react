@@ -1,7 +1,7 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { SnackbarProvider } from 'notistack'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import AlertIcon from 'src/assets/icons/alert.svg'
@@ -12,11 +12,7 @@ import AppLayout from 'src/components/AppLayout'
 import { SafeListSidebar, SafeListSidebarContext } from 'src/components/SafeListSidebar'
 import CookiesBanner from 'src/components/CookiesBanner'
 import Notifier from 'src/components/Notifier'
-import Backdrop from 'src/components/layout/Backdrop'
 import Img from 'src/components/layout/Img'
-import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
-import { currentChainId } from 'src/logic/config/store/selectors'
-import { networkSelector } from 'src/logic/wallets/store/selectors'
 import { currentSafeWithNames } from 'src/logic/safe/store/selectors'
 import { currentCurrencySelector } from 'src/logic/currencyValues/store/selectors'
 import Modal from 'src/components/Modal'
@@ -30,6 +26,8 @@ import ReceiveModal from './ReceiveModal'
 import { useSidebarItems } from 'src/components/AppLayout/Sidebar/useSidebarItems'
 import useAddressBookSync from 'src/logic/addressBook/hooks/useAddressBookSync'
 import { extractSafeAddress } from 'src/routes/routes'
+import loadSafesFromStorage from 'src/logic/safe/store/actions/loadSafesFromStorage'
+import loadCurrentSessionFromStorage from 'src/logic/currentSession/store/actions/loadCurrentSessionFromStorage'
 
 const notificationStyles = {
   success: {
@@ -57,9 +55,6 @@ const useStyles = makeStyles(notificationStyles)
 
 const App: React.FC = ({ children }) => {
   const classes = useStyles()
-  const desiredNetwork = useSelector(currentChainId)
-  const currentNetwork = useSelector(networkSelector)
-  const isWrongNetwork = currentNetwork !== ETHEREUM_NETWORK.UNKNOWN && currentNetwork !== desiredNetwork
   const { toggleSidebar } = useContext(SafeListSidebarContext)
   const { name: safeName, totalFiatBalance: currentSafeBalance } = useSelector(currentSafeWithNames)
   const addressFromUrl = extractSafeAddress()
@@ -67,8 +62,9 @@ const App: React.FC = ({ children }) => {
   const currentCurrency = useSelector(currentCurrencySelector)
   const granted = useSelector(grantedSelector)
   const sidebarItems = useSidebarItems()
-  const safeLoaded = useLoadSafe(addressFromUrl)
-  useSafeScheduledUpdates(safeLoaded, addressFromUrl)
+  const dispatch = useDispatch()
+  useLoadSafe(addressFromUrl) // load initially
+  useSafeScheduledUpdates(addressFromUrl) // load every X seconds
   useAddressBookSync()
 
   const sendFunds = safeActionsState.sendFunds
@@ -79,9 +75,15 @@ const App: React.FC = ({ children }) => {
   const onReceiveShow = () => onShow('Receive')
   const onReceiveHide = () => onHide('Receive')
 
+  // Load the Safes from LS just once,
+  // they'll be reloaded on network change
+  useEffect(() => {
+    dispatch(loadSafesFromStorage())
+    dispatch(loadCurrentSessionFromStorage())
+  }, [dispatch])
+
   return (
     <Frame>
-      <Backdrop isOpen={isWrongNetwork} />
       <SnackbarProvider
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         classes={{

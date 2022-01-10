@@ -4,14 +4,32 @@ import {
   DateLabel,
   Label,
   ModuleExecutionDetails,
+  MultiSend,
   MultisigExecutionDetails,
   MultisigExecutionInfo,
   TransactionSummary,
   Transfer,
   TransactionDetails as GWTransactionDetails,
+  Transaction as GWTransaction,
   TransactionListItem,
   TransactionListPage,
+  TransactionStatus,
 } from '@gnosis.pm/safe-react-gateway-sdk'
+
+/**
+ * We can't use the enum values from the SDK directly when comparing to strings
+ * Not sure if a bug or a feature 🤷
+ */
+export const LocalTransactionStatus: Record<string, TransactionStatus> = {
+  AWAITING_CONFIRMATIONS: 'AWAITING_CONFIRMATIONS',
+  AWAITING_EXECUTION: 'AWAITING_EXECUTION',
+  CANCELLED: 'CANCELLED',
+  FAILED: 'FAILED',
+  SUCCESS: 'SUCCESS',
+  PENDING: 'PENDING',
+  PENDING_FAILED: 'PENDING_FAILED',
+  WILL_BE_REPLACED: 'WILL_BE_REPLACED',
+}
 
 export type Transaction = TransactionSummary & {
   txDetails?: ExpandedTxDetails
@@ -62,7 +80,7 @@ export const isConflictHeader = (value: QueuedGatewayResult): value is ConflictH
   return value.type === 'CONFLICT_HEADER'
 }
 
-export const isTransactionSummary = (value: HistoryGatewayResult | QueuedGatewayResult): value is Transaction => {
+export const isTransactionSummary = (value: HistoryGatewayResult | QueuedGatewayResult): value is GWTransaction => {
   return value.type === 'TRANSACTION'
 }
 
@@ -86,30 +104,6 @@ export const isCreationTxInfo = (value: TransactionInfo): value is Creation => {
   return value.type === 'Creation'
 }
 
-export const isStatusSuccess = (value: Transaction['txStatus']): value is 'SUCCESS' => {
-  return value === 'SUCCESS'
-}
-
-export const isStatusFailed = (value: Transaction['txStatus']): value is 'FAILED' => {
-  return value === 'FAILED'
-}
-
-export const isStatusCancelled = (value: Transaction['txStatus']): value is 'CANCELLED' => {
-  return value === 'CANCELLED'
-}
-
-export const isStatusPending = (value: Transaction['txStatus']): value is 'PENDING' => {
-  return value === 'PENDING'
-}
-
-export const isStatusAwaitingConfirmation = (value: Transaction['txStatus']): value is 'AWAITING_CONFIRMATIONS' => {
-  return value === 'AWAITING_CONFIRMATIONS'
-}
-
-export const isStatusWillBeReplaced = (value: Transaction['txStatus']): value is 'WILL_BE_REPLACED' => {
-  return value === 'WILL_BE_REPLACED'
-}
-
 export const isMultiSigExecutionDetails = (
   value: ExpandedTxDetails['detailedExecutionInfo'],
 ): value is MultisigExecutionDetails => {
@@ -124,4 +118,14 @@ export const isModuleExecutionInfo = (
 
 export const isMultisigExecutionInfo = (value: TransactionSummary['executionInfo']): value is MultisigExecutionInfo => {
   return value?.type === 'MULTISIG'
+}
+
+export const isTxQueued = (value: LocalTransactionStatus): boolean => {
+  return [
+    LocalTransactionStatus.PENDING,
+    LocalTransactionStatus.PENDING_FAILED,
+    LocalTransactionStatus.AWAITING_CONFIRMATIONS,
+    LocalTransactionStatus.AWAITING_EXECUTION,
+    LocalTransactionStatus.WILL_BE_REPLACED,
+  ].includes(value)
 }

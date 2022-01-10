@@ -8,15 +8,16 @@ import {
   extractPrefixedSafeAddress,
   ADDRESSED_ROUTE,
   history,
-  isValidShortChainName,
   LOAD_SPECIFIC_SAFE_ROUTE,
 } from './routes'
 import { Route, Switch } from 'react-router'
 import { render } from 'src/utils/test-utils'
 import { ZERO_ADDRESS } from 'src/logic/wallets/ethAddresses'
+import Root from 'src/components/Root'
 
 const validSafeAddress = '0xF5A2915982BC8b0dEDda9cEF79297A83081Fe88f'
 
+// Only contains shortNames that are on the CGW staging Django
 describe('chainSpecificSafeAddressPathRegExp', () => {
   it('renders routes with chain-specific addresses', () => {
     const testId = 'addressed-route'
@@ -46,19 +47,9 @@ describe('chainSpecificSafeAddressPathRegExp', () => {
   })
 })
 
-describe('isValidShortChainName', () => {
-  it('returns true for a valid short chain name', () => {
-    expect(isValidShortChainName('rin')).toBe(true)
-  })
-
-  it('returns false for a invalid short chain name', () => {
-    expect(isValidShortChainName('fake')).toBe(false)
-  })
-})
-
 describe('extractPrefixedSafeAddress', () => {
-  it('returns the chain-specific addresses from the url if both supplied', async () => {
-    const shortName = 'bnb'
+  it('returns the chain and address from the url if both supplied', async () => {
+    const shortName = 'matic'
 
     const route = generateSafeRoute(SAFE_ROUTES.ASSETS_BALANCES, { shortName, safeAddress: validSafeAddress })
     history.push(route)
@@ -66,17 +57,17 @@ describe('extractPrefixedSafeAddress', () => {
     expect(extractPrefixedSafeAddress()).toStrictEqual({ shortName, safeAddress: validSafeAddress })
   })
 
-  it('returns the current chain prefix with safe address when a malformed chain is supplied', () => {
-    const route = `/fakechain:${validSafeAddress}/balances`
+  it('returns the incorrect chain prefix with safe address when an incorrect chain is supplied', () => {
+    const fakeChainShortName = 'fakechain'
+    const route = `/${fakeChainShortName}:${validSafeAddress}/balances`
     history.push(route)
 
-    // 'rin' is default dev env shortName
-    expect(extractPrefixedSafeAddress()).toStrictEqual({ shortName: 'rin', safeAddress: validSafeAddress })
+    expect(extractPrefixedSafeAddress()).toStrictEqual({ shortName: 'fakechain', safeAddress: validSafeAddress })
   })
 
   // matchPath will fail because of chainSpecificSafeAddressPathRegExp path
   it('returns the chain prefix with empty safe address when a malformed address is supplied', () => {
-    const shortName = 'bnb'
+    const shortName = 'rin'
 
     const route = `/${shortName}:0xqiwueyrqpwoifnaskjdgafgdsf/balances`
     history.push(route)
@@ -84,8 +75,8 @@ describe('extractPrefixedSafeAddress', () => {
     expect(extractPrefixedSafeAddress()).toStrictEqual({ shortName: 'rin', safeAddress: '' })
   })
 
-  it('returns the chain prefix with numbers in in', () => {
-    const shortName = 'arb1'
+  it('returns the chain prefix with zero address', () => {
+    const shortName = 'eth'
 
     const route = `/${shortName}:${ZERO_ADDRESS}/balances`
     history.push(route)
@@ -94,7 +85,7 @@ describe('extractPrefixedSafeAddress', () => {
   })
 
   it('extracts address and shortName from a custom route', () => {
-    const shortName = 'ewt'
+    const shortName = 'matic'
     const path = `/load/${shortName}:${ZERO_ADDRESS}`
     history.push(path)
 
@@ -138,7 +129,7 @@ describe('getPrefixedSafeAddressSlug', () => {
   })
 
   it('returns the current URL/config chain shortName if none is given', () => {
-    const shortName = 'ewt'
+    const shortName = 'eth'
 
     const route = `/${shortName}:${ZERO_ADDRESS}`
     history.push(route)
@@ -152,7 +143,7 @@ describe('getPrefixedSafeAddressSlug', () => {
   })
 
   it('returns the safe address from the URL and current URL/config chain short name without arguments', () => {
-    const shortName = 'vt'
+    const shortName = 'rin'
     const fakeAddress = ZERO_ADDRESS
 
     const route = `/${shortName}:${fakeAddress}`
@@ -170,7 +161,7 @@ describe('getPrefixedSafeAddressSlug', () => {
 
 describe('generateSafeRoute', () => {
   it('adds the chain-specific slug to provided routes', () => {
-    const shortName = 'xdai'
+    const shortName = 'eth'
 
     const testSafeRoute = generateSafeRoute(SAFE_ROUTES.ASSETS_BALANCES, {
       shortName,
@@ -183,7 +174,7 @@ describe('generateSafeRoute', () => {
 
 describe('generatePrefixedAddressRoutes', () => {
   it('generates all SAFE_ROUTES with given chain-specific arguments', () => {
-    const shortName = 'bnb'
+    const shortName = 'matic'
 
     const currentSafeRoutes = generatePrefixedAddressRoutes({
       shortName,

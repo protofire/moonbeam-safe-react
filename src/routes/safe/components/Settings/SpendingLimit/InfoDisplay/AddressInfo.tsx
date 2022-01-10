@@ -1,7 +1,8 @@
-import { EthHashInfo, Text } from '@gnosis.pm/safe-react-components'
+import { Text } from '@gnosis.pm/safe-react-components'
 import { ReactElement } from 'react'
 import { useSelector } from 'react-redux'
 
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { getExplorerInfo } from 'src/config'
 import { addressBookEntryName } from 'src/logic/addressBook/store/selectors'
 import { ADDRESS_BOOK_DEFAULT_NAME } from 'src/logic/addressBook/model/addressBook'
@@ -10,11 +11,12 @@ import { sameString } from 'src/utils/strings'
 interface AddressInfoProps {
   address: string
   title?: string
+  name?: string
+  logoUri?: string
 }
 
-const AddressInfo = ({ address, title }: AddressInfoProps): ReactElement => {
-  const name = useSelector((state) => addressBookEntryName(state, { address }))
-  const explorerUrl = getExplorerInfo(address)
+const AddressInfo = ({ address, title, name, logoUri }: AddressInfoProps): ReactElement => {
+  const addessBookName = useSelector((state) => addressBookEntryName(state, { address }))
 
   return (
     <>
@@ -23,13 +25,14 @@ const AddressInfo = ({ address, title }: AddressInfoProps): ReactElement => {
           {title}
         </Text>
       )}
-      <EthHashInfo
+      <PrefixedEthHashInfo
         hash={address}
-        name={sameString(name, ADDRESS_BOOK_DEFAULT_NAME) ? undefined : name}
+        name={sameString(addessBookName, ADDRESS_BOOK_DEFAULT_NAME) ? name : addessBookName}
         showCopyBtn
         showAvatar
         textSize="lg"
-        explorerUrl={explorerUrl}
+        explorerUrl={getExplorerInfo(address)}
+        customAvatar={logoUri || undefined}
       />
     </>
   )
