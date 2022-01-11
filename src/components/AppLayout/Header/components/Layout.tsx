@@ -5,7 +5,7 @@ import Popper from '@material-ui/core/Popper'
 import { withStyles } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 
-import { getNetworkInfo } from 'src/config'
+// import { getNetworkInfo } from 'src/config'
 import Provider from './Provider'
 import NetworkSelector from './NetworkSelector'
 import Spacer from 'src/components/Spacer'
@@ -19,7 +19,10 @@ import { useStateHandler } from 'src/logic/hooks/useStateHandler'
 import SafeLogoMVR from '../assets/moonriver_logo.svg'
 import SafeLogoMBASE from '../assets/moonbase_logo.svg'
 import { WELCOME_ROUTE } from 'src/routes/routes'
+import WalletSwitch from 'src/components/WalletSwitch'
+import Divider from 'src/components/layout/Divider'
 import { shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
+import { currentChainId } from 'src/logic/config/store/selectors'
 import { useSelector } from 'react-redux'
 
 const styles = () => ({
@@ -93,13 +96,11 @@ const WalletPopup = ({ anchorEl, providerDetails, classes, open, onClose }) => {
   )
 }
 
-const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) => {
+const Layout = ({ classes, providerDetails, providerInfo }) => {
   const { clickAway, open, toggle } = useStateHandler()
   const { clickAway: clickAwayNetworks, open: openNetworks, toggle: toggleNetworks } = useStateHandler()
-  const { isDesktop } = window
-  const chainName = getNetworkInfo().label
-  const isOpen = open || shouldSwitchChain
   const isWrongChain = useSelector(shouldSwitchWalletChain)
+  const chainId = useSelector(currentChainId)
 
   return (
     <Row className={classes.summary}>
@@ -107,8 +108,8 @@ const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) =
         <Link to={WELCOME_ROUTE}>
           <Img
             alt="Moonbeam Safe"
-            height={chainName == 'Moonriver' ? '96' : '36'}
-            src={chainName == 'Moonriver' ? SafeLogoMVR : SafeLogoMBASE}
+            height={chainId == '1285' ? '96' : '36'}
+            src={chainId == '1285' ? SafeLogoMVR : SafeLogoMBASE}
             testId="heading-gnosis-logo"
           />
         </Link>
@@ -125,14 +126,14 @@ const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) =
 
       <Provider
         info={providerInfo}
-        open={isOpen}
+        open={open}
         toggle={toggle}
         render={(providerRef) =>
           providerRef.current && (
             <WalletPopup
               anchorEl={providerRef.current}
               providerDetails={providerDetails}
-              open={isOpen}
+              open={open}
               classes={classes}
               onClose={clickAway}
             />
@@ -140,7 +141,7 @@ const Layout = ({ classes, providerDetails, providerInfo, shouldSwitchChain }) =
         }
       />
 
-      {!isDesktop && <NetworkSelector open={openNetworks} toggle={toggleNetworks} clickAway={clickAwayNetworks} />}
+      <NetworkSelector open={openNetworks} toggle={toggleNetworks} clickAway={clickAwayNetworks} />
     </Row>
   )
 }

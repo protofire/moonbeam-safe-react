@@ -67,6 +67,9 @@ const SafeDetails = (): ReactElement => {
     currentVersion: safeCurrentVersion,
     chainId = curChainId,
   } = useSelector(currentSafe)
+
+  const data = useSelector(currentSafe)
+  console.log('data', data)
   const safeNamesMap = useSelector(safesWithNamesAsMap)
   const safeName = safeNamesMap[safeAddress]?.name
 
@@ -139,6 +142,7 @@ const SafeDetails = (): ReactElement => {
           <Block className={classes.formContainer}>
             <Heading tag="h2">Contract Version</Heading>
             <Row align="end" grow>
+              {console.log(safeInfo)}
               <StyledLink rel="noreferrer noopener" target="_blank" href={safeInfo?.deployerRepoUrl}>
                 <Text size="xl" as="span" color="primary">
                   {getSafeVersion()}

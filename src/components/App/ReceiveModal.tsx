@@ -14,7 +14,7 @@ import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import PrefixedEthHashInfo from '../PrefixedEthHashInfo'
 import { border, fontColor, lg, md, screenSm, secondaryText } from 'src/theme/variables'
-import { getChainInfo, getExplorerInfo, getNetworkInfo } from 'src/config'
+import { getChainInfo, getExplorerInfo } from 'src/config'
 import { ChainInfo } from '@gnosis.pm/safe-react-gateway-sdk'
 import { copyShortNameSelector } from 'src/logic/appearance/selectors'
 import { getPrefixedSafeAddressSlug } from 'src/routes/routes'
@@ -81,7 +81,6 @@ type Props = {
 
 const ReceiveModal = ({ onClose, safeAddress, safeName }: Props): ReactElement => {
   const chainInfo = getChainInfo()
-  const networkInfo = getNetworkInfo()
   const classes = useStyles(chainInfo)
 
   const copyShortName = useSelector(copyShortNameSelector)
@@ -105,7 +104,7 @@ const ReceiveModal = ({ onClose, safeAddress, safeName }: Props): ReactElement =
       </Paragraph>
       <Paragraph className={classes.annotation} noMargin size="lg">
         This is the address of your Safe. Deposit funds by scanning the QR code or copying the address below. Only send{' '}
-        {networkInfo.nativeCoin.name} and assets to this address (e.g. ETH)!
+        {chainInfo.nativeCurrency.symbol} and assets to this address (e.g. ETH, ERC20, ERC721)!
       </Paragraph>
       <Col layout="column" middle="xs">
         <Paragraph className={classes.safeName} noMargin size="lg" weight="bold">
