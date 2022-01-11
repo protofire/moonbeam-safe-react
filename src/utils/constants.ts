@@ -3,7 +3,7 @@ import { CHAIN_ID } from 'src/config/chain.d'
 export const APP_ENV = process.env.REACT_APP_ENV
 export const NODE_ENV = process.env.NODE_ENV
 export const IS_PRODUCTION = APP_ENV === 'production'
-export const DEFAULT_CHAIN_ID = IS_PRODUCTION ? CHAIN_ID.ETHEREUM : CHAIN_ID.RINKEBY
+export const DEFAULT_CHAIN_ID = IS_PRODUCTION ? CHAIN_ID.MOONRIVER : CHAIN_ID.MOONBASE
 export const PUBLIC_URL = process.env.PUBLIC_URL
 export const TX_SERVICE_VERSION = '1'
 export const INTERCOM_ID = IS_PRODUCTION ? process.env.REACT_APP_INTERCOM_ID : 'plssl1fl'
@@ -31,6 +31,7 @@ export const SPENDING_LIMIT_MODULE_ADDRESS =
 export const LS_NAMESPACE = 'SAFE'
 export const LS_SEPARATOR = '__'
 export const LS_USE_PROD_CGW = 'useProdGateway'
+console.log('Is production gateway:', IS_PRODUCTION)
 
 // For debugging on dev
 const isProdGateway = () => {
