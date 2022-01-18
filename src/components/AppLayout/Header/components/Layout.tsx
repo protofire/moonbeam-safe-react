@@ -14,6 +14,7 @@ import Img from 'src/components/layout/Img'
 import Row from 'src/components/layout/Row'
 import { headerHeight, md, screenSm, sm } from 'src/theme/variables'
 import { useStateHandler } from 'src/logic/hooks/useStateHandler'
+import SafeLogoMBEAM from '../assets/moonbeam_logo.svg'
 import SafeLogoMVR from '../assets/moonriver_logo.svg'
 import SafeLogoMBASE from '../assets/moonbase_logo.svg'
 import { WELCOME_ROUTE } from 'src/routes/routes'
@@ -106,8 +107,8 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
         <Link to={WELCOME_ROUTE}>
           <Img
             alt="Moonbeam Safe"
-            height={chainId == '1285' ? '96' : '36'}
-            src={chainId == '1285' ? SafeLogoMVR : SafeLogoMBASE}
+            height={chainId == '1285' || chainId == '1284' ? '96' : '36'}
+            src={chainId == '1285' ? SafeLogoMVR : chainId == '1284' ? SafeLogoMBEAM : SafeLogoMBASE}
             testId="heading-gnosis-logo"
           />
         </Link>
