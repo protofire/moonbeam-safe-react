@@ -13,6 +13,9 @@ const STORAGE_KEYS: Record<ChainId, string> = {
   [CHAIN_ID.ENERGY_WEB_CHAIN]: 'ENERGY_WEB_CHAIN',
   [CHAIN_ID.ARBITRUM]: 'ARBITRUM',
   [CHAIN_ID.VOLTA]: 'VOLTA',
+  [CHAIN_ID.MOONBEAM]: 'MOONBEAM',
+  [CHAIN_ID.MOONRIVER]: 'MOONRIVER',
+  [CHAIN_ID.MOONBASE]: 'MOONBASE',
 }
 
 export const storage = new Storage(window.localStorage, '')
