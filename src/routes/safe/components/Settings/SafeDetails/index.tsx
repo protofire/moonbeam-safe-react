@@ -68,8 +68,6 @@ const SafeDetails = (): ReactElement => {
     chainId = curChainId,
   } = useSelector(currentSafe)
 
-  const data = useSelector(currentSafe)
-  console.log('data', data)
   const safeNamesMap = useSelector(safesWithNamesAsMap)
   const safeName = safeNamesMap[safeAddress]?.name
 
