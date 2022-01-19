@@ -22,6 +22,8 @@ export const CHAIN_ID: Record<ChainName, ChainId> = {
   MOONBEAM: '1284',
   MOONRIVER: '1285',
   MOONBASE: '1287',
+  GNOSIS_CHAIN: '100',
+  POLYGON: '137',
   ENERGY_WEB_CHAIN: '246',
   LOCAL: '4447',
   ARBITRUM: '42161',
