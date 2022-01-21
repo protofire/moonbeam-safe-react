@@ -71,14 +71,14 @@ index ed42e60..5a9bfbe 100644
          "1287": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
          "4002": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
 diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
-index 31ee2c5..af2c5af 100644
+index 31ee2c5..824cdff 100644
 --- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
 +++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
 @@ -18,6 +18,7 @@
          "137": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
          "246": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
          "288": "0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC",
-+        "1284": "0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC",
++        "1284": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
          "1285": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
          "1287": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
          "4002": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
