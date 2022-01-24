@@ -18,7 +18,7 @@ import { hasFeature } from 'src/logic/safe/utils/safeVersion'
 
 const useSidebarItems = (): ListItemType[] => {
   const featuresEnabled = useSelector(currentSafeFeaturesEnabled)
-  // const safeAppsEnabled = hasFeature(FEATURES.SAFE_APPS)
+  const safeAppsEnabled = hasFeature(FEATURES.SAFE_APPS)
   const isCollectiblesEnabled = hasFeature(FEATURES.ERC721)
   const isSpendingLimitEnabled = hasFeature(FEATURES.SPENDING_LIMIT)
   const { needsUpdate } = useSelector(currentSafeWithNames)
@@ -120,6 +120,12 @@ const useSidebarItems = (): ListItemType[] => {
         href: currentSafeRoutes.ADDRESS_BOOK,
       }),
       makeEntryItem({
+        disabled: !safeAppsEnabled,
+        label: 'Apps',
+        iconType: 'apps',
+        href: currentSafeRoutes.APPS,
+      }),
+      makeEntryItem({
         label: 'Settings',
         iconType: 'settings',
         href: currentSafeRoutes.SETTINGS_DETAILS,
@@ -136,6 +142,7 @@ const useSidebarItems = (): ListItemType[] => {
     matchSafeWithSidebarSection,
     needsUpdate,
     safeAddress,
+    safeAppsEnabled,
   ])
 }
 
