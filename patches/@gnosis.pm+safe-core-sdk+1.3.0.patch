@@ -1,5 +1,17 @@
+diff --git a/node_modules/@gnosis.pm/safe-core-sdk/dist/src/Safe.js b/node_modules/@gnosis.pm/safe-core-sdk/dist/src/Safe.js
+index 63b9150..e929cd6 100644
+--- a/node_modules/@gnosis.pm/safe-core-sdk/dist/src/Safe.js
++++ b/node_modules/@gnosis.pm/safe-core-sdk/dist/src/Safe.js
+@@ -40,6 +40,7 @@ class Safe {
+      * @throws "MultiSend contract is not deployed in the current network"
+      */
+     static async create({ ethAdapter, safeAddress, isL1SafeMasterCopy, contractNetworks }) {
++        debugger
+         const safeSdk = new Safe();
+         await safeSdk.init({ ethAdapter, safeAddress, isL1SafeMasterCopy, contractNetworks });
+         return safeSdk;
 diff --git a/node_modules/@gnosis.pm/safe-core-sdk/package.json b/node_modules/@gnosis.pm/safe-core-sdk/package.json
-index 560a5ec..c799e0c 100644
+index 560a5ec..fc0dc45 100644
 --- a/node_modules/@gnosis.pm/safe-core-sdk/package.json
 +++ b/node_modules/@gnosis.pm/safe-core-sdk/package.json
 @@ -92,7 +92,7 @@
