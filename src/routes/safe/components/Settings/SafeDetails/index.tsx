@@ -140,7 +140,6 @@ const SafeDetails = (): ReactElement => {
           <Block className={classes.formContainer}>
             <Heading tag="h2">Contract Version</Heading>
             <Row align="end" grow>
-              {console.log(safeInfo)}
               <StyledLink rel="noreferrer noopener" target="_blank" href={safeInfo?.deployerRepoUrl}>
                 <Text size="xl" as="span" color="primary">
                   {getSafeVersion()}
