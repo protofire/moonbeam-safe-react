@@ -1,5 +1,5 @@
 import { Operation } from '@gnosis.pm/safe-react-gateway-sdk'
-import { EthHashInfo, Icon, Text } from '@gnosis.pm/safe-react-components'
+import { Icon, Text } from '@gnosis.pm/safe-react-components'
 import MuiTextField from '@material-ui/core/TextField'
 import { ReactElement, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,12 +8,11 @@ import styled from 'styled-components'
 import ModalTitle from 'src/components/ModalTitle'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
-import { getExplorerInfo, getNetworkInfo } from 'src/config'
+import { getExplorerInfo, getNativeCurrency } from 'src/config'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
-import { TransactionFees } from 'src/components/TransactionsFees'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
-import { lg, md, sm } from 'src/theme/variables'
+import { lg, md } from 'src/theme/variables'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { BasicTxInfo } from 'src/components/DecodeTxs'
@@ -22,18 +21,15 @@ import Divider from 'src/components/Divider'
 import { SignMessageModalProps } from '.'
 import Hairline from 'src/components/layout/Hairline'
 import { ButtonStatus, Modal } from 'src/components/Modal'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { grantedSelector } from 'src/routes/safe/container/selector'
 import Paragraph from 'src/components/layout/Paragraph'
-
-const { nativeCoin } = getNetworkInfo()
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 const Container = styled.div`
   max-width: 480px;
   padding: ${md} ${lg} 0;
-`
-const TransactionFeesWrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors.background};
-  padding: ${sm} ${lg};
 `
 
 const StyledBlock = styled(Block)`
@@ -86,11 +82,13 @@ export const ReviewMessage = ({
 }: Props): ReactElement => {
   const dispatch = useDispatch()
   const explorerUrl = getExplorerInfo(safeAddress)
+  const nativeCurrency = getNativeCurrency()
   const isOwner = useSelector(grantedSelector)
 
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
+  const [manualSafeNonce, setManualSafeNonce] = useState<number | undefined>()
 
   const {
     gasLimit,
@@ -98,7 +96,6 @@ export const ReviewMessage = ({
     gasEstimation,
     isOffChainSignature,
     isCreation,
-    isExecution,
     gasCostFormatted,
     txEstimationExecutionStatus,
   } = useEstimateTransactionGas({
@@ -109,7 +106,9 @@ export const ReviewMessage = ({
     safeTxGas: manualSafeTxGas,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
   })
+  const canTxExecute = useCanTxExecute(false, manualSafeNonce)
 
   const [buttonStatus, setButtonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
@@ -154,6 +153,7 @@ export const ReviewMessage = ({
     const newGasPrice = txParameters.ethGasPrice
     const oldSafeTxGas = gasEstimation
     const newSafeTxGas = txParameters.safeTxGas
+    const newSafeNonce = txParameters.safeNonce
 
     if (newGasPrice && oldGasPrice !== newGasPrice) {
       setManualGasPrice(txParameters.ethGasPrice)
@@ -166,6 +166,11 @@ export const ReviewMessage = ({
     if (newSafeTxGas && oldSafeTxGas !== newSafeTxGas) {
       setManualSafeTxGas(newSafeTxGas)
     }
+
+    if (newSafeNonce) {
+      const newSafeNonceNumber = parseInt(newSafeNonce, 10)
+      setManualSafeNonce(newSafeNonceNumber)
+    }
   }
 
   return (
@@ -175,7 +180,7 @@ export const ReviewMessage = ({
       safeTxGas={gasEstimation}
       closeEditModalCallback={closeEditModalCallback}
       isOffChainSignature={isOffChainSignature}
-      isExecution={isExecution}
+      isExecution={canTxExecute}
     >
       {(txParameters, toggleEditMode) => (
         <div>
@@ -185,10 +190,10 @@ export const ReviewMessage = ({
 
           <Container>
             {/* Safe */}
-            <EthHashInfo name={safeName} hash={safeAddress} showAvatar showCopyBtn explorerUrl={explorerUrl} />
+            <PrefixedEthHashInfo name={safeName} hash={safeAddress} showAvatar showCopyBtn explorerUrl={explorerUrl} />
             <StyledBlock>
               <Text size="md">Balance:</Text>
-              <Text size="md" strong>{`${ethBalance} ${nativeCoin.symbol}`}</Text>
+              <Text size="md" strong>{`${ethBalance} ${nativeCurrency.symbol}`}</Text>
             </StyledBlock>
 
             <Divider withArrow />
@@ -224,22 +229,20 @@ export const ReviewMessage = ({
               txParameters={txParameters}
               onEdit={toggleEditMode}
               isTransactionCreation={isCreation}
-              isTransactionExecution={isExecution}
+              isTransactionExecution={canTxExecute}
               isOffChainSignature={isOffChainSignature}
             />
           </Container>
 
           {/* Gas info */}
           {txEstimationExecutionStatus === EstimationStatus.LOADING ? null : (
-            <TransactionFeesWrapper>
-              <TransactionFees
-                gasCostFormatted={isOwner ? gasCostFormatted : undefined}
-                isExecution={isExecution}
-                isCreation={isCreation}
-                isOffChainSignature={isOffChainSignature}
-                txEstimationExecutionStatus={txEstimationExecutionStatus}
-              />
-            </TransactionFeesWrapper>
+            <ReviewInfoText
+              gasCostFormatted={isOwner ? gasCostFormatted : undefined}
+              isCreation={isCreation}
+              isExecution={canTxExecute}
+              safeNonce={txParameters.safeNonce}
+              txEstimationExecutionStatus={txEstimationExecutionStatus}
+            />
           )}
 
           {/* Buttons */}

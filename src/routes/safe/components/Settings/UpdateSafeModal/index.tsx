@@ -12,7 +12,7 @@ import Row from 'src/components/layout/Row'
 import { getUpgradeSafeTransactionHash } from 'src/logic/safe/utils/upgradeSafe'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
 import { ButtonStatus, Modal } from 'src/components/Modal'
-import { TransactionFees } from 'src/components/TransactionsFees'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { getMultisendContractAddress } from 'src/logic/contracts/safeContracts'
@@ -21,6 +21,7 @@ import { TxParametersDetail } from 'src/routes/safe/components/Transactions/help
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 type Props = {
   onClose: () => void
@@ -36,7 +37,6 @@ export const UpdateSafeModal = ({ onClose, safeAddress, safeCurrentVersion }: Pr
   const {
     gasCostFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isCreation,
     isOffChainSignature,
     gasPriceFormatted,
@@ -48,6 +48,7 @@ export const UpdateSafeModal = ({ onClose, safeAddress, safeCurrentVersion }: Pr
     txAmount: '0',
     operation: Operation.DELEGATE,
   })
+  const canTxExecute = useCanTxExecute()
 
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
@@ -82,7 +83,7 @@ export const UpdateSafeModal = ({ onClose, safeAddress, safeCurrentVersion }: Pr
   return (
     <EditableTxParameters
       isOffChainSignature={isOffChainSignature}
-      isExecution={isExecution}
+      isExecution={canTxExecute}
       ethGasLimit={gasLimit}
       ethGasPrice={gasPriceFormatted}
       safeTxGas={gasEstimation.toString()}
@@ -122,20 +123,18 @@ export const UpdateSafeModal = ({ onClose, safeAddress, safeCurrentVersion }: Pr
               onEdit={toggleEditMode}
               compact={false}
               isTransactionCreation={isCreation}
-              isTransactionExecution={isExecution}
+              isTransactionExecution={canTxExecute}
               isOffChainSignature={isOffChainSignature}
             />
           </Block>
           {txEstimationExecutionStatus === EstimationStatus.LOADING ? null : (
-            <Block className={classes.gasCostsContainer}>
-              <TransactionFees
-                gasCostFormatted={gasCostFormatted}
-                isExecution={isExecution}
-                isCreation={isCreation}
-                isOffChainSignature={isOffChainSignature}
-                txEstimationExecutionStatus={txEstimationExecutionStatus}
-              />
-            </Block>
+            <ReviewInfoText
+              gasCostFormatted={gasCostFormatted}
+              isCreation={isCreation}
+              isExecution={canTxExecute}
+              safeNonce={txParameters.safeNonce}
+              txEstimationExecutionStatus={txEstimationExecutionStatus}
+            />
           )}
           {/* Footer */}
           <Modal.Footer withoutBorder={buttonStatus !== ButtonStatus.LOADING}>

@@ -1,8 +1,11 @@
+import { lazy } from 'react'
 import styled from 'styled-components'
 import { Divider, IconText } from '@gnosis.pm/safe-react-components'
 
 import List, { ListItemType } from 'src/components/List'
 import SafeHeader from './SafeHeader'
+import { IS_PRODUCTION } from 'src/utils/constants'
+import { wrapInSuspense } from 'src/utils/wrapInSuspense'
 
 const StyledDivider = styled(Divider)`
   margin: 16px -8px 0;
@@ -47,6 +50,13 @@ type Props = {
   items: ListItemType[]
 }
 
+// This doesn't play well if exported to its own file
+const lazyLoad = (path: string): React.ReactElement => {
+  // import(path) does not work unless it is a template literal
+  const Component = lazy(() => import(`${path}`))
+  return wrapInSuspense(<Component />)
+}
+
 const Sidebar = ({
   items,
   balance,
@@ -74,10 +84,19 @@ const Sidebar = ({
         <List items={items} />
       </>
     ) : null}
-
     <HelpContainer>
+      {!IS_PRODUCTION && safeAddress && (
+        <>
+          <StyledDivider />
+          {lazyLoad('./DevTools')}
+        </>
+      )}
+
+      {!IS_PRODUCTION && lazyLoad('./DebugToggle')}
+
       <StyledDivider />
-      <HelpCenterLink href="https://docs.moonbeam.network/" target="_blank" title="Help Center of Moonbeam">
+
+      <HelpCenterLink href="https://help.gnosis-safe.io/en/" target="_blank" title="Help Center of Gnosis Safe">
         <IconText text="HELP CENTER" iconSize="md" textSize="md" color="placeHolder" iconType="question" />
       </HelpCenterLink>
     </HelpContainer>

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@gnosis.pm/safe-core-sdk/package.json b/node_modules/@gnosis.pm/safe-core-sdk/package.json
+index 560a5ec..7abf6a5 100644
+--- a/node_modules/@gnosis.pm/safe-core-sdk/package.json
++++ b/node_modules/@gnosis.pm/safe-core-sdk/package.json
+@@ -92,7 +92,7 @@
+   },
+   "dependencies": {
+     "@gnosis.pm/safe-core-sdk-types": "^0.1.1",
+-    "@gnosis.pm/safe-deployments": "^1.7.0",
++    "@gnosis.pm/safe-deployments": "^1.8.0",
+     "ethereumjs-util": "^7.1.3",
+     "semver": "^7.3.5"
+   }

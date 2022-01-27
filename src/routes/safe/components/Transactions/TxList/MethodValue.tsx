@@ -1,5 +1,4 @@
-import { Text, EthHashInfo } from '@gnosis.pm/safe-react-components'
-
+import { Text } from '@gnosis.pm/safe-react-components'
 import styled from 'styled-components'
 
 import {
@@ -8,6 +7,7 @@ import {
 } from 'src/routes/safe/components/Balances/SendModal/screens/ContractInteraction/utils'
 import { HexEncodedData } from './HexEncodedData'
 import { getExplorerInfo } from 'src/config'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 
 const NestedWrapper = styled.div`
   padding-left: 4px;
@@ -23,7 +23,7 @@ const GenericValue = ({ method, type, value }: RenderValueProps): React.ReactEle
   const getTextValue = (value: string) => <HexEncodedData limit={60} hexData={value} />
 
   const getArrayValue = (parentId: string, value: string[] | string) => (
-    <div>
+    <>
       [
       <NestedWrapper>
         {(value as string[]).map((currentValue, index) => {
@@ -38,7 +38,7 @@ const GenericValue = ({ method, type, value }: RenderValueProps): React.ReactEle
         })}
       </NestedWrapper>
       ]
-    </div>
+    </>
   )
 
   if (isArrayParameter(type) || Array.isArray(value)) {
@@ -51,23 +51,31 @@ const GenericValue = ({ method, type, value }: RenderValueProps): React.ReactEle
 const Value = ({ type, ...props }: RenderValueProps): React.ReactElement => {
   if (isArrayParameter(type) && isAddress(type)) {
     return (
-      <div>
+      <>
         [
         <NestedWrapper>
           {(props.value as string[]).map((address) => {
             const explorerUrl = getExplorerInfo(address)
-            return <EthHashInfo key={address} textSize="xl" hash={address} showCopyBtn explorerUrl={explorerUrl} />
+            return (
+              <PrefixedEthHashInfo key={address} textSize="xl" hash={address} showCopyBtn explorerUrl={explorerUrl} />
+            )
           })}
         </NestedWrapper>
         ]
-      </div>
+      </>
     )
   }
 
   if (isAddress(type)) {
     const explorerUrl = getExplorerInfo(props.value as string)
     return (
-      <EthHashInfo textSize="xl" hash={props.value as string} showCopyBtn explorerUrl={explorerUrl} shortenHash={4} />
+      <PrefixedEthHashInfo
+        textSize="xl"
+        hash={props.value as string}
+        showCopyBtn
+        explorerUrl={explorerUrl}
+        shortenHash={4}
+      />
     )
   }
 

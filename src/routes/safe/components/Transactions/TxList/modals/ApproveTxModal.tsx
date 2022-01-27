@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useStyles } from './style'
 
 import Modal, { ButtonStatus, Modal as GenericModal } from 'src/components/Modal'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import Block from 'src/components/layout/Block'
 import Bold from 'src/components/layout/Bold'
 import Hairline from 'src/components/layout/Hairline'
@@ -21,7 +22,6 @@ import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { processTransaction } from 'src/logic/safe/store/actions/processTransaction'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
-import { TransactionFees } from 'src/components/TransactionsFees'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
@@ -56,8 +56,7 @@ const getModalTitleAndDescription = (
 
   if (thresholdReached) {
     modalInfo.title = 'Execute transaction'
-    modalInfo.description =
-      'This action will execute this transaction. A separate Transaction will be performed to submit the execution.'
+    modalInfo.description = 'This action will execute this transaction.'
   } else {
     modalInfo.title = 'Approve Transaction'
     modalInfo.description =
@@ -199,7 +198,7 @@ const useTxInfo = (transaction: Props['transaction']) => {
 
 type Props = {
   onClose: () => void
-  canExecute?: boolean
+  isExecution?: boolean
   isCancelTx?: boolean
   isOpen: boolean
   transaction: Overwrite<Transaction, { txDetails: ExpandedTxDetails }>
@@ -208,7 +207,7 @@ type Props = {
 
 export const ApproveTxModal = ({
   onClose,
-  canExecute = false,
+  isExecution = false,
   isCancelTx = false,
   isOpen,
   transaction,
@@ -217,7 +216,7 @@ export const ApproveTxModal = ({
   const userAddress = useSelector(userAccountSelector)
   const classes = useStyles()
   const safeAddress = extractSafeAddress()
-  const [approveAndExecute, setApproveAndExecute] = useState(canExecute)
+  const [shouldExecute, setShouldExecute] = useState(isExecution)
   const executionInfo = transaction.executionInfo as MultisigExecutionInfo
   const thresholdReached = !!(transaction.executionInfo && isThresholdReached(executionInfo))
   const _threshold = executionInfo?.confirmationsRequired ?? 0
@@ -248,7 +247,6 @@ export const ApproveTxModal = ({
     gasPriceFormatted,
     gasCostFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isOffChainSignature,
     isCreation,
   } = useEstimateTransactionGas({
@@ -256,13 +254,14 @@ export const ApproveTxModal = ({
     txData: data,
     txConfirmations: confirmations,
     txAmount: value,
-    preApprovingOwner: approveAndExecute ? userAddress : undefined,
+    preApprovingOwner: shouldExecute ? userAddress : undefined,
     safeTxGas,
     operation,
     manualGasPrice,
     manualGasLimit,
+    isExecution,
   })
-  const doExecute = isExecution && approveAndExecute
+  const willExecute = isExecution && shouldExecute
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
   const approveTx = (txParameters: TxParameters) => {
@@ -290,7 +289,7 @@ export const ApproveTxModal = ({
           },
           userAddress,
           notifiedTransaction: TX_NOTIFICATION_TYPES.CONFIRMATION_TX,
-          approveAndExecute: canExecute && approveAndExecute && isTheTxReadyToBeExecuted,
+          approveAndExecute: isExecution && shouldExecute && isTheTxReadyToBeExecuted,
           ethParameters: txParameters,
           thresholdReached,
         }),
@@ -300,7 +299,7 @@ export const ApproveTxModal = ({
   }
 
   const getParametersStatus = () => {
-    if (canExecute || approveAndExecute) {
+    if (isExecution || shouldExecute) {
       return 'SAFE_DISABLED'
     }
 
@@ -324,7 +323,7 @@ export const ApproveTxModal = ({
     <Modal description={description} handleClose={onClose} open={isOpen} title={title}>
       <EditableTxParameters
         isOffChainSignature={isOffChainSignature}
-        isExecution={doExecute}
+        isExecution={willExecute}
         parametersStatus={getParametersStatus()}
         ethGasLimit={gasLimit}
         ethGasPrice={gasPriceFormatted}
@@ -349,18 +348,16 @@ export const ApproveTxModal = ({
                     <Bold className={classes.nonceNumber}>{nonce}</Bold>
                   </Paragraph>
 
-                  {oneConfirmationLeft && canExecute && !isCancelTx && (
-                    <ExecuteCheckbox onChange={setApproveAndExecute} />
-                  )}
+                  {oneConfirmationLeft && isExecution && !isCancelTx && <ExecuteCheckbox onChange={setShouldExecute} />}
 
                   {/* Tx Parameters */}
-                  {(approveAndExecute || !isOffChainSignature) && (
+                  {(shouldExecute || !isOffChainSignature) && (
                     <TxParametersDetail
                       txParameters={txParameters}
                       onEdit={toggleEditMode}
                       parametersStatus={getParametersStatus()}
                       isTransactionCreation={isCreation}
-                      isTransactionExecution={doExecute}
+                      isTransactionExecution={willExecute}
                       isOffChainSignature={isOffChainSignature}
                     />
                   )}
@@ -368,15 +365,13 @@ export const ApproveTxModal = ({
               </Block>
 
               {txEstimationExecutionStatus === EstimationStatus.LOADING ? null : (
-                <Block className={classes.gasCostsContainer}>
-                  <TransactionFees
-                    gasCostFormatted={gasCostFormatted}
-                    isExecution={doExecute}
-                    isCreation={isCreation}
-                    isOffChainSignature={isOffChainSignature}
-                    txEstimationExecutionStatus={txEstimationExecutionStatus}
-                  />
-                </Block>
+                <ReviewInfoText
+                  gasCostFormatted={gasCostFormatted}
+                  isCreation={isCreation}
+                  isExecution={willExecute}
+                  safeNonce={txParameters.safeNonce}
+                  txEstimationExecutionStatus={txEstimationExecutionStatus}
+                />
               )}
 
               {/* Footer */}

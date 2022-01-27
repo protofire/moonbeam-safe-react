@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeft from '@material-ui/icons/ChevronLeft'
 import styled from 'styled-components'
@@ -12,7 +12,7 @@ import Block from 'src/components/layout/Block'
 import Row from 'src/components/layout/Row'
 import Heading from 'src/components/layout/Heading'
 import { history } from 'src/routes/routes'
-import { sm, secondary } from 'src/theme/variables'
+import { secondary, sm } from 'src/theme/variables'
 import StepperForm, { StepFormElement } from 'src/components/StepperForm/StepperForm'
 import NameNewSafeStep, { nameNewSafeStepLabel } from './steps/NameNewSafeStep'
 import {
@@ -22,11 +22,12 @@ import {
   FIELD_MAX_OWNER_NUMBER,
   FIELD_NEW_SAFE_PROXY_SALT,
   FIELD_NEW_SAFE_THRESHOLD,
+  FIELD_SAFE_OWNER_ENS_LIST,
   FIELD_SAFE_OWNERS_LIST,
   SAFE_PENDING_CREATION_STORAGE_KEY,
 } from './fields/createSafeFields'
 import { useMnemonicSafeName } from 'src/logic/hooks/useMnemonicName'
-import { providerNameSelector, userAccountSelector } from 'src/logic/wallets/store/selectors'
+import { providerNameSelector, shouldSwitchWalletChain, userAccountSelector } from 'src/logic/wallets/store/selectors'
 import OwnersAndConfirmationsNewSafeStep, {
   ownersAndConfirmationsNewSafeStepLabel,
   ownersAndConfirmationsNewSafeStepValidations,
@@ -36,19 +37,25 @@ import ReviewNewSafeStep, { reviewNewSafeStepLabel } from './steps/ReviewNewSafe
 import { loadFromStorage, saveToStorage } from 'src/utils/storage'
 import SafeCreationProcess from './components/SafeCreationProcess'
 import SelectWalletAndNetworkStep, { selectWalletAndNetworkStepLabel } from './steps/SelectWalletAndNetworkStep'
-import { instantiateSafeContracts } from 'src/logic/contracts/safeContracts'
 
 function CreateSafePage(): ReactElement {
   const [safePendingToBeCreated, setSafePendingToBeCreated] = useState<CreateSafeFormValues>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const provider = useSelector(providerNameSelector)
+  const providerName = useSelector(providerNameSelector)
+  const isWrongNetwork = useSelector(shouldSwitchWalletChain)
+  const provider = !!providerName && !isWrongNetwork
 
   useEffect(() => {
-    async function checkIfSafeIsPendingToBeCreated() {
+    const checkIfSafeIsPendingToBeCreated = async (): Promise<void> => {
       setIsLoading(true)
-      const safePendingToBeCreated = (await loadFromStorage(SAFE_PENDING_CREATION_STORAGE_KEY)) as CreateSafeFormValues
+
+      // Removing the await completely is breaking the tests for a mysterious reason
+      // @TODO: remove the promise
+      const safePendingToBeCreated = await Promise.resolve(
+        loadFromStorage<CreateSafeFormValues>(SAFE_PENDING_CREATION_STORAGE_KEY),
+      )
+
       if (provider) {
-        await instantiateSafeContracts()
         setSafePendingToBeCreated(safePendingToBeCreated)
       }
       setIsLoading(false)
@@ -61,8 +68,8 @@ function CreateSafePage(): ReactElement {
   const location = useLocation()
   const safeRandomName = useMnemonicSafeName()
 
-  async function showSafeCreationProcess(newSafeFormValues: CreateSafeFormValues) {
-    await saveToStorage(SAFE_PENDING_CREATION_STORAGE_KEY, { ...newSafeFormValues })
+  const showSafeCreationProcess = (newSafeFormValues: CreateSafeFormValues): void => {
+    saveToStorage(SAFE_PENDING_CREATION_STORAGE_KEY, { ...newSafeFormValues })
     setSafePendingToBeCreated(newSafeFormValues)
   }
 
@@ -137,7 +144,7 @@ function getInitialValues(userAddress, addressBook, location, suggestedSafeName)
 
   // we set the owner names
   const ownersNamesFromUrl = Array.isArray(ownernames) ? ownernames : [ownernames]
-  const userAddressName = [addressBook[userAddress]?.name || 'My Wallet']
+  const userAddressName = [addressBook[userAddress]?.name || '']
   const ownerNames = isOwnersPresentInTheUrl ? ownersNamesFromUrl : userAddressName
 
   const thresholdFromURl = Number(threshold)
@@ -152,6 +159,7 @@ function getInitialValues(userAddress, addressBook, location, suggestedSafeName)
       nameFieldName: `owner-name-${index}`,
       addressFieldName: `owner-address-${index}`,
     })),
+    [FIELD_SAFE_OWNER_ENS_LIST]: {},
     // we set owners address values as owner-address-${index} format in the form state
     ...owners.reduce(
       (ownerAddressFields, ownerAddress, index) => ({

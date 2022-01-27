@@ -1,16 +1,20 @@
-import { LocationDescriptorObject } from 'history'
-import { getCurrentShortChainName, getNetworkIdByShortChainName } from 'src/config'
-import { setNetwork } from 'src/logic/config/utils'
+import { _getChainId } from 'src/config'
+import { getChains } from 'src/config/cache/chains'
+import { setChainId } from 'src/logic/config/utils'
 import { hasPrefixedSafeAddressInUrl, extractPrefixedSafeAddress } from 'src/routes/routes'
 
-export const switchNetworkWithUrl = ({ pathname }: LocationDescriptorObject): void => {
-  if (!hasPrefixedSafeAddressInUrl()) return
+export const setChainIdFromUrl = (pathname: string): boolean => {
+  if (!hasPrefixedSafeAddressInUrl()) return false
 
   const { shortName } = extractPrefixedSafeAddress(pathname)
-  const currentShortName = getCurrentShortChainName()
+  const chainId = getChains().find((chain) => chain.shortName === shortName)?.chainId
 
-  if (shortName === currentShortName) return
+  if (chainId) {
+    if (chainId !== _getChainId()) {
+      setChainId(chainId)
+    }
+    return true
+  }
 
-  const networkId = getNetworkIdByShortChainName(shortName)
-  setNetwork(networkId)
+  return false
 }

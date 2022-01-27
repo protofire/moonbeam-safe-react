@@ -1,9 +1,9 @@
 import { Custom, SettingsChange, TransactionInfo, Transfer, TokenType } from '@gnosis.pm/safe-react-gateway-sdk'
 import { useEffect, useState } from 'react'
 
-import { getNetworkInfo } from 'src/config'
+import { getNativeCurrency } from 'src/config'
 import { isCustomTxInfo, isSettingsChangeTxInfo, isTransferTxInfo } from 'src/logic/safe/store/models/types/gateway.d'
-import { getTxAmount, NOT_AVAILABLE } from 'src/routes/safe/components/Transactions/TxList/utils'
+import { getTokenIdLabel, getTxAmount, NOT_AVAILABLE } from 'src/routes/safe/components/Transactions/TxList/utils'
 
 export type TokenTransferAsset = {
   type: 'Transfer'
@@ -53,7 +53,7 @@ export const useAssetInfo = (txInfo: TransactionInfo): AssetInfo | undefined => 
         case TokenType.ERC721: {
           setAsset({
             type: 'Transfer',
-            name: transferInfo.tokenName ?? defaultTokenTransferAsset.name,
+            name: `${transferInfo.tokenName ?? defaultTokenTransferAsset.name} ${getTokenIdLabel(transferInfo)}`,
             logoUri: transferInfo.logoUri ?? defaultTokenTransferAsset.logoUri,
             directionSign: directionSign,
             amountWithSymbol,
@@ -62,12 +62,12 @@ export const useAssetInfo = (txInfo: TransactionInfo): AssetInfo | undefined => 
           break
         }
         case TokenType.NATIVE_COIN: {
-          const { nativeCoin } = getNetworkInfo()
+          const nativeCurrency = getNativeCurrency()
 
           setAsset({
             type: 'Transfer',
-            name: nativeCoin.name ?? defaultTokenTransferAsset.name,
-            logoUri: nativeCoin.logoUri ?? defaultTokenTransferAsset.logoUri,
+            name: nativeCurrency.name ?? defaultTokenTransferAsset.name,
+            logoUri: nativeCurrency.logoUri ?? defaultTokenTransferAsset.logoUri,
             directionSign: directionSign,
             amountWithSymbol,
             tokenType: transferInfo.type,

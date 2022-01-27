@@ -1,9 +1,10 @@
 import axios from 'axios'
-import memoize from 'lodash.memoize'
+import memoize from 'lodash/memoize'
 
 import { getContentFromENS } from 'src/logic/wallets/getWeb3'
 import appsIconSvg from 'src/assets/icons/apps.svg'
 import { FETCH_STATUS } from 'src/utils/requests'
+import { SafeAppAccessPolicyTypes } from '@gnosis.pm/safe-react-gateway-sdk'
 
 import { SafeApp } from './types'
 
@@ -38,14 +39,18 @@ export const isAppManifestValid = (appInfo: AppManifest): boolean =>
   // `description` exists
   !!appInfo.description
 
-export const getEmptySafeApp = (): SafeApp => {
+export const getEmptySafeApp = (url = ''): SafeApp => {
   return {
     id: Math.random().toString(),
-    url: '',
+    url,
     name: 'unknown',
     iconUrl: appsIconSvg,
     description: '',
     fetchStatus: FETCH_STATUS.LOADING,
+    chainIds: [],
+    accessControl: {
+      type: SafeAppAccessPolicyTypes.NoRestrictions,
+    },
   }
 }
 
@@ -146,3 +151,19 @@ const canLoadAppImage = (path: string, timeout = 10000) =>
       resolve(false)
     }
   })
+
+// Some apps still need chain name, as they didn't update to chainId based SDK versions
+// With naming changing in the config service some names aren't the expected ones
+// Ex: Ethereum -> MAINNET, Gnosis Chain -> XDAI
+export const getLegacyChainName = (chainName: string, chainId: string): string => {
+  let network = chainName
+  switch (chainId) {
+    case '1':
+      network = 'MAINNET'
+      break
+    case '100':
+      network = 'XDAI'
+  }
+
+  return network
+}

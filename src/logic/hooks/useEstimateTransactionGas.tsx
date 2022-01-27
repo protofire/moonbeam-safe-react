@@ -2,8 +2,9 @@ import { Operation } from '@gnosis.pm/safe-react-gateway-sdk'
 import { List } from 'immutable'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { fromWei, toWei } from 'web3-utils'
 
-import { getNetworkId, getNetworkInfo } from 'src/config'
+import { getNativeCurrency } from 'src/config'
 import {
   checkTransactionExecution,
   estimateSafeTxGas,
@@ -13,46 +14,17 @@ import { fromTokenUnit } from 'src/logic/tokens/utils/humanReadableValue'
 import { formatAmount } from 'src/logic/tokens/utils/formatAmount'
 import { calculateGasPrice } from 'src/logic/wallets/ethTransactions'
 import { currentSafe } from 'src/logic/safe/store/selectors'
-import { getWeb3ReadOnly } from 'src/logic/wallets/getWeb3'
 import { providerSelector } from 'src/logic/wallets/store/selectors'
-
 import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
 import { checkIfOffChainSignatureIsPossible } from 'src/logic/safe/safeTxSigner'
 import { ZERO_ADDRESS } from 'src/logic/wallets/ethAddresses'
 import { sameString } from 'src/utils/strings'
-import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
+import useCanTxExecute from './useCanTxExecute'
 
 export enum EstimationStatus {
   LOADING = 'LOADING',
   FAILURE = 'FAILURE',
   SUCCESS = 'SUCCESS',
-}
-
-// How much to add to gasLimit per network
-// Defaults to x1 (i.e. no extra gas)
-const EXTRA_GAS_FACTOR = {
-  [ETHEREUM_NETWORK.ARBITRUM]: 1.2, // +20%
-}
-
-export const checkIfTxIsExecution = (
-  threshold: number,
-  preApprovingOwner?: string,
-  txConfirmations?: number,
-  txType?: string,
-): boolean => {
-  if (
-    threshold === 1 ||
-    sameString(txType, 'spendingLimit') ||
-    (txConfirmations !== undefined && txConfirmations >= threshold)
-  ) {
-    return true
-  }
-
-  if (preApprovingOwner && txConfirmations) {
-    return txConfirmations + 1 === threshold
-  }
-
-  return false
 }
 
 export const checkIfTxIsApproveAndExecution = (
@@ -86,6 +58,8 @@ type UseEstimateTransactionGasProps = {
   txType?: string
   manualGasPrice?: string
   manualGasLimit?: string
+  manualSafeNonce?: number // Edited nonce
+  isExecution?: boolean // If called from the TransactionList "next transaction"
 }
 
 export type TransactionGasEstimationResult = {
@@ -96,7 +70,6 @@ export type TransactionGasEstimationResult = {
   gasPrice: string // Current price of gas unit
   gasPriceFormatted: string // Current gas price formatted
   gasLimit: string // Minimum gas requited to execute the Tx
-  isExecution: boolean // Returns true if the user will execute the tx or false if it just signs it
   isCreation: boolean // Returns true if the transaction is a creation transaction
   isOffChainSignature: boolean // Returns true if offChainSignature is available
 }
@@ -105,7 +78,6 @@ const getDefaultGasEstimation = (
   txEstimationExecutionStatus: EstimationStatus,
   gasPrice: string,
   gasPriceFormatted: string,
-  isExecution = false,
   isCreation = false,
   isOffChainSignature = false,
 ): TransactionGasEstimationResult => {
@@ -117,7 +89,6 @@ const getDefaultGasEstimation = (
     gasPrice,
     gasPriceFormatted,
     gasLimit: '0',
-    isExecution,
     isCreation,
     isOffChainSignature,
   }
@@ -134,27 +105,28 @@ export const useEstimateTransactionGas = ({
   txType,
   manualGasPrice,
   manualGasLimit,
+  manualSafeNonce,
+  isExecution,
 }: UseEstimateTransactionGasProps): TransactionGasEstimationResult => {
   const [gasEstimation, setGasEstimation] = useState<TransactionGasEstimationResult>(
     getDefaultGasEstimation(EstimationStatus.LOADING, '0', '0'),
   )
-  const { nativeCoin } = getNetworkInfo()
+  const nativeCurrency = getNativeCurrency()
   const { address: safeAddress = '', threshold = 1, currentVersion: safeVersion = '' } = useSelector(currentSafe) ?? {}
   const { account: from, smartContractWallet, name: providerName } = useSelector(providerSelector)
+
+  const canTxExecute = useCanTxExecute(isExecution, manualSafeNonce, preApprovingOwner, txConfirmations?.size)
+
   useEffect(() => {
-    const web3 = getWeb3ReadOnly()
     const estimateGas = async () => {
       if (!txData.length) {
         return
       }
-      const isExecution = checkIfTxIsExecution(Number(threshold), preApprovingOwner, txConfirmations?.size, txType)
-      const isOffChainSignature = checkIfOffChainSignatureIsPossible(isExecution, smartContractWallet, safeVersion)
+      const isOffChainSignature = checkIfOffChainSignatureIsPossible(canTxExecute, smartContractWallet, safeVersion)
       const isCreation = checkIfTxIsCreation(txConfirmations?.size || 0, txType)
 
       if (isOffChainSignature && !isCreation) {
-        setGasEstimation(
-          getDefaultGasEstimation(EstimationStatus.SUCCESS, '1', '1', isExecution, isCreation, isOffChainSignature),
-        )
+        setGasEstimation(getDefaultGasEstimation(EstimationStatus.SUCCESS, '1', '1', isCreation, isOffChainSignature))
         return
       }
       const approvalAndExecution = checkIfTxIsApproveAndExecution(
@@ -171,15 +143,19 @@ export const useEstimateTransactionGas = ({
         let txEstimationExecutionStatus = EstimationStatus.LOADING
 
         if (isCreation) {
-          safeTxGasEstimation = await estimateSafeTxGas({
-            safeAddress,
-            txData,
-            txRecipient,
-            txAmount: txAmount || '0',
-            operation: operation || Operation.CALL,
-          })
+          safeTxGasEstimation = await estimateSafeTxGas(
+            {
+              safeAddress,
+              txData,
+              txRecipient,
+              txAmount: txAmount || '0',
+              operation: operation || Operation.CALL,
+            },
+            safeVersion,
+          )
         }
-        if (isExecution || approvalAndExecution) {
+
+        if (canTxExecute || approvalAndExecution) {
           ethGasLimitEstimation = await estimateTransactionGasLimit({
             safeAddress,
             safeVersion,
@@ -187,8 +163,7 @@ export const useEstimateTransactionGas = ({
             txData,
             txAmount: txAmount || '0',
             txConfirmations,
-            isExecution,
-            isOffChainSignature,
+            isExecution: canTxExecute,
             operation: operation || Operation.CALL,
             from,
             safeTxGas: safeTxGasEstimation,
@@ -196,15 +171,14 @@ export const useEstimateTransactionGas = ({
           })
         }
 
-        const gasPrice = manualGasPrice ? web3.utils.toWei(manualGasPrice, 'gwei') : await calculateGasPrice()
-        const gasPriceFormatted = web3.utils.fromWei(gasPrice, 'gwei')
-        const extraGasMult = EXTRA_GAS_FACTOR[getNetworkId()] || 1
-        const gasLimit = manualGasLimit || Math.round(ethGasLimitEstimation * extraGasMult).toString()
+        const gasPrice = manualGasPrice ? toWei(manualGasPrice, 'gwei') : await calculateGasPrice()
+        const gasPriceFormatted = fromWei(gasPrice, 'gwei')
+        const gasLimit = manualGasLimit || ethGasLimitEstimation.toString()
         const estimatedGasCosts = parseInt(gasLimit, 10) * parseInt(gasPrice, 10)
-        const gasCost = fromTokenUnit(estimatedGasCosts, nativeCoin.decimals)
+        const gasCost = fromTokenUnit(estimatedGasCosts, nativeCurrency.decimals)
         const gasCostFormatted = formatAmount(gasCost)
 
-        if (isExecution) {
+        if (canTxExecute) {
           transactionCallSuccess = await checkTransactionExecution({
             safeAddress,
             safeVersion,
@@ -233,7 +207,6 @@ export const useEstimateTransactionGas = ({
           gasPrice,
           gasPriceFormatted,
           gasLimit,
-          isExecution,
           isCreation,
           isOffChainSignature,
         })
@@ -252,7 +225,7 @@ export const useEstimateTransactionGas = ({
     txConfirmations,
     txAmount,
     preApprovingOwner,
-    nativeCoin.decimals,
+    nativeCurrency.decimals,
     threshold,
     from,
     operation,
@@ -263,6 +236,8 @@ export const useEstimateTransactionGas = ({
     providerName,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
+    canTxExecute,
   ])
 
   return gasEstimation

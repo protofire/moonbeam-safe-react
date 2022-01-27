@@ -1,43 +1,41 @@
 import { Operation } from '@gnosis.pm/safe-react-gateway-sdk'
-import { EthHashInfo, Text } from '@gnosis.pm/safe-react-components'
+import { Text } from '@gnosis.pm/safe-react-components'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { toBN } from 'web3-utils'
+import { DecodedDataResponse } from '@gnosis.pm/safe-react-gateway-sdk'
 
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
 import { getMultisendContractAddress } from 'src/logic/contracts/safeContracts'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
 import { encodeMultiSendCall } from 'src/logic/safe/transactions/multisend'
-import { getExplorerInfo, getNetworkInfo } from 'src/config'
+import { getExplorerInfo, getNativeCurrency } from 'src/config'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
-import { TransactionFees } from 'src/components/TransactionsFees'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
-import { lg, md, sm } from 'src/theme/variables'
+import { lg, md } from 'src/theme/variables'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { BasicTxInfo, DecodeTxs } from 'src/components/DecodeTxs'
 import { fetchTxDecoder } from 'src/utils/decodeTx'
-import { DecodedData } from 'src/types/transactions/decode.d'
 import { fromTokenUnit } from 'src/logic/tokens/utils/humanReadableValue'
 import Block from 'src/components/layout/Block'
 import Hairline from 'src/components/layout/Hairline'
 import Divider from 'src/components/Divider'
 import { ButtonStatus, Modal } from 'src/components/Modal'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 
 import { ConfirmTxModalProps, DecodedTxDetail } from '.'
 import { grantedSelector } from 'src/routes/safe/container/selector'
 import ExecuteCheckbox from 'src/components/ExecuteCheckbox'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 const Container = styled.div`
   max-width: 480px;
   padding: ${md} ${lg} 0;
-`
-const TransactionFeesWrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors.background};
-  padding: ${sm} ${lg};
 `
 
 const DecodeTxsWrapper = styled.div`
@@ -83,9 +81,9 @@ export const ReviewConfirm = ({
   showDecodedTxData,
 }: Props): ReactElement => {
   const isMultiSend = txs.length > 1
-  const [decodedData, setDecodedData] = useState<DecodedData | null>(null)
+  const [decodedData, setDecodedData] = useState<DecodedDataResponse | null>(null)
   const dispatch = useDispatch()
-  const { nativeCoin } = getNetworkInfo()
+  const nativeCurrency = getNativeCurrency()
   const explorerUrl = getExplorerInfo(safeAddress)
   const isOwner = useSelector(grantedSelector)
 
@@ -105,6 +103,7 @@ export const ReviewConfirm = ({
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
+  const [manualSafeNonce, setManualSafeNonce] = useState<number | undefined>()
 
   const {
     gasLimit,
@@ -112,7 +111,6 @@ export const ReviewConfirm = ({
     gasEstimation,
     isOffChainSignature,
     isCreation,
-    isExecution,
     gasCostFormatted,
     txEstimationExecutionStatus,
   } = useEstimateTransactionGas({
@@ -123,11 +121,13 @@ export const ReviewConfirm = ({
     safeTxGas: manualSafeTxGas,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
   })
 
   const [buttonStatus, setButtonStatus] = useEstimationStatus(txEstimationExecutionStatus)
-  const [executionApproved, setExecutionApproved] = useState<boolean>(true)
-  const doExecute = isExecution && executionApproved
+  const [shouldExecute, setShouldExecute] = useState<boolean>(true)
+  const canTxExecute = useCanTxExecute(false, manualSafeNonce)
+  const willExecute = canTxExecute && shouldExecute
 
   // Decode tx data.
   useEffect(() => {
@@ -161,7 +161,7 @@ export const ReviewConfirm = ({
           safeTxGas: txParameters.safeTxGas,
           ethParameters: txParameters,
           notifiedTransaction: TX_NOTIFICATION_TYPES.STANDARD_TX,
-          delayExecution: !executionApproved,
+          delayExecution: !shouldExecute,
         },
         handleUserConfirmation,
         onReject,
@@ -176,6 +176,7 @@ export const ReviewConfirm = ({
     const newGasPrice = txParameters.ethGasPrice
     const oldSafeTxGas = gasEstimation
     const newSafeTxGas = txParameters.safeTxGas
+    const newSafeNonce = txParameters.safeNonce
 
     if (newGasPrice && oldGasPrice !== newGasPrice) {
       setManualGasPrice(txParameters.ethGasPrice)
@@ -188,6 +189,11 @@ export const ReviewConfirm = ({
     if (newSafeTxGas && oldSafeTxGas !== newSafeTxGas) {
       setManualSafeTxGas(newSafeTxGas)
     }
+
+    if (newSafeNonce) {
+      const newSafeNonceNumber = parseInt(newSafeNonce, 10)
+      setManualSafeNonce(newSafeNonceNumber)
+    }
   }
 
   return (
@@ -197,7 +203,7 @@ export const ReviewConfirm = ({
       safeTxGas={Math.max(parseInt(gasEstimation), params?.safeTxGas || 0).toString()}
       closeEditModalCallback={closeEditModalCallback}
       isOffChainSignature={isOffChainSignature}
-      isExecution={doExecute}
+      isExecution={willExecute}
     >
       {(txParameters, toggleEditMode) => (
         <div hidden={hidden}>
@@ -207,10 +213,10 @@ export const ReviewConfirm = ({
 
           <Container>
             {/* Safe */}
-            <EthHashInfo name={safeName} hash={safeAddress} showAvatar showCopyBtn explorerUrl={explorerUrl} />
+            <PrefixedEthHashInfo name={safeName} hash={safeAddress} showAvatar showCopyBtn explorerUrl={explorerUrl} />
             <StyledBlock>
               <Text size="md">Balance:</Text>
-              <Text size="md" strong>{`${ethBalance} ${nativeCoin.symbol}`}</Text>
+              <Text size="md" strong>{`${ethBalance} ${nativeCurrency.symbol}`}</Text>
             </StyledBlock>
 
             <Divider withArrow />
@@ -219,7 +225,7 @@ export const ReviewConfirm = ({
             <BasicTxInfo
               txRecipient={txRecipient}
               txData={txData}
-              txValue={fromTokenUnit(txValue, nativeCoin.decimals)}
+              txValue={fromTokenUnit(txValue, nativeCurrency.decimals)}
             />
 
             <DecodeTxsWrapper>
@@ -228,29 +234,27 @@ export const ReviewConfirm = ({
 
             {!isMultiSend && <Divider />}
 
-            {isExecution && <ExecuteCheckbox onChange={setExecutionApproved} />}
+            {canTxExecute && <ExecuteCheckbox onChange={setShouldExecute} />}
 
             {/* Tx Parameters */}
             <TxParametersDetail
               txParameters={txParameters}
               onEdit={toggleEditMode}
               isTransactionCreation={isCreation}
-              isTransactionExecution={doExecute}
+              isTransactionExecution={willExecute}
               isOffChainSignature={isOffChainSignature}
             />
           </Container>
 
           {/* Gas info */}
           {txEstimationExecutionStatus === EstimationStatus.LOADING ? null : (
-            <TransactionFeesWrapper>
-              <TransactionFees
-                gasCostFormatted={isOwner ? gasCostFormatted : undefined}
-                isExecution={doExecute}
-                isCreation={isCreation}
-                isOffChainSignature={isOffChainSignature}
-                txEstimationExecutionStatus={txEstimationExecutionStatus}
-              />
-            </TransactionFeesWrapper>
+            <ReviewInfoText
+              gasCostFormatted={isOwner ? gasCostFormatted : undefined}
+              isCreation={isCreation}
+              isExecution={willExecute}
+              safeNonce={txParameters.safeNonce}
+              txEstimationExecutionStatus={txEstimationExecutionStatus}
+            />
           )}
 
           {/* Buttons */}

@@ -1,7 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles'
 import { ReactElement, useEffect, useState, Fragment } from 'react'
 import { useSelector } from 'react-redux'
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 
 import { getExplorerInfo } from 'src/config'
 import Block from 'src/components/layout/Block'
@@ -10,13 +9,14 @@ import Hairline from 'src/components/layout/Hairline'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import { userAccountSelector } from 'src/logic/wallets/store/selectors'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { currentSafeWithNames } from 'src/logic/safe/store/selectors'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { Modal } from 'src/components/Modal'
-import { TransactionFees } from 'src/components/TransactionsFees'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 
 import { OwnerValues } from '../..'
 import { styles } from './style'
@@ -24,6 +24,7 @@ import { EditableTxParameters } from 'src/routes/safe/components/Transactions/he
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
 import { getSafeSDK } from 'src/logic/wallets/getWeb3'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 export const ADD_OWNER_SUBMIT_BTN_TEST_ID = 'add-owner-submit-btn'
 
@@ -39,11 +40,17 @@ type ReviewAddOwnerProps = {
 export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: ReviewAddOwnerProps): ReactElement => {
   const classes = useStyles()
   const [data, setData] = useState('')
-  const { address: safeAddress, name: safeName, owners } = useSelector(currentSafeWithNames)
+  const {
+    address: safeAddress,
+    name: safeName,
+    owners,
+    currentVersion: safeVersion,
+  } = useSelector(currentSafeWithNames)
   const connectedWalletAddress = useSelector(userAccountSelector)
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
+  const [manualSafeNonce, setManualSafeNonce] = useState<number | undefined>()
 
   const {
     gasLimit,
@@ -51,7 +58,6 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
     gasCostFormatted,
     gasPriceFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isOffChainSignature,
     isCreation,
   } = useEstimateTransactionGas({
@@ -60,7 +66,9 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
     safeTxGas: manualSafeTxGas,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
   })
+  const canTxExecute = useCanTxExecute(false, manualSafeNonce)
 
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
@@ -69,7 +77,7 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
 
     const calculateAddOwnerData = async () => {
       try {
-        const sdk = await getSafeSDK(connectedWalletAddress, safeAddress)
+        const sdk = await getSafeSDK(connectedWalletAddress, safeAddress, safeVersion)
         const safeTx = await sdk.getAddOwnerTx(
           { ownerAddress: values.ownerAddress, threshold: +values.threshold },
           { safeTxGas: 0 },
@@ -88,13 +96,14 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
     return () => {
       isCurrent = false
     }
-  }, [connectedWalletAddress, safeAddress, values.ownerAddress, values.threshold])
+  }, [connectedWalletAddress, safeAddress, safeVersion, values.ownerAddress, values.threshold])
 
   const closeEditModalCallback = (txParameters: TxParameters) => {
     const oldGasPrice = gasPriceFormatted
     const newGasPrice = txParameters.ethGasPrice
     const oldSafeTxGas = gasEstimation
     const newSafeTxGas = txParameters.safeTxGas
+    const newSafeNonce = txParameters.safeNonce
 
     if (newGasPrice && oldGasPrice !== newGasPrice) {
       setManualGasPrice(txParameters.ethGasPrice)
@@ -107,12 +116,17 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
     if (newSafeTxGas && oldSafeTxGas !== newSafeTxGas) {
       setManualSafeTxGas(newSafeTxGas)
     }
+
+    if (newSafeNonce) {
+      const newSafeNonceNumber = parseInt(newSafeNonce, 10)
+      setManualSafeNonce(newSafeNonceNumber)
+    }
   }
 
   return (
     <EditableTxParameters
       isOffChainSignature={isOffChainSignature}
-      isExecution={isExecution}
+      isExecution={canTxExecute}
       ethGasLimit={gasLimit}
       ethGasPrice={gasPriceFormatted}
       safeTxGas={gasEstimation}
@@ -160,7 +174,7 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
                   <Fragment key={owner.address}>
                     <Row className={classes.owner}>
                       <Col align="center" xs={12}>
-                        <EthHashInfo
+                        <PrefixedEthHashInfo
                           hash={owner.address}
                           name={owner.name}
                           showCopyBtn
@@ -180,7 +194,7 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
                 <Hairline />
                 <Row className={classes.selectedOwner} data-testid="add-owner-review">
                   <Col align="center" xs={12}>
-                    <EthHashInfo
+                    <PrefixedEthHashInfo
                       hash={values.ownerAddress}
                       name={values.ownerName}
                       showCopyBtn
@@ -201,19 +215,17 @@ export const ReviewAddOwner = ({ onClickBack, onClose, onSubmit, values }: Revie
             onEdit={toggleEditMode}
             compact={false}
             isTransactionCreation={isCreation}
-            isTransactionExecution={isExecution}
+            isTransactionExecution={canTxExecute}
             isOffChainSignature={isOffChainSignature}
           />
 
-          <Block className={classes.gasCostsContainer}>
-            <TransactionFees
-              gasCostFormatted={gasCostFormatted}
-              isExecution={isExecution}
-              isCreation={isCreation}
-              isOffChainSignature={isOffChainSignature}
-              txEstimationExecutionStatus={txEstimationExecutionStatus}
-            />
-          </Block>
+          <ReviewInfoText
+            gasCostFormatted={gasCostFormatted}
+            isCreation={isCreation}
+            isExecution={canTxExecute}
+            safeNonce={txParameters.safeNonce}
+            txEstimationExecutionStatus={txEstimationExecutionStatus}
+          />
           <Hairline />
           <Row align="center" className={classes.buttonRow}>
             <Modal.Footer.Buttons

@@ -1,5 +1,6 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { Field, useFormState } from 'react-final-form'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Field } from 'react-final-form'
+import { OnChange } from 'react-final-form-listeners'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
@@ -10,17 +11,14 @@ import { getAddressFromDomain } from 'src/logic/wallets/getWeb3'
 import { isValidEnsName, isValidCryptoDomainName } from 'src/logic/wallets/ethAddresses'
 import { checksumAddress } from 'src/utils/checksumAddress'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
-import { isValidAddress } from 'src/utils/isValidAddress'
-
-// an idea for second field was taken from here
-// https://github.com/final-form/react-final-form-listeners/blob/master/src/OnBlur.js
+import { parsePrefixedAddress } from 'src/utils/prefixedAddress'
 
 export interface AddressInputProps {
   fieldMutator: (address: string) => void
   name?: string
   text?: string
   placeholder?: string
-  inputAdornment?: { endAdornment: ReactElement } | undefined | false
+  inputAdornment?: { endAdornment: React.ReactElement } | undefined | false
   testId: string
   validators?: Validator[]
   defaultValue?: string
@@ -40,54 +38,67 @@ const AddressInput = ({
   validators = [],
   defaultValue,
   disabled,
-}: AddressInputProps): ReactElement => {
-  const { values } = useFormState()
-  const address = trimSpaces(values[name])
+}: AddressInputProps): React.ReactElement => {
+  const [currentInput, setCurrentInput] = useState<string>('')
+  const [resolutions, setResolutions] = useState<Record<string, string | undefined>>({})
+  const resolvedAddress = resolutions[currentInput]
+  const isResolving = resolvedAddress === ''
 
-  const [showLoadingSpinner, setShowLoadingSpinner] = useState<boolean>(false)
+  // External validators must receive an unprefixed address
+  const sanitizedValidators = useCallback(
+    (val: string) => {
+      const parsed = parsePrefixedAddress(val)
+      return composeValidators(...validators)(parsed.address)
+    },
+    [validators],
+  )
 
-  useEffect(() => {
-    let isCurrentResolution = true
-    const handleAddressInput = async () => {
+  // Internal validators + externally passed validators
+  const allValidators = useMemo(
+    () => composeValidators(required, mustBeEthereumAddress, sanitizedValidators),
+    [sanitizedValidators],
+  )
+
+  const onValueChange = useCallback(
+    (rawVal: string) => {
+      const address = trimSpaces(rawVal)
+
+      setCurrentInput(rawVal)
+
       // A crypto domain name
       if (isValidEnsName(address) || isValidCryptoDomainName(address)) {
-        setShowLoadingSpinner(true)
-        // Trigger resolution/loading spinner
-        try {
-          const resolverAddr = await getAddressFromDomain(address)
-          const formattedAddress = checksumAddress(resolverAddr)
+        setResolutions((prev) => ({ ...prev, [rawVal]: '' }))
 
-          // Set field if current resolution in current effect
-          if (isCurrentResolution) {
-            fieldMutator(formattedAddress)
-          }
-        } catch (err) {
-          logError(Errors._101, err.message)
-        } finally {
-          setShowLoadingSpinner(false)
-        }
+        getAddressFromDomain(address)
+          .then((resolverAddr) => {
+            const formattedAddress = checksumAddress(resolverAddr)
+            setResolutions((prev) => ({ ...prev, [rawVal]: formattedAddress }))
+          })
+          .catch((err) => {
+            setResolutions((prev) => ({ ...prev, [rawVal]: undefined }))
+            logError(Errors._101, err.message)
+          })
       } else {
-        // A regular address hash// A regular address hash
-        let checkedAddress = address
+        // A regular address hash
+        if (!mustBeEthereumAddress(address)) {
+          const parsed = parsePrefixedAddress(address)
+          const checkedAddress = checksumAddress(parsed.address) || parsed.address
 
-        // Automatically checksum valid (either already checksummed, or lowercase addresses)
-        if (isValidAddress(address)) {
-          try {
-            checkedAddress = checksumAddress(address)
-          } catch {}
+          // Field mutator (parent component) always gets an unprefixed address
+          fieldMutator(checkedAddress)
         }
-        fieldMutator(checkedAddress)
       }
-    }
-    handleAddressInput()
+    },
+    [setCurrentInput, setResolutions, fieldMutator],
+  )
 
-    return () => {
-      // Effect is no longer current when address changes
-      isCurrentResolution = false
+  useEffect(() => {
+    if (resolvedAddress) {
+      onValueChange(resolvedAddress)
     }
-  }, [address, fieldMutator])
+  }, [resolvedAddress, onValueChange])
 
-  const adornment = showLoadingSpinner
+  const adornment = isResolving
     ? {
         endAdornment: (
           <InputAdornment position="end">
@@ -98,20 +109,25 @@ const AddressInput = ({
     : inputAdornment
 
   return (
-    <Field
-      className={className}
-      component={TextField as any}
-      defaultValue={defaultValue}
-      disabled={disabled}
-      inputAdornment={adornment}
-      name={name}
-      placeholder={placeholder}
-      testId={testId}
-      text={text}
-      type="text"
-      spellCheck={false}
-      validate={composeValidators(required, mustBeEthereumAddress, ...validators)}
-    />
+    <>
+      <Field
+        className={className}
+        component={TextField as any}
+        defaultValue={defaultValue}
+        disabled={disabled}
+        inputAdornment={adornment}
+        name={name}
+        placeholder={placeholder}
+        text={text}
+        spellCheck={false}
+        validate={allValidators}
+        inputProps={{
+          'data-testid': testId,
+        }}
+      />
+
+      <OnChange name={name}>{onValueChange}</OnChange>
+    </>
   )
 }
 

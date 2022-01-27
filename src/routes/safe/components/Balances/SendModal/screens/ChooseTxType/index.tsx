@@ -11,16 +11,16 @@ import Hairline from 'src/components/layout/Hairline'
 import Img from 'src/components/layout/Img'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { currentSafeFeaturesEnabled } from 'src/logic/safe/store/selectors'
 import { useStyles } from 'src/routes/safe/components/Balances/SendModal/screens/ChooseTxType/style'
 import ContractInteractionIcon from 'src/routes/safe/components/Transactions/TxList/assets/custom.svg'
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 
 import Collectible from '../assets/collectibles.svg'
 import Token from '../assets/token.svg'
-import { FEATURES } from 'src/config/networks/network.d'
 
 import { getExplorerInfo } from 'src/config'
+import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
 type ActiveScreen = 'sendFunds' | 'sendCollectible' | 'contractInteraction'
 
@@ -75,7 +75,7 @@ const ChooseTxType = ({
             <Paragraph className={classes.disclaimerText} noMargin>
               Please select what you will send to
             </Paragraph>
-            <EthHashInfo
+            <PrefixedEthHashInfo
               hash={recipientAddress}
               name={recipientName}
               showAvatar

@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { ReactElement, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -6,7 +5,7 @@ import Col from 'src/components/layout/Col'
 import Row from 'src/components/layout/Row'
 import Hairline from 'src/components/layout/Hairline'
 import { ButtonStatus, Modal } from 'src/components/Modal'
-import { TransactionFees } from 'src/components/TransactionsFees'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
@@ -24,6 +23,7 @@ import { AddressInfo, ResetTimeInfo, TokenInfo } from './InfoDisplay'
 import { SpendingLimitTable } from './LimitsTable/dataFetcher'
 import { useStyles } from './style'
 import { extractSafeAddress } from 'src/routes/routes'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 interface RemoveSpendingLimitModalProps {
   onClose: () => void
@@ -42,6 +42,7 @@ export const RemoveLimitModal = ({ onClose, spendingLimit, open }: RemoveSpendin
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
+  const [manualSafeNonce, setManualSafeNonce] = useState<number | undefined>()
 
   useEffect(() => {
     const {
@@ -55,7 +56,6 @@ export const RemoveLimitModal = ({ onClose, spendingLimit, open }: RemoveSpendin
   const {
     gasCostFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isOffChainSignature,
     isCreation,
     gasLimit,
@@ -68,7 +68,9 @@ export const RemoveLimitModal = ({ onClose, spendingLimit, open }: RemoveSpendin
     safeTxGas: manualSafeTxGas,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
   })
+  const canTxExecute = useCanTxExecute(false, manualSafeNonce)
 
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
@@ -102,6 +104,7 @@ export const RemoveLimitModal = ({ onClose, spendingLimit, open }: RemoveSpendin
     const newGasPrice = txParameters.ethGasPrice
     const oldSafeTxGas = gasEstimation
     const newSafeTxGas = txParameters.safeTxGas
+    const newSafeNonce = txParameters.safeNonce
 
     if (newGasPrice && oldGasPrice !== newGasPrice) {
       setManualGasPrice(txParameters.ethGasPrice)
@@ -113,6 +116,11 @@ export const RemoveLimitModal = ({ onClose, spendingLimit, open }: RemoveSpendin
 
     if (newSafeTxGas && oldSafeTxGas !== newSafeTxGas) {
       setManualSafeTxGas(newSafeTxGas)
+    }
+
+    if (newSafeNonce) {
+      const newSafeNonceNumber = parseInt(newSafeNonce, 10)
+      setManualSafeNonce(newSafeNonceNumber)
     }
   }
 
@@ -130,7 +138,7 @@ export const RemoveLimitModal = ({ onClose, spendingLimit, open }: RemoveSpendin
     >
       <EditableTxParameters
         isOffChainSignature={isOffChainSignature}
-        isExecution={isExecution}
+        isExecution={canTxExecute}
         ethGasLimit={gasLimit}
         ethGasPrice={gasPriceFormatted}
         safeTxGas={gasEstimation}
@@ -163,17 +171,17 @@ export const RemoveLimitModal = ({ onClose, spendingLimit, open }: RemoveSpendin
                   txParameters={txParameters}
                   onEdit={toggleEditMode}
                   isTransactionCreation={isCreation}
-                  isTransactionExecution={isExecution}
+                  isTransactionExecution={canTxExecute}
                   isOffChainSignature={isOffChainSignature}
                 />
               </Modal.Body>
 
-              <Row className={cn(classes.modalDescription, classes.gasCostsContainer)}>
-                <TransactionFees
+              <Row className={classes.modalDescription}>
+                <ReviewInfoText
                   gasCostFormatted={gasCostFormatted}
-                  isExecution={isExecution}
                   isCreation={isCreation}
-                  isOffChainSignature={isOffChainSignature}
+                  isExecution={canTxExecute}
+                  safeNonce={txParameters.safeNonce}
                   txEstimationExecutionStatus={txEstimationExecutionStatus}
                 />
               </Row>

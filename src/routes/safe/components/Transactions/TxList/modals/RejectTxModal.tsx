@@ -3,6 +3,7 @@ import { MultisigExecutionInfo } from '@gnosis.pm/safe-react-gateway-sdk'
 import { useDispatch } from 'react-redux'
 import { useStyles } from './style'
 import Modal, { ButtonStatus, Modal as GenericModal } from 'src/components/Modal'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import Block from 'src/components/layout/Block'
 import Bold from 'src/components/layout/Bold'
 import Hairline from 'src/components/layout/Hairline'
@@ -13,13 +14,13 @@ import { EMPTY_DATA } from 'src/logic/wallets/ethTransactions'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
 import { Transaction } from 'src/logic/safe/store/models/types/gateway.d'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
-import { TransactionFees } from 'src/components/TransactionsFees'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { ParametersStatus } from 'src/routes/safe/components/Transactions/helpers/utils'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
 import { extractSafeAddress } from 'src/routes/routes'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 type Props = {
   isOpen: boolean
@@ -35,7 +36,6 @@ export const RejectTxModal = ({ isOpen, onClose, gwTransaction }: Props): React.
   const {
     gasCostFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isOffChainSignature,
     isCreation,
     gasLimit,
@@ -44,6 +44,7 @@ export const RejectTxModal = ({ isOpen, onClose, gwTransaction }: Props): React.
     txData: EMPTY_DATA,
     txRecipient: safeAddress,
   })
+  const canTxExecute = useCanTxExecute()
 
   const origin = gwTransaction.safeAppInfo
     ? JSON.stringify({ name: gwTransaction.safeAppInfo.name, url: gwTransaction.safeAppInfo.url })
@@ -62,7 +63,6 @@ export const RejectTxModal = ({ isOpen, onClose, gwTransaction }: Props): React.
         safeTxGas: txParameters.safeTxGas,
         ethParameters: txParameters,
         notifiedTransaction: TX_NOTIFICATION_TYPES.CANCELLATION_TX,
-        navigateToTransactionsTab: false,
       }),
     )
     onClose()
@@ -83,7 +83,7 @@ export const RejectTxModal = ({ isOpen, onClose, gwTransaction }: Props): React.
     <Modal description="Reject transaction" handleClose={onClose} open={isOpen} title="Reject Transaction">
       <EditableTxParameters
         isOffChainSignature={isOffChainSignature}
-        isExecution={isExecution}
+        isExecution={canTxExecute}
         ethGasLimit={gasLimit}
         ethGasPrice={gasPriceFormatted}
         safeTxGas={'0'}
@@ -113,21 +113,19 @@ export const RejectTxModal = ({ isOpen, onClose, gwTransaction }: Props): React.
                   onEdit={toggleEditMode}
                   parametersStatus={getParametersStatus()}
                   isTransactionCreation={isCreation}
-                  isTransactionExecution={isExecution}
+                  isTransactionExecution={canTxExecute}
                   isOffChainSignature={isOffChainSignature}
                 />
               </Block>
 
               {txEstimationExecutionStatus === EstimationStatus.LOADING ? null : (
-                <Block className={classes.gasCostsContainer}>
-                  <TransactionFees
-                    gasCostFormatted={gasCostFormatted}
-                    isExecution={isExecution}
-                    isCreation={isCreation}
-                    isOffChainSignature={isOffChainSignature}
-                    txEstimationExecutionStatus={txEstimationExecutionStatus}
-                  />
-                </Block>
+                <ReviewInfoText
+                  gasCostFormatted={gasCostFormatted}
+                  isCreation={isCreation}
+                  isExecution={canTxExecute}
+                  safeNonce={txParameters.safeNonce}
+                  txEstimationExecutionStatus={txEstimationExecutionStatus}
+                />
               )}
               <GenericModal.Footer withoutBorder={confirmButtonStatus !== ButtonStatus.LOADING}>
                 <GenericModal.Footer.Buttons

@@ -15,14 +15,13 @@ export const ActionModal = (): ReactElement | null => {
   const txParameters = useTransactionParameters()
 
   const transaction = useSelector((state: AppReduxState) =>
-    getTransactionByAttribute(state)({
+    getTransactionByAttribute(state, {
       attributeValue: selectedAction.transactionId,
       attributeName: 'id',
-      txLocation: selectedAction.txLocation,
     }),
   )
 
-  const onClose = () => selectAction({ actionSelected: 'none', transactionId: '', txLocation: 'history' })
+  const onClose = () => selectAction({ actionSelected: 'none', transactionId: '' })
 
   if (!transaction?.txDetails) {
     return null
@@ -45,7 +44,7 @@ export const ActionModal = (): ReactElement | null => {
     case 'execute':
       return (
         <ApproveTxModal
-          canExecute
+          isExecution
           isOpen
           onClose={onClose}
           transaction={transaction as Overwrite<Transaction, { txDetails: ExpandedTxDetails }>}

@@ -2,7 +2,6 @@ import { Fragment, ReactElement } from 'react'
 import { useSelector } from 'react-redux'
 import { useForm } from 'react-final-form'
 import TableContainer from '@material-ui/core/TableContainer'
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import styled from 'styled-components'
 
 import Block from 'src/components/layout/Block'
@@ -13,13 +12,14 @@ import Paragraph from 'src/components/layout/Paragraph'
 import { getExplorerInfo } from 'src/config'
 import { userAccountSelector } from 'src/logic/wallets/store/selectors'
 import Hairline from 'src/components/layout/Hairline'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import {
   FIELD_LOAD_SAFE_ADDRESS,
   FIELD_SAFE_OWNER_LIST,
   FIELD_SAFE_THRESHOLD,
   LoadSafeFormValues,
 } from '../fields/loadFields'
-import { getLoadSafeName } from '../fields/utils'
+import { getLoadSafeName, getOwnerName } from '../fields/utils'
 import NetworkLabel from 'src/components/NetworkLabel/NetworkLabel'
 import { currentNetworkAddressBookAsMap } from 'src/logic/addressBook/store/selectors'
 
@@ -37,11 +37,10 @@ function ReviewLoadStep(): ReactElement {
   const ownerList = formValues[FIELD_SAFE_OWNER_LIST]
 
   const ownerListWithNames = ownerList.map((owner) => {
-    const ownerFieldName = `owner-address-${owner.address}`
-    const ownerNameValue = formValues[ownerFieldName]
+    const ownerName = getOwnerName(formValues, owner.address)
     return {
       ...owner,
-      name: ownerNameValue,
+      name: ownerName,
     }
   })
 
@@ -77,7 +76,7 @@ function ReviewLoadStep(): ReactElement {
               Safe address
             </Paragraph>
             <SafeAddressContainer>
-              <EthHashInfo
+              <PrefixedEthHashInfo
                 hash={safeAddress}
                 shortenHash={4}
                 showAvatar
@@ -116,7 +115,7 @@ function ReviewLoadStep(): ReactElement {
             <Fragment key={owner.address}>
               <OwnerItemContainer testId={'load-safe-review-owner-name-' + index}>
                 <Col align="center" xs={12}>
-                  <EthHashInfo
+                  <PrefixedEthHashInfo
                     hash={owner.address}
                     name={owner.name}
                     showAvatar

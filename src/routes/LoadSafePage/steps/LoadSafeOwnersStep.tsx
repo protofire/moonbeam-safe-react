@@ -2,7 +2,6 @@ import { ReactElement } from 'react'
 import { useForm } from 'react-final-form'
 import styled from 'styled-components'
 import TableContainer from '@material-ui/core/TableContainer'
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 
 import Block from 'src/components/layout/Block'
 import Col from 'src/components/layout/Col'
@@ -11,23 +10,26 @@ import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import Field from 'src/components/forms/Field'
 import TextField from 'src/components/forms/TextField'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
 import { disabled, extraSmallFontSize, lg, md, sm } from 'src/theme/variables'
 import { minMaxLength } from 'src/components/forms/validator'
 import { getExplorerInfo } from 'src/config'
-import { FIELD_SAFE_OWNER_LIST } from '../fields/loadFields'
+import { FIELD_SAFE_OWNER_ENS_LIST, FIELD_SAFE_OWNER_LIST, LoadSafeFormValues } from '../fields/loadFields'
 import NetworkLabel from 'src/components/NetworkLabel/NetworkLabel'
 
 export const loadSafeOwnersStepLabel = 'Owners'
 
 function LoadSafeOwnersStep(): ReactElement {
   const loadSafeForm = useForm()
-  const ownersWithName = loadSafeForm.getState().values[FIELD_SAFE_OWNER_LIST]
+
+  const formValues = loadSafeForm.getState().values as LoadSafeFormValues
+  const ownerList = formValues[FIELD_SAFE_OWNER_LIST]
 
   return (
     <>
       <TitleContainer>
         <Paragraph color="primary" noMargin size="lg" data-testid="load-safe-owners-step">
-          This Safe on <NetworkLabel /> has {ownersWithName.length} owners. Optional: Provide a name for each owner.
+          This Safe on <NetworkLabel /> has {ownerList.length} owners. Optional: Provide a name for each owner.
         </Paragraph>
       </TitleContainer>
       <Hairline />
@@ -38,8 +40,10 @@ function LoadSafeOwnersStep(): ReactElement {
         </HeaderContainer>
         <Hairline />
         <Block margin="md" padding="md">
-          {ownersWithName.map(({ address, name }, index) => {
+          {ownerList.map(({ address, name }, index) => {
             const ownerFieldName = `owner-address-${address}`
+            const ownerName = formValues[FIELD_SAFE_OWNER_ENS_LIST][address] || 'Owner Name'
+
             return (
               <OwnerContainer key={address} data-testid="owner-row">
                 <Col xs={4}>
@@ -47,7 +51,7 @@ function LoadSafeOwnersStep(): ReactElement {
                     component={TextField}
                     initialValue={name}
                     name={ownerFieldName}
-                    placeholder="Owner Name"
+                    placeholder={ownerName}
                     text="Owner Name"
                     type="text"
                     validate={minMaxLength(0, 50)}
@@ -56,7 +60,7 @@ function LoadSafeOwnersStep(): ReactElement {
                 </Col>
                 <Col xs={8}>
                   <OwnerAddressContainer>
-                    <EthHashInfo hash={address} showAvatar showCopyBtn explorerUrl={getExplorerInfo(address)} />
+                    <PrefixedEthHashInfo hash={address} showAvatar showCopyBtn explorerUrl={getExplorerInfo(address)} />
                   </OwnerAddressContainer>
                 </Col>
               </OwnerContainer>

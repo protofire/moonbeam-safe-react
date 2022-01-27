@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Col from 'src/components/layout/Col'
 import Row from 'src/components/layout/Row'
 import { ButtonStatus, Modal } from 'src/components/Modal'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { createTransaction, CreateTransactionArgs } from 'src/logic/safe/store/actions/createTransaction'
 import { SafeRecordProps, SpendingLimit } from 'src/logic/safe/store/models/safe'
 import {
@@ -21,14 +22,13 @@ import { MultiSendTx } from 'src/logic/safe/transactions/multisend'
 import { makeToken, Token } from 'src/logic/tokens/store/model/token'
 import { fromTokenUnit, toTokenUnit } from 'src/logic/tokens/utils/humanReadableValue'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
+import { userAccountSelector } from 'src/logic/wallets/store/selectors'
 import { getResetTimeOptions } from 'src/routes/safe/components/Settings/SpendingLimit/FormFields/ResetTime'
 import { AddressInfo, ResetTimeInfo, TokenInfo } from 'src/routes/safe/components/Settings/SpendingLimit/InfoDisplay'
-import { useStyles } from 'src/routes/safe/components/Settings/SpendingLimit/style'
 import { currentSafe } from 'src/logic/safe/store/selectors'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
-import { TransactionFees } from 'src/components/TransactionsFees'
 import Hairline from 'src/components/layout/Hairline'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
@@ -37,6 +37,7 @@ import { SPENDING_LIMIT_MODULE_ADDRESS } from 'src/utils/constants'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
 
 import { ActionCallback, CREATE } from '.'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 const useExistentSpendingLimit = ({
   spendingLimits,
@@ -68,16 +69,7 @@ const useExistentSpendingLimit = ({
   }, [spendingLimits, txToken.decimals, values.beneficiary, values.token])
 }
 
-const calculateSpendingLimitsTxData = (
-  safeAddress: string,
-  safeVersion: string,
-  spendingLimits: SpendingLimit[] | null | undefined,
-  existentSpendingLimit: SpendingLimit | null,
-  txToken: Token,
-  values: Record<string, string>,
-  modules: string[],
-  txParameters?: TxParameters,
-): {
+type SpendingLimitsTxData = {
   spendingLimitTxData: CreateTransactionArgs
   transactions: MultiSendTx[]
   spendingLimitArgs: {
@@ -87,13 +79,29 @@ const calculateSpendingLimitsTxData = (
     resetTimeMin: number
     resetBaseMin: number
   }
-} => {
+}
+const calculateSpendingLimitsTxData = async (
+  safeAddress: string,
+  safeVersion: string,
+  connectedWalletAddress: string,
+  spendingLimits: SpendingLimit[] | null | undefined,
+  existentSpendingLimit: SpendingLimit | null,
+  txToken: Token,
+  values: Record<string, string>,
+  modules: string[],
+  txParameters?: TxParameters,
+): Promise<SpendingLimitsTxData> => {
   const isSpendingLimitEnabled = isModuleEnabled(modules, SPENDING_LIMIT_MODULE_ADDRESS)
   const transactions: MultiSendTx[] = []
 
   // is spendingLimit module enabled? -> if not, create the tx to enable it, and encode it
   if (!isSpendingLimitEnabled && safeAddress) {
-    transactions.push(enableSpendingLimitModuleMultiSendTx(safeAddress, safeVersion))
+    const enableSpendingLimitTx = await enableSpendingLimitModuleMultiSendTx(
+      safeAddress,
+      safeVersion,
+      connectedWalletAddress,
+    )
+    transactions.push(enableSpendingLimitTx)
   }
 
   // does `delegate` already exist? (`getDelegates`, previously queried to build the table with allowances (??))
@@ -153,7 +161,6 @@ interface ReviewSpendingLimitProps {
 }
 
 export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: ReviewSpendingLimitProps): ReactElement => {
-  const classes = useStyles()
   const dispatch = useDispatch()
 
   const {
@@ -162,6 +169,7 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
     currentVersion: safeVersion = '',
     modules,
   } = useSelector(currentSafe) ?? {}
+  const connectedWalletAddress = useSelector(userAccountSelector)
   const existentSpendingLimit = useExistentSpendingLimit({ spendingLimits, txToken, values })
   const [estimateGasArgs, setEstimateGasArgs] = useState<Partial<CreateTransactionArgs>>({
     to: '',
@@ -170,11 +178,11 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
+  const [manualSafeNonce, setManualSafeNonce] = useState<number | undefined>()
 
   const {
     gasCostFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isCreation,
     isOffChainSignature,
     gasPrice,
@@ -188,26 +196,41 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
     safeTxGas: manualSafeTxGas,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
   })
+  const canTxExecute = useCanTxExecute(false, manualSafeNonce)
 
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
   const safeModules = useMemo(() => modules?.map((pair) => pair[1]) || [], [modules])
 
   useEffect(() => {
-    const { spendingLimitTxData } = calculateSpendingLimitsTxData(
-      safeAddress,
-      safeVersion,
-      spendingLimits,
-      existentSpendingLimit,
-      txToken,
-      values,
-      safeModules,
-    )
-    setEstimateGasArgs(spendingLimitTxData)
-  }, [safeAddress, safeVersion, spendingLimits, existentSpendingLimit, txToken, values, safeModules])
+    const calculateSpendingLimit = async () => {
+      const { spendingLimitTxData } = await calculateSpendingLimitsTxData(
+        safeAddress,
+        safeVersion,
+        connectedWalletAddress,
+        spendingLimits,
+        existentSpendingLimit,
+        txToken,
+        values,
+        safeModules,
+      )
+      setEstimateGasArgs(spendingLimitTxData)
+    }
+    calculateSpendingLimit()
+  }, [
+    safeAddress,
+    safeVersion,
+    connectedWalletAddress,
+    spendingLimits,
+    existentSpendingLimit,
+    txToken,
+    values,
+    safeModules,
+  ])
 
-  const handleSubmit = (txParameters: TxParameters): void => {
+  const handleSubmit = async (txParameters: TxParameters): Promise<void> => {
     const { ethGasPrice, ethGasLimit, ethGasPriceInGWei } = txParameters
     const advancedOptionsTxParameters = {
       ...txParameters,
@@ -217,9 +240,10 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
     }
 
     if (safeAddress) {
-      const { spendingLimitTxData } = calculateSpendingLimitsTxData(
+      const { spendingLimitTxData } = await calculateSpendingLimitsTxData(
         safeAddress,
         safeVersion,
+        connectedWalletAddress,
         spendingLimits,
         existentSpendingLimit,
         txToken,
@@ -246,6 +270,7 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
     const newGasPrice = txParameters.ethGasPrice
     const oldSafeTxGas = gasEstimation
     const newSafeTxGas = txParameters.safeTxGas
+    const newSafeNonce = txParameters.safeNonce
 
     if (newGasPrice && oldGasPrice !== newGasPrice) {
       setManualGasPrice(txParameters.ethGasPrice)
@@ -258,6 +283,11 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
     if (newSafeTxGas && oldSafeTxGas !== newSafeTxGas) {
       setManualSafeTxGas(newSafeTxGas)
     }
+
+    if (newSafeNonce) {
+      const newSafeNonceNumber = parseInt(newSafeNonce, 10)
+      setManualSafeNonce(newSafeNonceNumber)
+    }
   }
 
   let confirmButtonText = 'Submit'
@@ -268,7 +298,7 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
   return (
     <EditableTxParameters
       isOffChainSignature={isOffChainSignature}
-      isExecution={isExecution}
+      isExecution={canTxExecute}
       ethGasLimit={gasLimit}
       ethGasPrice={gasPriceFormatted}
       safeTxGas={gasEstimation}
@@ -318,19 +348,17 @@ export const ReviewSpendingLimits = ({ onBack, onClose, txToken, values }: Revie
               txParameters={txParameters}
               onEdit={toggleEditMode}
               isTransactionCreation={isCreation}
-              isTransactionExecution={isExecution}
+              isTransactionExecution={canTxExecute}
               isOffChainSignature={isOffChainSignature}
             />
           </Modal.Body>
-          <div className={classes.gasCostsContainer}>
-            <TransactionFees
-              gasCostFormatted={gasCostFormatted}
-              isExecution={isExecution}
-              isCreation={isCreation}
-              isOffChainSignature={isOffChainSignature}
-              txEstimationExecutionStatus={txEstimationExecutionStatus}
-            />
-          </div>
+          <ReviewInfoText
+            gasCostFormatted={gasCostFormatted}
+            isCreation={isCreation}
+            isExecution={canTxExecute}
+            safeNonce={txParameters.safeNonce}
+            txEstimationExecutionStatus={txEstimationExecutionStatus}
+          />
 
           <Modal.Footer withoutBorder={buttonStatus !== ButtonStatus.LOADING}>
             <Modal.Footer.Buttons

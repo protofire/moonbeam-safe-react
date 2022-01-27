@@ -7,8 +7,10 @@ import { generateSignaturesFromTxConfirmations } from 'src/logic/safe/safeTxSign
 import { fetchSafeTxGasEstimation } from 'src/logic/safe/api/fetchSafeTxGasEstimation'
 import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
 import { checksumAddress } from 'src/utils/checksumAddress'
+import { hasFeature } from '../utils/safeVersion'
+import { FEATURES } from '@gnosis.pm/safe-react-gateway-sdk'
 
-type SafeTxGasEstimationProps = {
+export type SafeTxGasEstimationProps = {
   safeAddress: string
   txData: string
   txRecipient: string
@@ -16,15 +18,16 @@ type SafeTxGasEstimationProps = {
   operation: number
 }
 
-export const estimateSafeTxGas = async ({
-  safeAddress,
-  txData,
-  txRecipient,
-  txAmount,
-  operation,
-}: SafeTxGasEstimationProps): Promise<string> => {
+export const estimateSafeTxGas = async (
+  { safeAddress, txData, txRecipient, txAmount, operation }: SafeTxGasEstimationProps,
+  safeVersion: string,
+): Promise<string> => {
+  if (hasFeature(FEATURES.SAFE_TX_GAS_OPTIONAL, safeVersion)) {
+    return '0'
+  }
+
   try {
-    const safeTxGasEstimation = await fetchSafeTxGasEstimation({
+    const { safeTxGas } = await fetchSafeTxGasEstimation({
       safeAddress,
       to: checksumAddress(txRecipient),
       value: txAmount,
@@ -32,7 +35,7 @@ export const estimateSafeTxGas = async ({
       operation,
     })
 
-    return safeTxGasEstimation
+    return safeTxGas
   } catch (error) {
     console.info('Error calculating tx gas estimation', error.message)
     throw error
@@ -71,7 +74,6 @@ export const estimateTransactionGasLimit = async ({
   safeTxGas,
   from,
   isExecution,
-  isOffChainSignature = false,
   approvalAndExecution,
 }: TransactionEstimationProps): Promise<number> => {
   if (!from) {
@@ -104,7 +106,6 @@ export const estimateTransactionGasLimit = async ({
     txAmount,
     txRecipient,
     from,
-    isOffChainSignature,
   })
 }
 
@@ -192,7 +193,6 @@ type TransactionApprovalEstimationProps = {
   txData: string
   operation: number
   from: string
-  isOffChainSignature: boolean
 }
 
 export const estimateGasForTransactionApproval = async ({
@@ -203,12 +203,7 @@ export const estimateGasForTransactionApproval = async ({
   txData,
   operation,
   from,
-  isOffChainSignature,
 }: TransactionApprovalEstimationProps): Promise<number> => {
-  if (isOffChainSignature) {
-    return 0
-  }
-
   const safeInstance = getGnosisSafeInstanceAt(safeAddress, safeVersion)
 
   const nonce = await safeInstance.methods.nonce().call()
@@ -223,4 +218,8 @@ export const estimateGasForTransactionApproval = async ({
     from,
     to: safeAddress,
   })
+}
+
+export const getGasParam = (): string => {
+  return hasFeature(FEATURES.EIP1559) ? 'maxFeePerGas' : 'gasPrice'
 }

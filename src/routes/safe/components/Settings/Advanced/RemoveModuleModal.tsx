@@ -1,5 +1,3 @@
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
-import cn from 'classnames'
 import { ReactElement, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -9,45 +7,44 @@ import Hairline from 'src/components/layout/Hairline'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import Modal, { ButtonStatus, Modal as GenericModal } from 'src/components/Modal'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { getExplorerInfo } from 'src/config'
-import { getDisableModuleTxData } from 'src/logic/safe/utils/modules'
 import { createTransaction } from 'src/logic/safe/store/actions/createTransaction'
-
-import { ModulePair } from 'src/logic/safe/store/models/safe'
 import { currentSafe } from 'src/logic/safe/store/selectors'
 import { TX_NOTIFICATION_TYPES } from 'src/logic/safe/transactions'
-
 import { useStyles } from './style'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
-import { TransactionFees } from 'src/components/TransactionsFees'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
+import { userAccountSelector } from 'src/logic/wallets/store/selectors'
+import { getDisableModuleTxData } from 'src/logic/safe/utils/modules'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 interface RemoveModuleModalProps {
   onClose: () => void
-  selectedModulePair: ModulePair
+  selectedModuleAddress: string
 }
 
-export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleModalProps): ReactElement => {
+export const RemoveModuleModal = ({ onClose, selectedModuleAddress }: RemoveModuleModalProps): ReactElement => {
   const classes = useStyles()
 
   const { address: safeAddress, currentVersion: safeVersion } = useSelector(currentSafe)
   const [txData, setTxData] = useState('')
   const dispatch = useDispatch()
+  const connectedWalletAddress = useSelector(userAccountSelector)
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
-
-  const [, moduleAddress] = selectedModulePair
+  const [manualSafeNonce, setManualSafeNonce] = useState<number | undefined>()
 
   const {
     gasCostFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isOffChainSignature,
     isCreation,
     gasLimit,
@@ -60,14 +57,36 @@ export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleM
     safeTxGas: manualSafeTxGas,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
   })
-
+  const canTxExecute = useCanTxExecute(false, manualSafeNonce)
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
   useEffect(() => {
-    const txData = getDisableModuleTxData(selectedModulePair, safeAddress, safeVersion)
-    setTxData(txData)
-  }, [selectedModulePair, safeAddress, safeVersion])
+    let isCurrent = true
+
+    const calculateRemoveOwnerData = async () => {
+      try {
+        const txData = await getDisableModuleTxData({
+          moduleAddress: selectedModuleAddress,
+          safeAddress,
+          safeVersion,
+          connectedWalletAddress,
+        })
+
+        if (isCurrent) {
+          setTxData(txData)
+        }
+      } catch (error) {
+        logError(Errors._806, `${selectedModuleAddress} - ${error.message}`)
+      }
+    }
+    calculateRemoveOwnerData()
+
+    return () => {
+      isCurrent = false
+    }
+  }, [connectedWalletAddress, safeAddress, safeVersion, selectedModuleAddress])
 
   const removeSelectedModule = async (txParameters: TxParameters): Promise<void> => {
     try {
@@ -84,7 +103,7 @@ export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleM
         }),
       )
     } catch (e) {
-      logError(Errors._806, `${selectedModulePair} – ${e.message}`)
+      logError(Errors._806, `${selectedModuleAddress} - ${e.message}`)
     }
   }
 
@@ -93,6 +112,7 @@ export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleM
     const newGasPrice = txParameters.ethGasPrice
     const oldSafeTxGas = gasEstimation
     const newSafeTxGas = txParameters.safeTxGas
+    const newSafeNonce = txParameters.safeNonce
 
     if (newGasPrice && oldGasPrice !== newGasPrice) {
       setManualGasPrice(txParameters.ethGasPrice)
@@ -104,6 +124,11 @@ export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleM
 
     if (newSafeTxGas && oldSafeTxGas !== newSafeTxGas) {
       setManualSafeTxGas(newSafeTxGas)
+    }
+
+    if (newSafeNonce) {
+      const newSafeNonceNumber = parseInt(newSafeNonce, 10)
+      setManualSafeNonce(newSafeNonceNumber)
     }
   }
 
@@ -122,7 +147,7 @@ export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleM
     >
       <EditableTxParameters
         isOffChainSignature={isOffChainSignature}
-        isExecution={isExecution}
+        isExecution={canTxExecute}
         ethGasLimit={gasLimit}
         ethGasPrice={gasPriceFormatted}
         safeTxGas={gasEstimation}
@@ -131,16 +156,16 @@ export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleM
         {(txParameters, toggleEditMode) => {
           return (
             <>
-              <ModalHeader onClose={onClose} title="Remove Guard" />
+              <ModalHeader onClose={onClose} title="Remove Module" />
               <Hairline />
               <Block>
                 <Row className={classes.modalOwner}>
                   <Col align="center" xs={1}>
-                    <EthHashInfo
-                      hash={moduleAddress}
+                    <PrefixedEthHashInfo
+                      hash={selectedModuleAddress}
                       showCopyBtn
                       showAvatar
-                      explorerUrl={getExplorerInfo(moduleAddress)}
+                      explorerUrl={getExplorerInfo(selectedModuleAddress)}
                     />
                   </Col>
                 </Row>
@@ -158,16 +183,16 @@ export const RemoveModuleModal = ({ onClose, selectedModulePair }: RemoveModuleM
                   txParameters={txParameters}
                   onEdit={toggleEditMode}
                   isTransactionCreation={isCreation}
-                  isTransactionExecution={isExecution}
+                  isTransactionExecution={canTxExecute}
                   isOffChainSignature={isOffChainSignature}
                 />
               </Block>
-              <Row className={cn(classes.modalDescription, classes.gasCostsContainer)}>
-                <TransactionFees
+              <Row className={classes.modalDescription}>
+                <ReviewInfoText
                   gasCostFormatted={gasCostFormatted}
-                  isExecution={isExecution}
                   isCreation={isCreation}
-                  isOffChainSignature={isOffChainSignature}
+                  isExecution={canTxExecute}
+                  safeNonce={txParameters.safeNonce}
                   txEstimationExecutionStatus={txEstimationExecutionStatus}
                 />
               </Row>

@@ -19,17 +19,18 @@ import { textShortener } from 'src/utils/strings'
 import { generateERC721TransferTxData } from 'src/logic/collectibles/utils'
 
 import { styles } from './style'
-import { EthHashInfo } from '@gnosis.pm/safe-react-components'
 import { EstimationStatus, useEstimateTransactionGas } from 'src/logic/hooks/useEstimateTransactionGas'
 import { useEstimationStatus } from 'src/logic/hooks/useEstimationStatus'
 import { ButtonStatus, Modal } from 'src/components/Modal'
-import { TransactionFees } from 'src/components/TransactionsFees'
+import PrefixedEthHashInfo from 'src/components/PrefixedEthHashInfo'
+import { ReviewInfoText } from 'src/components/ReviewInfoText'
 import { EditableTxParameters } from 'src/routes/safe/components/Transactions/helpers/EditableTxParameters'
 import { TxParametersDetail } from 'src/routes/safe/components/Transactions/helpers/TxParametersDetail'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
 import { ModalHeader } from '../ModalHeader'
 import { extractSafeAddress } from 'src/routes/routes'
 import ExecuteCheckbox from 'src/components/ExecuteCheckbox'
+import useCanTxExecute from 'src/logic/hooks/useCanTxExecute'
 
 const useStyles = makeStyles(styles)
 
@@ -56,7 +57,8 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
   const [manualSafeTxGas, setManualSafeTxGas] = useState('0')
   const [manualGasPrice, setManualGasPrice] = useState<string | undefined>()
   const [manualGasLimit, setManualGasLimit] = useState<string | undefined>()
-  const [executionApproved, setExecutionApproved] = useState<boolean>(true)
+  const [manualSafeNonce, setManualSafeNonce] = useState<number | undefined>()
+  const [shouldExecute, setShouldExecute] = useState<boolean>(true)
 
   const txToken = nftTokens.find(
     ({ assetAddress, tokenId }) => assetAddress === tx.assetAddress && tokenId === tx.nftTokenId,
@@ -69,7 +71,6 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
     gasPriceFormatted,
     gasCostFormatted,
     txEstimationExecutionStatus,
-    isExecution,
     isOffChainSignature,
     isCreation,
   } = useEstimateTransactionGas({
@@ -78,9 +79,10 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
     safeTxGas: manualSafeTxGas,
     manualGasPrice,
     manualGasLimit,
+    manualSafeNonce,
   })
-
-  const doExecute = isExecution && executionApproved
+  const canTxExecute = useCanTxExecute(false, manualSafeNonce)
+  const willExecute = canTxExecute && shouldExecute
   const [buttonStatus] = useEstimationStatus(txEstimationExecutionStatus)
 
   useEffect(() => {
@@ -116,7 +118,7 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
             safeTxGas: txParameters.safeTxGas,
             ethParameters: txParameters,
             notifiedTransaction: TX_NOTIFICATION_TYPES.STANDARD_TX,
-            delayExecution: !executionApproved,
+            delayExecution: !shouldExecute,
           }),
         )
       } else {
@@ -134,6 +136,7 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
     const newGasPrice = txParameters.ethGasPrice
     const oldSafeTxGas = gasEstimation
     const newSafeTxGas = txParameters.safeTxGas
+    const newSafeNonce = txParameters.safeNonce
 
     if (newGasPrice && oldGasPrice !== newGasPrice) {
       setManualGasPrice(txParameters.ethGasPrice)
@@ -146,12 +149,17 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
     if (newSafeTxGas && oldSafeTxGas !== newSafeTxGas) {
       setManualSafeTxGas(newSafeTxGas)
     }
+
+    if (newSafeNonce) {
+      const newSafeNonceNumber = parseInt(newSafeNonce, 10)
+      setManualSafeNonce(newSafeNonceNumber)
+    }
   }
 
   return (
     <EditableTxParameters
       isOffChainSignature={isOffChainSignature}
-      isExecution={doExecute}
+      isExecution={willExecute}
       ethGasLimit={gasLimit}
       ethGasPrice={gasPriceFormatted}
       safeTxGas={gasEstimation}
@@ -171,7 +179,7 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
             </Row>
             <Row align="center" margin="md">
               <Col xs={12}>
-                <EthHashInfo
+                <PrefixedEthHashInfo
                   hash={tx.recipientAddress}
                   name={tx.recipientName}
                   showAvatar
@@ -194,26 +202,24 @@ const ReviewCollectible = ({ onClose, onPrev, tx }: Props): React.ReactElement =
               </Row>
             )}
 
-            {isExecution && <ExecuteCheckbox onChange={setExecutionApproved} />}
+            {canTxExecute && <ExecuteCheckbox onChange={setShouldExecute} />}
 
             {/* Tx Parameters */}
             <TxParametersDetail
               txParameters={txParameters}
               onEdit={toggleEditMode}
               isTransactionCreation={isCreation}
-              isTransactionExecution={doExecute}
+              isTransactionExecution={willExecute}
               isOffChainSignature={isOffChainSignature}
             />
           </Block>
-          <div className={classes.gasCostsContainer}>
-            <TransactionFees
-              gasCostFormatted={gasCostFormatted}
-              isExecution={doExecute}
-              isCreation={isCreation}
-              isOffChainSignature={isOffChainSignature}
-              txEstimationExecutionStatus={txEstimationExecutionStatus}
-            />
-          </div>
+          <ReviewInfoText
+            gasCostFormatted={gasCostFormatted}
+            isCreation={isCreation}
+            isExecution={willExecute}
+            safeNonce={txParameters.safeNonce}
+            txEstimationExecutionStatus={txEstimationExecutionStatus}
+          />
           <Modal.Footer withoutBorder={buttonStatus !== ButtonStatus.LOADING}>
             <Modal.Footer.Buttons
               cancelButtonProps={{ onClick: onPrev, text: 'Back' }}

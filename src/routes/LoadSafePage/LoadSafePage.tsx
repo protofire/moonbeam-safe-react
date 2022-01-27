@@ -30,13 +30,15 @@ import {
   FIELD_LOAD_IS_LOADING_SAFE_ADDRESS,
   FIELD_LOAD_SAFE_ADDRESS,
   FIELD_LOAD_SUGGESTED_SAFE_NAME,
+  FIELD_SAFE_OWNER_ENS_LIST,
   FIELD_SAFE_OWNER_LIST,
   LoadSafeFormValues,
 } from './fields/loadFields'
 import { extractPrefixedSafeAddress, generateSafeRoute, LOAD_SPECIFIC_SAFE_ROUTE, SAFE_ROUTES } from '../routes'
-import { getCurrentShortChainName } from 'src/config'
+import { getShortName } from 'src/config'
 import { currentNetworkAddressBookAsMap } from 'src/logic/addressBook/store/selectors'
-import { getLoadSafeName } from './fields/utils'
+import { getLoadSafeName, getOwnerName } from './fields/utils'
+import { currentChainId } from 'src/logic/config/store/selectors'
 
 function Load(): ReactElement {
   const dispatch = useDispatch()
@@ -45,6 +47,7 @@ function Load(): ReactElement {
   const safeRandomName = useMnemonicSafeName()
   const [initialFormValues, setInitialFormValues] = useState<LoadSafeFormValues>()
   const addressBook = useSelector(currentNetworkAddressBookAsMap)
+  const chainId = useSelector(currentChainId)
 
   useEffect(() => {
     const initialValues: LoadSafeFormValues = {
@@ -52,6 +55,7 @@ function Load(): ReactElement {
       [FIELD_LOAD_SAFE_ADDRESS]: safeAddress,
       [FIELD_LOAD_IS_LOADING_SAFE_ADDRESS]: false,
       [FIELD_SAFE_OWNER_LIST]: [],
+      [FIELD_SAFE_OWNER_ENS_LIST]: {},
     }
     setInitialFormValues(initialValues)
   }, [safeAddress, safeRandomName])
@@ -61,11 +65,10 @@ function Load(): ReactElement {
 
     const ownerEntries = ownerList
       .map((owner) => {
-        const ownerFieldName = `owner-address-${owner.address}`
-        const ownerNameValue = values[ownerFieldName]
+        const ownerName = getOwnerName(values, owner.address)
         return {
           ...owner,
-          name: ownerNameValue,
+          name: ownerName,
         }
       })
       .filter((owner) => !!owner.name)
@@ -73,12 +76,13 @@ function Load(): ReactElement {
     const safeEntry = makeAddressBookEntry({
       address: checksumAddress(values[FIELD_LOAD_SAFE_ADDRESS] || ''),
       name: getLoadSafeName(values, addressBook),
+      chainId,
     })
 
     dispatch(addressBookSafeLoad([...ownerEntries, safeEntry]))
   }
 
-  const onSubmitLoadSafe = async (values: LoadSafeFormValues) => {
+  const onSubmitLoadSafe = async (values: LoadSafeFormValues): Promise<void> => {
     const address = values[FIELD_LOAD_SAFE_ADDRESS]
     if (!isValidAddress(address)) {
       return
@@ -88,16 +92,16 @@ function Load(): ReactElement {
 
     const checksummedAddress = checksumAddress(address || '')
     const safeProps = await buildSafe(checksummedAddress)
-    const storedSafes = (await loadStoredSafes()) || {}
+    const storedSafes = loadStoredSafes() || {}
     storedSafes[checksummedAddress] = safeProps
 
-    await saveSafes(storedSafes)
+    saveSafes(storedSafes)
     dispatch(addOrUpdateSafe(safeProps))
 
     // Go to the newly added Safe
     history.push(
       generateSafeRoute(SAFE_ROUTES.ASSETS_BALANCES, {
-        shortName: getCurrentShortChainName(),
+        shortName: getShortName(),
         safeAddress: checksummedAddress,
       }),
     )
