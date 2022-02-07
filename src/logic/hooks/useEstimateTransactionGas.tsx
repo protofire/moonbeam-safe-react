@@ -29,7 +29,7 @@ export enum EstimationStatus {
 }
 
 const DEFAULT_MAX_GAS_FEE = String(3.5e9) // 3.5 GWEI
-const DEFAULT_MAX_PRIO_FEE = String(2.5e9) // 2.5 GWEI
+export const DEFAULT_MAX_PRIO_FEE = String(2.5e9) // 2.5 GWEI
 
 export const checkIfTxIsApproveAndExecution = (
   threshold: number,
@@ -37,11 +37,9 @@ export const checkIfTxIsApproveAndExecution = (
   txType?: string,
   preApprovingOwner?: string,
 ): boolean => {
-  if (preApprovingOwner) {
-    return txConfirmations + 1 === threshold || isSpendingLimit(txType)
-  }
-
-  return threshold === 1
+  if (txConfirmations === threshold) return false
+  if (!preApprovingOwner) return false
+  return txConfirmations + 1 === threshold || isSpendingLimit(txType)
 }
 
 export const checkIfTxIsCreation = (txConfirmations: number, txType?: string): boolean =>
@@ -60,7 +58,6 @@ type UseEstimateTransactionGasProps = {
   manualMaxPrioFee?: string
   manualGasLimit?: string
   manualSafeNonce?: number // Edited nonce
-  isExecution?: boolean // If called from the TransactionList "next transaction"
 }
 
 export type TransactionGasEstimationResult = {
@@ -116,7 +113,7 @@ export const calculateTotalGasCost = (
   gasMaxPrioFee: string,
   decimals: number,
 ): [string, string] => {
-  const totalPricePerGas = parseFloat(gasPrice) + parseFloat(gasMaxPrioFee || '0')
+  const totalPricePerGas = parseInt(gasPrice, 10) + parseInt(gasMaxPrioFee || '0', 10)
   const estimatedGasCosts = parseInt(gasLimit, 10) * totalPricePerGas
   const gasCost = fromTokenUnit(estimatedGasCosts, decimals)
   const formattedGasCost = formatAmount(gasCost)
@@ -136,7 +133,6 @@ export const useEstimateTransactionGas = ({
   manualMaxPrioFee,
   manualGasLimit,
   manualSafeNonce,
-  isExecution,
 }: UseEstimateTransactionGasProps): TransactionGasEstimationResult => {
   const [gasEstimation, setGasEstimation] = useState<TransactionGasEstimationResult>(
     getDefaultGasEstimation({
@@ -151,7 +147,7 @@ export const useEstimateTransactionGas = ({
   const { address: safeAddress = '', threshold = 1, currentVersion: safeVersion = '' } = useSelector(currentSafe) ?? {}
   const { account: from, smartContractWallet, name: providerName } = useSelector(providerSelector)
 
-  const canTxExecute = useCanTxExecute(isExecution, manualSafeNonce, preApprovingOwner, txConfirmations?.size)
+  const canTxExecute = useCanTxExecute(preApprovingOwner, txConfirmations?.size)
 
   useEffect(() => {
     const estimateGas = async () => {
