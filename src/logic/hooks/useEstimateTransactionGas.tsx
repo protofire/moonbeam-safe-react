@@ -13,7 +13,7 @@ import {
 } from 'src/logic/safe/transactions/gas'
 import { fromTokenUnit } from 'src/logic/tokens/utils/humanReadableValue'
 import { formatAmount } from 'src/logic/tokens/utils/formatAmount'
-import { calculateGasPrice } from 'src/logic/wallets/ethTransactions'
+import { calculateGasPrice, setMaxPrioFeePerGas, getFeesPerGas } from 'src/logic/wallets/ethTransactions'
 import { currentSafe } from 'src/logic/safe/store/selectors'
 import { providerSelector } from 'src/logic/wallets/store/selectors'
 import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
@@ -28,20 +28,15 @@ export enum EstimationStatus {
   SUCCESS = 'SUCCESS',
 }
 
-const DEFAULT_MAX_GAS_FEE = String(3.5e9) // 3.5 GWEI
-const DEFAULT_MAX_PRIO_FEE = String(2.5e9) // 2.5 GWEI
-
 export const checkIfTxIsApproveAndExecution = (
   threshold: number,
   txConfirmations: number,
   txType?: string,
   preApprovingOwner?: string,
 ): boolean => {
-  if (preApprovingOwner) {
-    return txConfirmations + 1 === threshold || isSpendingLimit(txType)
-  }
-
-  return threshold === 1
+  if (txConfirmations === threshold) return false
+  if (!preApprovingOwner) return false
+  return txConfirmations + 1 === threshold || isSpendingLimit(txType)
 }
 
 export const checkIfTxIsCreation = (txConfirmations: number, txType?: string): boolean =>
@@ -60,7 +55,6 @@ type UseEstimateTransactionGasProps = {
   manualMaxPrioFee?: string
   manualGasLimit?: string
   manualSafeNonce?: number // Edited nonce
-  isExecution?: boolean // If called from the TransactionList "next transaction"
 }
 
 export type TransactionGasEstimationResult = {
@@ -116,7 +110,7 @@ export const calculateTotalGasCost = (
   gasMaxPrioFee: string,
   decimals: number,
 ): [string, string] => {
-  const totalPricePerGas = parseFloat(gasPrice) + parseFloat(gasMaxPrioFee || '0')
+  const totalPricePerGas = parseInt(gasPrice, 10) + parseInt(gasMaxPrioFee || '0', 10)
   const estimatedGasCosts = parseInt(gasLimit, 10) * totalPricePerGas
   const gasCost = fromTokenUnit(estimatedGasCosts, decimals)
   const formattedGasCost = formatAmount(gasCost)
@@ -136,7 +130,6 @@ export const useEstimateTransactionGas = ({
   manualMaxPrioFee,
   manualGasLimit,
   manualSafeNonce,
-  isExecution,
 }: UseEstimateTransactionGasProps): TransactionGasEstimationResult => {
   const [gasEstimation, setGasEstimation] = useState<TransactionGasEstimationResult>(
     getDefaultGasEstimation({
@@ -151,7 +144,7 @@ export const useEstimateTransactionGas = ({
   const { address: safeAddress = '', threshold = 1, currentVersion: safeVersion = '' } = useSelector(currentSafe) ?? {}
   const { account: from, smartContractWallet, name: providerName } = useSelector(providerSelector)
 
-  const canTxExecute = useCanTxExecute(isExecution, manualSafeNonce, preApprovingOwner, txConfirmations?.size)
+  const canTxExecute = useCanTxExecute(preApprovingOwner, txConfirmations?.size)
 
   useEffect(() => {
     const estimateGas = async () => {
@@ -161,14 +154,17 @@ export const useEstimateTransactionGas = ({
       const isOffChainSignature = checkIfOffChainSignatureIsPossible(canTxExecute, smartContractWallet, safeVersion)
       const isCreation = checkIfTxIsCreation(txConfirmations?.size || 0, txType)
 
+      const { maxPriorityFeePerGas, maxFeePerGas } = await getFeesPerGas()
+      const maxPrioFeePerGas = setMaxPrioFeePerGas(maxPriorityFeePerGas, maxFeePerGas)
+
       if (isOffChainSignature && !isCreation) {
         setGasEstimation(
           getDefaultGasEstimation({
             txEstimationExecutionStatus: EstimationStatus.SUCCESS,
-            gasPrice: fromWei(DEFAULT_MAX_GAS_FEE, 'gwei'),
-            gasPriceFormatted: DEFAULT_MAX_GAS_FEE,
-            gasMaxPrioFee: fromWei(DEFAULT_MAX_PRIO_FEE, 'gwei'),
-            gasMaxPrioFeeFormatted: DEFAULT_MAX_PRIO_FEE,
+            gasPrice: fromWei(maxFeePerGas.toString(), 'gwei'),
+            gasPriceFormatted: maxFeePerGas.toString(),
+            gasMaxPrioFee: fromWei(maxPrioFeePerGas.toString(), 'gwei'),
+            gasMaxPrioFeeFormatted: maxPrioFeePerGas.toString(),
             isCreation,
             isOffChainSignature,
           }),
@@ -222,9 +218,9 @@ export const useEstimateTransactionGas = ({
         const gasMaxPrioFee = isMaxFeeParam()
           ? manualMaxPrioFee
             ? toWei(manualMaxPrioFee, 'gwei')
-            : DEFAULT_MAX_PRIO_FEE
+            : setMaxPrioFeePerGas(maxPriorityFeePerGas, parseInt(gasPrice)).toString()
           : '0'
-        const gasMaxPrioFeeFormatted = fromWei(gasMaxPrioFee, 'gwei')
+        const gasMaxPrioFeeFormatted = fromWei(gasMaxPrioFee.toString(), 'gwei')
         const gasLimit = manualGasLimit || ethGasLimitEstimation.toString()
         const [gasCost, gasCostFormatted] = calculateTotalGasCost(
           gasLimit,
@@ -273,10 +269,10 @@ export const useEstimateTransactionGas = ({
         setGasEstimation(
           getDefaultGasEstimation({
             txEstimationExecutionStatus: EstimationStatus.FAILURE,
-            gasPrice: DEFAULT_MAX_GAS_FEE,
-            gasPriceFormatted: fromWei(DEFAULT_MAX_GAS_FEE, 'gwei'),
-            gasMaxPrioFee: DEFAULT_MAX_PRIO_FEE,
-            gasMaxPrioFeeFormatted: fromWei(DEFAULT_MAX_PRIO_FEE, 'gwei'),
+            gasPrice: maxFeePerGas.toString(),
+            gasPriceFormatted: fromWei(maxFeePerGas.toString(), 'gwei'),
+            gasMaxPrioFee: maxPrioFeePerGas.toString(),
+            gasMaxPrioFeeFormatted: fromWei(maxPrioFeePerGas.toString(), 'gwei'),
           }),
         )
       }

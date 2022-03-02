@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import Close from '@material-ui/icons/Close'
 import { makeStyles } from '@material-ui/core/styles'
-import { Title, Text, Divider, Link, Icon } from '@gnosis.pm/safe-react-components'
+import { Text, Divider, Link, Icon } from '@gnosis.pm/safe-react-components'
 import styled from 'styled-components'
 
 import Field from 'src/components/forms/Field'
@@ -12,7 +12,7 @@ import Row from 'src/components/layout/Row'
 import { styles } from './style'
 import GnoForm from 'src/components/forms/GnoForm'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
-import { minValue } from 'src/components/forms/validator'
+import { composeValidators, maxValue, minValue } from 'src/components/forms/validator'
 import { Modal } from 'src/components/Modal'
 import {
   ParametersStatus,
@@ -24,9 +24,10 @@ import useSafeTxGas from 'src/routes/safe/components/Transactions/helpers/useSaf
 import { isMaxFeeParam } from 'src/logic/safe/transactions/gas'
 import { extractSafeAddress } from 'src/routes/routes'
 import useGetRecommendedNonce from 'src/logic/hooks/useGetRecommendedNonce'
+import Paragraph from 'src/components/layout/Paragraph'
 
 const StyledDivider = styled(Divider)`
-  margin: 0px;
+  margin: 0;
 `
 const StyledDividerFooter = styled(Divider)`
   margin: 16px -24px;
@@ -39,14 +40,9 @@ const SafeOptions = styled.div`
 `
 
 const EthereumOptions = styled.div`
-  display: flex;
-  /* justify-content: space-between; */
-  flex-wrap: wrap;
-  gap: 10px 20px;
-
-  div {
-    width: 216px !important;
-  }
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 `
 const StyledLink = styled(Link)`
   margin: 16px 0 0 0;
@@ -79,7 +75,7 @@ const formValidation = (values: Record<keyof TxParameters, string>): Record<stri
 
   const ethGasPriceValidation = minValue(0, true)(ethGasPrice)
 
-  const ethMaxPrioFeeValidation = minValue(0, true)(ethMaxPrioFee)
+  const ethMaxPrioFeeValidation = composeValidators(minValue(0, true), maxValue(ethGasPrice))(ethMaxPrioFee)
 
   const ethNonceValidation = minValue(0, true)(ethNonce)
 
@@ -121,9 +117,9 @@ export const EditTxParametersForm = ({
     <>
       {/* Header */}
       <Row align="center" className={classes.heading} grow data-testid="send-funds-review-step">
-        <Title size="sm" withoutMargin>
-          Advanced options
-        </Title>
+        <Paragraph size="xl" noMargin>
+          Advanced parameters
+        </Paragraph>
         <IconButton disableRipple onClick={onCloseFormHandler}>
           <Close className={classes.closeIcon} />
         </IconButton>
@@ -198,7 +194,7 @@ export const EditTxParametersForm = ({
                       text="Gas limit"
                       type="number"
                       component={TextField}
-                      disabled={parametersStatus === 'CANCEL_TRANSACTION'}
+                      disabled={!areEthereumParamsVisible(parametersStatus)}
                     />
                     {((gasPriceText) => (
                       <Field
@@ -217,7 +213,7 @@ export const EditTxParametersForm = ({
                         name="ethMaxPrioFee"
                         defaultValue={ethMaxPrioFee}
                         type="number"
-                        placeholder="Max priority fee (GWEI)"
+                        placeholder="Max priority fee"
                         text="Max priority fee (GWEI)"
                         component={TextField}
                         disabled={!areEthereumParamsVisible(parametersStatus)}

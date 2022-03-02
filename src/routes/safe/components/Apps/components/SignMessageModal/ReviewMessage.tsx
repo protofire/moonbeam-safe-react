@@ -117,9 +117,9 @@ export const ReviewMessage = ({
       txData={txData}
       txTo={txRecipient}
       onSubmit={confirmTransactions}
-      onBack={handleTxRejection}
+      onClose={handleTxRejection}
       operation={Operation.DELEGATE}
-      isConfirmDisabled={!isOwner}
+      isSubmitDisabled={!isOwner}
     >
       <ModalTitle title={app.name} iconUrl={app.iconUrl} onClose={handleTxRejection} />
 
@@ -127,7 +127,14 @@ export const ReviewMessage = ({
 
       <Container>
         {/* Safe */}
-        <PrefixedEthHashInfo name={safeName} hash={safeAddress} showAvatar showCopyBtn explorerUrl={explorerUrl} />
+        <PrefixedEthHashInfo
+          name={safeName}
+          hash={safeAddress}
+          strongName
+          showAvatar
+          showCopyBtn
+          explorerUrl={explorerUrl}
+        />
         <StyledBlock>
           <Text size="md">Balance:</Text>
           <Text size="md" strong>{`${ethBalance} ${nativeCurrency.symbol}`}</Text>
