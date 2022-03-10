@@ -15,7 +15,7 @@ import { ScanQRWrapper } from 'src/components/ScanQRModal/ScanQRWrapper'
 import { isValidAddress } from 'src/utils/isValidAddress'
 import { isChecksumAddress } from 'src/utils/checksumAddress'
 import { getSafeInfo } from 'src/logic/safe/utils/safeInformation'
-import { lg, secondary } from 'src/theme/variables'
+import { lg, secondary, md } from 'src/theme/variables'
 import { AddressBookEntry, makeAddressBookEntry } from 'src/logic/addressBook/model/addressBook'
 import { currentNetworkAddressBookAsMap } from 'src/logic/addressBook/store/selectors'
 import {
@@ -148,7 +148,7 @@ function LoadSafeAddressStep(): ReactElement {
             component={TextField}
             name={FIELD_LOAD_CUSTOM_SAFE_NAME}
             placeholder={safeName}
-            text="Safe name"
+            label="Safe name"
             type="text"
             testId="load-safe-name-field"
           />
@@ -190,8 +190,7 @@ function LoadSafeAddressStep(): ReactElement {
           <StyledLink href="https://moonbeam.foundation/privacy-policy" rel="noopener noreferrer" target="_blank">
             privacy policy
           </StyledLink>
-          . Most importantly, you confirm that your funds are held securely in the Moonbeam Safe, a smart contract on
-          the Ethereum blockchain. These funds cannot be accessed by Moonbeam at any point.
+          .
         </Paragraph>
       </Block>
     </Container>
@@ -245,7 +244,7 @@ const Container = styled(Block)`
 const FieldContainer = styled(Block)`
   display: flex;
   max-width: 480px;
-  margin-top: 12px;
+  margin-top: ${md};
 `
 
 const CheckIconAddressAdornment = styled(CheckCircle)`
