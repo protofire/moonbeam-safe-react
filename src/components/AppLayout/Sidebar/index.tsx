@@ -1,16 +1,16 @@
 import { lazy, useMemo } from 'react'
 import styled from 'styled-components'
 import { Divider } from '@gnosis.pm/safe-react-components'
-import { useDispatch } from 'react-redux'
+// import { useDispatch } from 'react-redux'
 
-import List, { ListItemType, StyledListItem, StyledListItemText } from 'src/components/List'
+import List, { ListItemType, StyledListItemText } from 'src/components/List'
 import SafeHeader from './SafeHeader'
-import { IS_PRODUCTION, BEAMER_ID } from 'src/utils/constants'
+import { IS_PRODUCTION } from 'src/utils/constants'
 import { wrapInSuspense } from 'src/utils/wrapInSuspense'
 import ListIcon from 'src/components/List/ListIcon'
-import { openCookieBanner } from 'src/logic/cookies/store/actions/openCookieBanner'
-import { loadFromCookie } from 'src/logic/cookies/utils'
-import { COOKIES_KEY, BannerCookiesType, COOKIE_IDS } from 'src/logic/cookies/model/cookie'
+// import { openCookieBanner } from 'src/logic/cookies/store/actions/openCookieBanner'
+// import { loadFromCookie } from 'src/logic/cookies/utils'
+// import { COOKIES_KEY, BannerCookiesType, COOKIE_IDS } from 'src/logic/cookies/model/cookie'
 
 const StyledDivider = styled(Divider)`
   margin: 16px -8px 0;
@@ -68,7 +68,7 @@ const lazyLoad = (path: string): React.ReactElement => {
   return wrapInSuspense(<Component />)
 }
 
-const isDesktop = process.env.REACT_APP_BUILD_FOR_DESKTOP
+// const isDesktop = process.env.REACT_APP_BUILD_FOR_DESKTOP
 
 const Sidebar = ({
   items,
@@ -81,23 +81,23 @@ const Sidebar = ({
   onNewTransactionClick,
 }: Props): React.ReactElement => {
   const debugToggle = useMemo(() => (IS_PRODUCTION ? null : lazyLoad('./DebugToggle')), [])
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
-  const handleClick = (): void => {
-    const cookiesState = loadFromCookie<BannerCookiesType>(COOKIES_KEY)
-    if (!cookiesState) {
-      dispatch(openCookieBanner({ cookieBannerOpen: true }))
-      return
-    }
-    if (!cookiesState.acceptedSupportAndUpdates) {
-      dispatch(
-        openCookieBanner({
-          cookieBannerOpen: true,
-          key: COOKIE_IDS.BEAMER,
-        }),
-      )
-    }
-  }
+  // const handleClick = (): void => {
+  //   const cookiesState = loadFromCookie<BannerCookiesType>(COOKIES_KEY)
+  //   if (!cookiesState) {
+  //     dispatch(openCookieBanner({ cookieBannerOpen: true }))
+  //     return
+  //   }
+  //   if (!cookiesState.acceptedSupportAndUpdates) {
+  //     dispatch(
+  //       openCookieBanner({
+  //         cookieBannerOpen: true,
+  //         key: COOKIE_IDS.BEAMER,
+  //       }),
+  //     )
+  //   }
+  // }
 
   return (
     <>
@@ -124,12 +124,12 @@ const Sidebar = ({
         <StyledDivider />
 
         <HelpList>
-          {!isDesktop && BEAMER_ID && (
+          {/* {!isDesktop && BEAMER_ID && (
             <StyledListItem id="whats-new-button" button onClick={handleClick}>
               <ListIcon type="gift" />
               <StyledListItemText>What&apos;s new</StyledListItemText>
             </StyledListItem>
-          )}
+          )} */}
 
           <HelpCenterLink href="https://help.gnosis-safe.io/en/" target="_blank" title="Help Center of Gnosis Safe">
             <ListIcon type="question" />
