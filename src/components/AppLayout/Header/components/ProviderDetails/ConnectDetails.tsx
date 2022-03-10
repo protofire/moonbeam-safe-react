@@ -1,4 +1,4 @@
-import { lazy, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Card } from '@gnosis.pm/safe-react-components'
 import styled from 'styled-components'
@@ -8,10 +8,10 @@ import Block from 'src/components/layout/Block'
 import Paragraph from 'src/components/layout/Paragraph'
 import Row from 'src/components/layout/Row'
 import { KeyRing } from 'src/components/AppLayout/Header/components/KeyRing'
-import { isPairingSupported } from 'src/logic/wallets/pairing/utils'
-import { wrapInSuspense } from 'src/utils/wrapInSuspense'
+// import { isPairingSupported } from 'src/logic/wallets/pairing/utils'
+// import { wrapInSuspense } from 'src/utils/wrapInSuspense'
 // We need lazy import because the component imports static css that should only be applied if the component is rendered
-const PairingDetails = lazy(() => import('src/components/AppLayout/Header/components/ProviderDetails/PairingDetails'))
+// const PairingDetails = lazy(() => import('src/components/AppLayout/Header/components/ProviderDetails/PairingDetails'))
 
 const styles = () => ({
   header: {
@@ -52,8 +52,6 @@ const ConnectDetails = ({ classes }): ReactElement => (
     <Block className={classes.centerText}>
       <ConnectButton data-testid="heading-connect-btn" />
     </Block>
-
-    {isPairingSupported() && wrapInSuspense(<PairingDetails classes={classes} />)}
   </StyledCard>
 )
 

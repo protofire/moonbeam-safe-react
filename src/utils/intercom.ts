@@ -49,8 +49,8 @@ export const loadIntercom = (): void => {
   }
 }
 
-export const closeIntercom = (): void => {
-  if (!isIntercomLoaded()) return
-  intercomLoaded = false
-  ;(window as any).Intercom('shutdown')
-}
+// export const closeIntercom = (): void => {
+//   if (!isIntercomLoaded()) return
+//   intercomLoaded = false
+//   ;(window as any).Intercom('shutdown')
+// }

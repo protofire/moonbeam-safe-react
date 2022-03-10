@@ -11,7 +11,7 @@ import { cookieBannerState } from 'src/logic/cookies/store/selectors'
 import { loadFromCookie, saveCookie } from 'src/logic/cookies/utils'
 import { mainFontFamily, md, primary, screenSm } from 'src/theme/variables'
 import { loadGoogleAnalytics, unloadGoogleAnalytics } from 'src/utils/googleAnalytics'
-import { closeIntercom, isIntercomLoaded, loadIntercom } from 'src/utils/intercom'
+import { isIntercomLoaded, loadIntercom } from 'src/utils/intercom'
 import AlertRedIcon from './assets/alert-red.svg'
 import IntercomIcon from './assets/intercom.png'
 import { useSafeAppUrl } from 'src/logic/hooks/useSafeAppUrl'
@@ -275,10 +275,10 @@ const CookiesBanner = isDesktop
 
       // Toggle Intercom
       useEffect(() => {
-        if (isSafeAppView || !localSupportAndUpdates) {
-          isIntercomLoaded() && closeIntercom()
-          return
-        }
+        // if (isSafeAppView || !localSupportAndUpdates) {
+        //   isIntercomLoaded() && closeIntercom()
+        //   return
+        // }
 
         if (!isSafeAppView && localSupportAndUpdates) {
           !isIntercomLoaded() && loadIntercom()

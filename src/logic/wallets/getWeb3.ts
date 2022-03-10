@@ -38,7 +38,7 @@ export enum WALLET_PROVIDER {
   LATTICE = 'LATTICE',
   KEYSTONE = 'KEYSTONE',
   // Safe name as PAIRING_MODULE_NAME
-  SAFE_MOBILE = 'SAFE MOBILE',
+  // SAFE_MOBILE = 'SAFE MOBILE',
 }
 
 // With some wallets from web3connect you have to use their provider instance only for signing
