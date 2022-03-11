@@ -2,6 +2,8 @@ import { createTheme } from '@material-ui/core/styles'
 import { alpha } from '@material-ui/core/styles/colorManipulator'
 
 import {
+  alertWarning,
+  background,
   boldFont,
   bolderFont,
   border,
@@ -24,7 +26,8 @@ import {
   sm,
   smallFontSize,
   xs,
-  alertWarning,
+  black300,
+  black400,
 } from './variables'
 
 const palette = {
@@ -150,17 +153,9 @@ const theme = createTheme({
         fontFamily: secondaryFontFamily,
       },
     },
-    MuiFormHelperText: {
+    MuiFormControl: {
       root: {
-        color: secondary,
-        fontFamily: secondaryFontFamily,
-        fontSize: '12px',
-        marginTop: '0px',
-        order: '0',
-        padding: `0 0 0 ${md}`,
-        position: 'absolute',
-        top: '5px',
-        zIndex: 1, // for firefox
+        width: '100%',
       },
     },
     MuiInput: {
@@ -224,6 +219,74 @@ const theme = createTheme({
       },
       formControl: {
         marginTop: '0 !important',
+      },
+    },
+    MuiInputLabel: {
+      outlined: {
+        '&$error': {
+          color: error,
+        },
+      },
+    },
+    MuiAutocomplete: {
+      inputRoot: {
+        padding: '0 !important',
+      },
+      root: {
+        input: {
+          padding: '16px',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      root: {
+        padding: 0,
+        borderRadius: xs,
+        color: primary,
+        fontFamily: secondaryFontFamily,
+        fontSize: largeFontSize,
+        '&:$disabled': {
+          color: '#0000ff',
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderColor: black300,
+          transition: 'borderColor 0.2s ease-in-out 0s',
+          borderWidth: '1px',
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+          borderColor: secondary,
+        },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          borderColor: black400,
+          borderWidth: '1px',
+        },
+        '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+          borderColor: error,
+        },
+      },
+      input: {
+        color: primary,
+        display: 'flex',
+        height: 'auto',
+        letterSpacing: '0.5px',
+        padding: md,
+        lineHeight: '1.5',
+        textOverflow: 'ellipsis',
+        '&::-webkit-input-placeholder': {
+          color: disabled,
+        },
+      },
+      adornedEnd: {
+        paddingRight: md,
+      },
+    },
+    MuiSelect: {
+      outlined: {
+        padding: '8px 16px',
+        minHeight: '56px !important',
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
       },
     },
     MuiFilledInput: {
@@ -425,6 +488,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiFormLabel: {
+      root: {
+        '&$focused': {
+          color: black400,
+        },
+      },
+    },
     MuiFormControlLabel: {
       label: {
         '&$disabled': {
@@ -492,7 +562,7 @@ export const DropdownListTheme = {
       },
       button: {
         '&:hover': {
-          backgroundColor: '#f7f5f5',
+          backgroundColor: `${background}`,
         },
       },
     },
