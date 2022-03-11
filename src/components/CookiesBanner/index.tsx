@@ -13,7 +13,7 @@ import { mainFontFamily, md, primary, screenSm } from 'src/theme/variables'
 import { loadGoogleAnalytics, unloadGoogleAnalytics } from 'src/utils/googleAnalytics'
 import { isIntercomLoaded, loadIntercom } from 'src/utils/intercom'
 import AlertRedIcon from './assets/alert-red.svg'
-import IntercomIcon from './assets/intercom.png'
+// import IntercomIcon from './assets/intercom.png'
 import { useSafeAppUrl } from 'src/logic/hooks/useSafeAppUrl'
 // import { loadBeamer, unloadBeamer } from 'src/utils/beamer'
 
@@ -164,24 +164,24 @@ const CookiesBannerForm = (props: {
   )
 }
 
-const FakeIntercomButton = ({ onClick }: { onClick: () => void }): ReactElement => {
-  return (
-    <img
-      style={{
-        position: 'fixed',
-        cursor: 'pointer',
-        height: '80px',
-        width: '80px',
-        bottom: '8px',
-        right: '10px',
-        zIndex: 1000,
-        boxShadow: '1px 2px 10px 0 var(rgba(40, 54, 61, 0.18))',
-      }}
-      src={IntercomIcon}
-      onClick={onClick}
-    />
-  )
-}
+// const FakeIntercomButton = ({ onClick }: { onClick: () => void }): ReactElement => {
+//   return (
+//     <img
+//       style={{
+//         position: 'fixed',
+//         cursor: 'pointer',
+//         height: '80px',
+//         width: '80px',
+//         bottom: '8px',
+//         right: '10px',
+//         zIndex: 1000,
+//         boxShadow: '1px 2px 10px 0 var(rgba(40, 54, 61, 0.18))',
+//       }}
+//       src={IntercomIcon}
+//       onClick={onClick}
+//     />
+//   )
+// }
 
 const CookiesBanner = isDesktop
   ? Fragment
@@ -283,10 +283,10 @@ const CookiesBanner = isDesktop
 
       return (
         <>
-          {/* A fake Intercom button before Intercom is loaded */}
+          {/* A fake Intercom button before Intercom is loaded
           {!localSupportAndUpdates && !isSafeAppView && (
             <FakeIntercomButton onClick={() => openBanner(COOKIE_IDS.INTERCOM)} />
-          )}
+          )} */}
 
           {/* The cookie banner itself */}
           {cookieBannerOpen && (
