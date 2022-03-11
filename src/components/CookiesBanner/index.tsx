@@ -167,7 +167,6 @@ const CookiesBannerForm = (props: {
 // const FakeIntercomButton = ({ onClick }: { onClick: () => void }): ReactElement => {
 //   return (
 //     <img
-//       alt="Open Intercom"
 //       style={{
 //         position: 'fixed',
 //         cursor: 'pointer',
@@ -285,8 +284,8 @@ const CookiesBanner = isDesktop
 
       return (
         <>
-          {/* A fake Intercom button before Intercom is loaded */}
-          {/* {!localSupportAndUpdates && !isSafeAppView && (
+          {/* A fake Intercom button before Intercom is loaded
+          {!localSupportAndUpdates && !isSafeAppView && (
             <FakeIntercomButton onClick={() => openBanner(COOKIE_IDS.INTERCOM)} />
           )} */}
 
