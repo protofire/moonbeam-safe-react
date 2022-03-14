@@ -49,4 +49,4 @@ export const GATEWAY_URL =
   process.env.REACT_APP_GATEWAY_URL ||
   (IS_PRODUCTION || isProdGateway()
     ? 'https://gateway.moonriver.multisig.moonbeam.network'
-    : 'https://gateway.staging.multisig.moonbeam.network/')
+    : 'https://gateway.moonbase.staging.multisig.moonbeam.network')
