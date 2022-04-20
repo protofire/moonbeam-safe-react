@@ -7,6 +7,8 @@ import List, { ListItemType, StyledListItemText } from 'src/components/List'
 import SafeHeader from './SafeHeader'
 import { IS_PRODUCTION } from 'src/utils/constants'
 import { wrapInSuspense } from 'src/utils/wrapInSuspense'
+import Track from 'src/components/Track'
+import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
 import ListIcon from 'src/components/List/ListIcon'
 // import { openCookieBanner } from 'src/logic/cookies/store/actions/openCookieBanner'
 // import { loadFromCookie } from 'src/logic/cookies/utils'
@@ -131,10 +133,12 @@ const Sidebar = ({
             </StyledListItem>
           )} */}
 
-          <HelpCenterLink href="https://help.gnosis-safe.io/en/" target="_blank" title="Help Center of Gnosis Safe">
-            <ListIcon type="question" />
-            <StyledListItemText>Help Center</StyledListItemText>
-          </HelpCenterLink>
+          <Track {...OVERVIEW_EVENTS.HELP_CENTER}>
+            <HelpCenterLink href="https://help.gnosis-safe.io/en/" target="_blank" title="Help Center of Gnosis Safe">
+              <ListIcon type="question" />
+              <StyledListItemText>Help Center</StyledListItemText>
+            </HelpCenterLink>
+          </Track>
         </HelpList>
       </HelpContainer>
     </>

@@ -27,9 +27,6 @@ const styles = () => ({
   justifyCenter: {
     justifyContent: 'center',
   },
-  appStore: {
-    height: '35px',
-  },
 })
 
 const StyledCard = styled(Card)`

@@ -22,6 +22,8 @@ import Divider from 'src/components/layout/Divider'
 import { shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
 import { currentChainId } from 'src/logic/config/store/selectors'
 import { useSelector } from 'react-redux'
+import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
+import Track from 'src/components/Track'
 
 const styles = () => ({
   root: {
@@ -100,14 +102,16 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
   return (
     <Row className={classes.summary}>
       <Col className={classes.logo} middle="xs" start="xs">
-        <Link to={WELCOME_ROUTE}>
-          <Img
-            alt="Moonbeam Safe"
-            height={chainId == '1285' || chainId == '1284' ? '96' : '36'}
-            src={chainId == '1285' ? SafeLogoMVR : chainId == '1284' ? SafeLogoMBEAM : SafeLogoMBASE}
-            testId="heading-gnosis-logo"
-          />
-        </Link>
+        <Track {...OVERVIEW_EVENTS.HOME}>
+          <Link to={WELCOME_ROUTE}>
+            <Img
+              alt="Moonbeam Safe"
+              height={chainId == '1285' || chainId == '1284' ? '96' : '36'}
+              src={chainId == '1285' ? SafeLogoMVR : chainId == '1284' ? SafeLogoMBEAM : SafeLogoMBASE}
+              testId="heading-gnosis-logo"
+            />
+          </Link>
+        </Track>
       </Col>
 
       <Spacer />

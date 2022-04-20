@@ -16,6 +16,7 @@ const useStyles = makeStyles({
     flexShrink: '1',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    alignItems: 'center',
     margin: '0 auto',
     maxWidth: '100%',
     padding: `20px ${sm} 20px`,
