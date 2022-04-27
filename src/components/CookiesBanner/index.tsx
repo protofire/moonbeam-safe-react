@@ -10,7 +10,7 @@ import { closeCookieBanner, openCookieBanner } from 'src/logic/cookies/store/act
 import { cookieBannerState } from 'src/logic/cookies/store/selectors'
 import { loadFromCookie, saveCookie } from 'src/logic/cookies/utils'
 import { mainFontFamily, md, primary, screenSm } from 'src/theme/variables'
-// import { loadGoogleAnalytics, unloadGoogleAnalytics } from 'src/utils/googleAnalytics'
+import { loadGoogleTagManager, unloadGoogleTagManager } from 'src/utils/googleTagManager'
 import { isIntercomLoaded, loadIntercom } from 'src/utils/intercom'
 import AlertRedIcon from './assets/alert-red.svg'
 // import IntercomIcon from './assets/intercom.png'
@@ -261,9 +261,9 @@ const CookiesBanner = isDesktop
       }, [setLocalNecessary, setLocalSupportAndUpdates, setLocalAnalytics, openBanner])
 
       // Load or unload GTM depending on user choice
-      // useEffect(() => {
-      //   localAnalytics ? loadGoogleTagManager() : unloadGoogleTagManager()
-      // }, [localAnalytics])
+      useEffect(() => {
+        localAnalytics ? loadGoogleTagManager() : unloadGoogleTagManager()
+      }, [localAnalytics])
 
       // Toggle Intercom
       useEffect(() => {
