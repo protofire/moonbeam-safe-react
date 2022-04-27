@@ -6,7 +6,7 @@ import { INTERCOM_ID } from 'src/utils/constants'
 import { trackEvent } from 'src/utils/googleTagManager'
 import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
 
-let intercomLoaded = true
+let intercomLoaded = false
 
 export const isIntercomLoaded = (): boolean => intercomLoaded
 

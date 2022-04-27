@@ -65,6 +65,71 @@
       ]
     },
     {
+      "transactionService": "https://safe-transaction.xdai.gnosis.io",
+      "chainId": "100",
+      "chainName": "Gnosis Chain",
+      "shortName": "gno",
+      "l2": true,
+      "description": "",
+      "rpcUri": {
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.xdaichain.com/"
+      },
+      "safeAppsRpcUri": {
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.xdaichain.com/"
+      },
+      "publicRpcUri": {
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.xdaichain.com/"
+      },
+      "blockExplorerUriTemplate": {
+        "address": "https://blockscout.com/xdai/mainnet/address/{{address}}/transactions",
+        "txHash": "https://blockscout.com/xdai/mainnet/tx/{{txHash}}/",
+        "api": "https://blockscout.com/poa/xdai/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}"
+      },
+      "nativeCurrency": {
+        "name": "xDai",
+        "symbol": "XDAI",
+        "decimals": 18,
+        "logoUri": "https://safe-transaction-assets.staging.gnosisdev.com/chains/100/currency_logo.png"
+      },
+      "theme": {
+        "textColor": "#ffffff",
+        "backgroundColor": "#48A9A6"
+      },
+      "gasPrice": [
+        {
+          "type": "FIXED",
+          "weiValue": "4000000000"
+        }
+      ],
+      "disabledWallets": [
+        "authereum",
+        "coinbase",
+        "fortmatic",
+        "frame",
+        "keystone",
+        "lattice",
+        "ledger",
+        "opera",
+        "operaTouch",
+        "portis",
+        "torus",
+        "trezor",
+        "trust",
+        "walletLink"
+      ],
+      "features": [
+        "CONTRACT_INTERACTION",
+        "EIP1559",
+        "ERC721",
+        "SAFE_APPS",
+        "SAFE_TX_GAS_OPTIONAL",
+        "SPENDING_LIMIT"
+      ]
+    },
+    {
       "transactionService": "https://safe-transaction-polygon.staging.gnosisdev.com",
       "chainId": "137",
       "chainName": "Polygon",
@@ -110,6 +175,7 @@
         "authereum",
         "coinbase",
         "fortmatic",
+        "frame",
         "keystone",
         "lattice",
         "opera",
@@ -121,10 +187,12 @@
       ],
       "features": [
         "CONTRACT_INTERACTION",
+        "DOMAIN_LOOKUP",
         "EIP1559",
         "ERC721",
         "SAFE_APPS",
-        "SAFE_TX_GAS_OPTIONAL"
+        "SAFE_TX_GAS_OPTIONAL",
+        "SPENDING_LIMIT"
       ]
     },
     {
@@ -164,10 +232,8 @@
       "ensRegistryAddress": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
       "gasPrice": [
         {
-          "type": "ORACLE",
-          "uri": "https://api-rinkeby.etherscan.io/api?module=gastracker&action=gasoracle&apikey=JNFAU892RF9TJWBU3EV7DJCPIWZY8KEMY1",
-          "gasParameter": "FastGasPrice",
-          "gweiFactor": "1000000000.000000000"
+          "type": "FIXED",
+          "weiValue": "24000000000"
         }
       ],
       "disabledWallets": [
