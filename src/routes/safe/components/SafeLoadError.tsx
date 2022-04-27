@@ -1,48 +1,25 @@
-import { ReactElement, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
-import { Title } from '@gnosis.pm/safe-react-components'
-import styled from 'styled-components'
+import { ReactElement } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
-import Button from 'src/components/layout/Button'
-import { extractSafeAddress, WELCOME_ROUTE } from 'src/routes/routes'
-import { useDispatch } from 'react-redux'
+import { WELCOME_ROUTE } from 'src/routes/routes'
 import removeViewedSafe from 'src/logic/currentSession/store/actions/removeViewedSafe'
+import FetchError from './FetchError'
+import { currentSafe } from 'src/logic/safe/store/selectors'
 
 const SafeLoadError = (): ReactElement => {
   const dispatch = useDispatch()
-  const history = useHistory()
 
-  useEffect(() => {
-    // Remove the errorneous Safe from the list of viewed safes on unmount
-    return () => {
-      dispatch(removeViewedSafe(extractSafeAddress()))
-    }
-  }, [dispatch])
-
-  const handleClick = () => {
-    history.push(WELCOME_ROUTE)
-  }
+  const { address } = useSelector(currentSafe)
+  const onClick = () => dispatch(removeViewedSafe(address))
 
   return (
-    <ErrorContainer>
-      <img src="./resources/error.png" alt="Error" />
-      <Title size="xs">This Safe couldn&apos;t be loaded</Title>
-      <Button onClick={handleClick} color="primary" size="medium" variant="contained">
-        Back to Main Page
-      </Button>
-    </ErrorContainer>
+    <FetchError
+      text="This Safe couldn't be loaded"
+      buttonText="Back to Main Page"
+      redirectRoute={WELCOME_ROUTE}
+      onClick={onClick}
+    />
   )
 }
-
-export const ErrorContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  // Offset so that it is centered relative to the header
-  margin-top: -30px;
-`
 
 export default SafeLoadError

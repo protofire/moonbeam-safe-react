@@ -15,7 +15,10 @@ import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionPara
 import { extractSafeAddress } from 'src/routes/routes'
 import { getSafeSDK } from 'src/logic/wallets/getWeb3'
 import { Errors, logError } from 'src/logic/exceptions/CodedException'
-import { currentSafeCurrentVersion } from 'src/logic/safe/store/selectors'
+import { currentSafe, currentSafeCurrentVersion } from 'src/logic/safe/store/selectors'
+import { trackEvent } from 'src/utils/googleTagManager'
+import { SETTINGS_EVENTS } from 'src/utils/events/settings'
+import { store } from 'src/store'
 
 type OwnerValues = OwnerData & {
   threshold: string
@@ -29,6 +32,7 @@ export const sendRemoveOwner = async (
   dispatch: Dispatch,
   txParameters: TxParameters,
   connectedWalletAddress: string,
+  delayExecution: boolean,
 ): Promise<void> => {
   const sdk = await getSafeSDK(connectedWalletAddress, safeAddress, safeVersion)
   const safeTx = await sdk.getRemoveOwnerTx(
@@ -47,8 +51,12 @@ export const sendRemoveOwner = async (
       safeTxGas: txParameters.safeTxGas,
       ethParameters: txParameters,
       notifiedTransaction: TX_NOTIFICATION_TYPES.SETTINGS_CHANGE_TX,
+      delayExecution,
     }),
   )
+
+  trackEvent({ ...SETTINGS_EVENTS.THRESHOLD.THRESHOLD, label: values.threshold })
+  trackEvent({ ...SETTINGS_EVENTS.THRESHOLD.OWNERS, label: currentSafe(store.getState()).owners.length })
 }
 
 type RemoveOwnerProps = {
@@ -90,7 +98,7 @@ export const RemoveOwnerModal = ({ isOpen, onClose, owner }: RemoveOwnerProps): 
     setActiveScreen('reviewRemoveOwner')
   }
 
-  const onRemoveOwner = async (txParameters: TxParameters) => {
+  const onRemoveOwner = async (txParameters: TxParameters, delayExecution: boolean) => {
     onClose()
 
     try {
@@ -102,6 +110,7 @@ export const RemoveOwnerModal = ({ isOpen, onClose, owner }: RemoveOwnerProps): 
         dispatch,
         txParameters,
         connectedWalletAddress,
+        delayExecution,
       )
     } catch (error) {
       logError(Errors._809, error.message)

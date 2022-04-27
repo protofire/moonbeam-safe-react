@@ -13,12 +13,14 @@ import { providerNameSelector } from 'src/logic/wallets/store/selectors'
 import {
   FIELD_CREATE_CUSTOM_SAFE_NAME,
   FIELD_CREATE_SUGGESTED_SAFE_NAME,
-  FIELD_SAFE_OWNER_ENS_LIST,
   FIELD_SAFE_OWNERS_LIST,
+  FIELD_SAFE_OWNER_ENS_LIST,
 } from '../fields/createSafeFields'
 import { useStepper } from 'src/components/Stepper/stepperContext'
 import NetworkLabel from 'src/components/NetworkLabel/NetworkLabel'
-import { removeTld, reverseENSLookup } from 'src/logic/wallets/getWeb3'
+import { reverseENSLookup } from 'src/logic/wallets/getWeb3'
+import { trackEvent } from 'src/utils/googleTagManager'
+import { CREATE_SAFE_EVENTS } from 'src/utils/events/createLoadSafe'
 
 export const nameNewSafeStepLabel = 'Name'
 
@@ -36,21 +38,32 @@ function NameNewSafeStep(): ReactElement {
 
   const createNewSafeForm = useForm()
   const formValues = createNewSafeForm.getState().values
+  const hasCustomSafeName = !!formValues[FIELD_CREATE_CUSTOM_SAFE_NAME]
+
+  useEffect(() => {
+    // On unmount, e.g. go back/next
+    return () => {
+      if (hasCustomSafeName) {
+        trackEvent(CREATE_SAFE_EVENTS.NAME_SAFE)
+      }
+    }
+  }, [hasCustomSafeName])
 
   useEffect(() => {
     const getInitialOwnerENSNames = async () => {
       const formValues = createNewSafeForm.getState().values
       const owners = formValues[FIELD_SAFE_OWNERS_LIST]
       const ownersWithENSName = await Promise.all(
-        owners.map(async ({ addressFieldName }) => {
-          const address = formValues[addressFieldName]
-          const ensName = await reverseENSLookup(address)
-          const ensDomain = removeTld(ensName)
-          return {
-            address,
-            name: ensDomain,
-          }
-        }),
+        owners
+          .filter(({ addressFieldName }) => !!formValues[addressFieldName])
+          .map(async ({ addressFieldName }) => {
+            const address = formValues[addressFieldName]
+            const ensName = await reverseENSLookup(address)
+            return {
+              address,
+              name: ensName,
+            }
+          }),
       )
 
       const ownersWithENSNameRecord = ownersWithENSName.reduce<Record<string, string>>((acc, { address, name }) => {
@@ -87,7 +100,7 @@ function NameNewSafeStep(): ReactElement {
             component={TextField}
             name={FIELD_CREATE_CUSTOM_SAFE_NAME}
             placeholder={formValues[FIELD_CREATE_SUGGESTED_SAFE_NAME]}
-            text="Safe name"
+            label="Safe name"
             type="text"
             testId="create-safe-name-field"
           />
@@ -95,7 +108,7 @@ function NameNewSafeStep(): ReactElement {
       </FieldContainer>
       <Block margin="lg">
         <Paragraph color="primary" noMargin size="lg">
-          By continuing you consent with the{' '}
+          By continuing you consent to the{' '}
           <Link href="https://gnosis-safe.io/terms" rel="noopener noreferrer" target="_blank">
             terms of use
           </Link>{' '}

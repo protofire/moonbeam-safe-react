@@ -30,6 +30,7 @@ import { isValidAddress } from 'src/utils/isValidAddress'
 import { OwnerValues } from '../..'
 import { Modal } from 'src/components/Modal'
 import { ModalHeader } from 'src/routes/safe/components/Balances/SendModal/screens/ModalHeader'
+import { getStepTitle } from 'src/routes/safe/components/Balances/SendModal/utils'
 
 export const ADD_OWNER_NAME_INPUT_TEST_ID = 'add-owner-name-input'
 export const ADD_OWNER_ADDRESS_INPUT_TEST_ID = 'add-owner-address-testid'
@@ -61,13 +62,13 @@ export const OwnerForm = ({ onClose, onSubmit, initialValues }: OwnerFormProps):
     onSubmit(values)
   }
   const addressBookMap = useSelector(currentNetworkAddressBookAsMap)
-  const { address: safeAddress = '', owners = [] } = useSelector(currentSafe) ?? {}
+  const { address: safeAddress = '', owners = [] } = useSelector(currentSafe)
   const ownerDoesntExist = uniqueAddress(owners)
   const ownerAddressIsNotSafeAddress = addressIsNotCurrentSafe(safeAddress)
 
   return (
     <>
-      <ModalHeader onClose={onClose} title="Add new owner" subTitle="1 of 3" />
+      <ModalHeader onClose={onClose} title="Add new owner" subTitle={getStepTitle(1, 3)} />
       <Hairline />
       <GnoForm
         formMutators={formMutators}
@@ -103,7 +104,7 @@ export const OwnerForm = ({ onClose, onSubmit, initialValues }: OwnerFormProps):
                       name="ownerName"
                       placeholder="Owner name*"
                       testId={ADD_OWNER_NAME_INPUT_TEST_ID}
-                      text="Owner name*"
+                      label="Owner name*"
                       type="text"
                       validate={composeValidators(required, validAddressBookName)}
                     />
