@@ -9,7 +9,7 @@ import { getWCWalletInterface, getWalletConnectProvider } from 'src/logic/wallet
 // Modified version of the built in WC module in Onboard v1.35.5
 // https://github.com/blocknative/onboard/blob/release/1.35.5/src/modules/select/wallets/wallet-connect.ts
 
-export const PAIRING_MODULE_NAME = ''
+export const PAIRING_MODULE_NAME = 'Safe Mobile'
 
 let client = ''
 const getClientMeta = (): IClientMeta => {
