@@ -22,6 +22,8 @@ import Divider from 'src/components/layout/Divider'
 import { shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
 import { currentChainId } from 'src/logic/config/store/selectors'
 import { useSelector } from 'react-redux'
+// import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
+// import Track from 'src/components/Track'
 
 const styles = () => ({
   root: {

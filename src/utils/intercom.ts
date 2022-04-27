@@ -3,8 +3,10 @@ import { CookieAttributes } from 'js-cookie'
 import { COOKIES_KEY_INTERCOM, IntercomCookieType } from 'src/logic/cookies/model/cookie'
 import { loadFromCookie, saveCookie } from 'src/logic/cookies/utils'
 import { INTERCOM_ID } from 'src/utils/constants'
+import { trackEvent } from 'src/utils/googleTagManager'
+import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
 
-let intercomLoaded = true
+let intercomLoaded = false
 
 export const isIntercomLoaded = (): boolean => intercomLoaded
 
@@ -46,11 +48,14 @@ export const loadIntercom = (): void => {
       user_id: intercomUserId,
     })
     intercomLoaded = true
+    ;(window as any).Intercom('onShow', () => {
+      trackEvent(OVERVIEW_EVENTS.OPEN_INTERCOM)
+    })
   }
 }
 
-// export const closeIntercom = (): void => {
-//   if (!isIntercomLoaded()) return
-//   intercomLoaded = false
-//   ;(window as any).Intercom('shutdown')
-// }
+export const closeIntercom = (): void => {
+  if (!isIntercomLoaded()) return
+  intercomLoaded = false
+  ;(window as any).Intercom('shutdown')
+}

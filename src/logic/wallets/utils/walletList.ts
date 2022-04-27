@@ -3,7 +3,7 @@ import { WalletInitOptions, WalletModule, WalletSelectModuleOptions } from 'bnc-
 import { getRpcServiceUrl, getDisabledWallets, getChainById } from 'src/config'
 import { ChainId, WALLETS } from 'src/config/chain.d'
 import { FORTMATIC_KEY, PORTIS_ID } from 'src/utils/constants'
-// import getPairingModule from 'src/logic/wallets/pairing/module'
+import getPairingModule from 'src/logic/wallets/pairing/module'
 import { isPairingSupported } from 'src/logic/wallets/pairing/utils'
 import getPatchedWCModule from 'src/logic/wallets/walletConnect/module'
 
@@ -93,5 +93,5 @@ export const getSupportedWallets = (chainId: ChainId): WalletSelectModuleOptions
   }
 
   // Pairing must be 1st in list (to hide via CSS)
-  return isPairingSupported() ? [...supportedWallets] : supportedWallets
+  return isPairingSupported() ? [getPairingModule(chainId), ...supportedWallets] : supportedWallets
 }
