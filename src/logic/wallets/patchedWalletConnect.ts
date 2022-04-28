@@ -8,7 +8,7 @@ import { INFURA_TOKEN } from 'src/utils/constants'
 import { ChainId } from 'src/config/chain'
 
 // TODO: When desktop pairing is merged, import these into there
-export const WC_BRIDGE = 'https://safe-walletconnect.gnosis.io/'
+export const WC_BRIDGE = 'https://bridge.walletconnect.org/'
 
 // Modified version of the built in WC module in Onboard v1.35.5, including:
 // https://github.com/blocknative/onboard/blob/release/1.35.5/src/modules/select/wallets/wallet-connect.ts
