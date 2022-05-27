@@ -10,7 +10,7 @@ import { INFURA_TOKEN } from 'src/utils/constants'
 type Options = Omit<IWalletConnectProviderOptions, 'bridge' | 'infuraId' | 'rpc' | 'chainId' | 'pollingInterval'>
 
 export const getWalletConnectProvider = (chainId: ChainId, options: Options = {}): WalletConnectProvider => {
-  const WC_BRIDGE = 'https://safe-walletconnect.gnosis.io/'
+  const WC_BRIDGE = 'https://bridge.walletconnect.org/'
   // Prevent `eth_getBlockByNumber` polling every 4 seconds
   // https://github.com/WalletConnect/walletconnect-monorepo/issues/357#issuecomment-789663540
   const POLLING_INTERVAL = 60_000 * 60 // 1 hour
