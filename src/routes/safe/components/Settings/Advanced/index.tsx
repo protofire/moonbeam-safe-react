@@ -1,6 +1,6 @@
 import { Text, theme, Title } from '@gnosis.pm/safe-react-components'
 import { ReactElement } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import semverSatisfies from 'semver/functions/satisfies'
 
@@ -11,12 +11,12 @@ import { ModulesTable } from './ModulesTable'
 import Block from 'src/components/layout/Block'
 import { currentSafe } from 'src/logic/safe/store/selectors'
 import { TransactionGuard } from './TransactionGuard'
-import FormGroup from '@material-ui/core/FormGroup/FormGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox/Checkbox'
-import { toggleBatchExecute } from 'src/logic/appearance/actions/toggleBatchExecute'
-import { batchExecuteSelector } from 'src/logic/appearance/selectors'
-import { getMultisendContractAddress } from 'src/logic/contracts/safeContracts'
+// import FormGroup from '@material-ui/core/FormGroup/FormGroup'
+// import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel'
+// import Checkbox from '@material-ui/core/Checkbox/Checkbox'
+// import { toggleBatchExecute } from 'src/logic/appearance/actions/toggleBatchExecute'
+// import { batchExecuteSelector } from 'src/logic/appearance/selectors'
+// import { getMultisendContractAddress } from 'src/logic/contracts/safeContracts'
 
 const InfoText = styled(Text)`
   margin-top: 16px;
@@ -41,16 +41,16 @@ const NoTransactionGuardLegend = (): ReactElement => (
 // const DOCS_LINK = 'https://docs.gnosis-safe.io/contracts/modules-1'
 
 const Advanced = (): ReactElement => {
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const classes = useStyles()
   const { nonce, modules, guard, currentVersion } = useSelector(currentSafe) ?? {}
-  const batchExecute = useSelector(batchExecuteSelector)
-  const multiSendContractAddress = getMultisendContractAddress()
+  // const batchExecute = useSelector(batchExecuteSelector)
+  // const multiSendContractAddress = getMultisendContractAddress()
 
   const moduleData = modules ? getModuleData(modules) ?? null : null
   const isVersionWithGuards = semverSatisfies(currentVersion, '>=1.3.0')
 
-  const handleToggleBatchExecute = () => dispatch(toggleBatchExecute())
+  // const handleToggleBatchExecute = () => dispatch(toggleBatchExecute())
 
   return (
     <>
@@ -95,7 +95,7 @@ const Advanced = (): ReactElement => {
           {!guard ? <NoTransactionGuardLegend /> : <TransactionGuard address={guard} />}
         </Block>
       )}
-      {multiSendContractAddress && (
+      {/* {multiSendContractAddress && (
         <Block className={classes.container}>
           <Title size="xs" withoutMargin>
             Transactions (experimental)
@@ -112,7 +112,7 @@ const Advanced = (): ReactElement => {
             />
           </FormGroup>
         </Block>
-      )}
+      )} */}
     </>
   )
 }
