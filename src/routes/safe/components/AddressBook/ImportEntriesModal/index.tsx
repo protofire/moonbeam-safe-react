@@ -165,7 +165,7 @@ const ImportEntriesModal = ({ importEntryModalHandler, isOpen, onClose }: Import
           )}
           {!csvLoaded && importError === '' && (
             <Text color="text" as="p" size="xl">
-              Only CSV files exported from Moonbeam Safe are allowed. <br />
+              Only CSV files exported from Velas Safe are allowed. <br />
               <HelpInfo />
             </Text>
           )}

@@ -59,7 +59,7 @@ const PairingDetails = ({ classes }: { classes: Record<string, string> }): React
           Scan this code in the{' '}
           <Track {...OVERVIEW_EVENTS.IPHONE_APP_BUTTON}>
             <Link href="https://apps.apple.com/app/apple-store/id1515759131?pt=119497694&ct=Web%20App%20Connect&mt=8">
-              Gnosis Safe app
+              Velas Safe app
             </Link>
           </Track>{' '}
           to sign transactions with your mobile device.

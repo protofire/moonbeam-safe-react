@@ -13,14 +13,12 @@ import Img from 'src/components/layout/Img'
 import Row from 'src/components/layout/Row'
 import { headerHeight, md, screenSm, sm } from 'src/theme/variables'
 import { useStateHandler } from 'src/logic/hooks/useStateHandler'
-import SafeLogoMBEAM from '../assets/moonbeam_logo.svg'
-import SafeLogoMVR from '../assets/moonriver_logo.svg'
-import SafeLogoMBASE from '../assets/moonbase_logo.svg'
+import SafeLogo from '../assets/velas_logo.svg'
 import { WELCOME_ROUTE } from 'src/routes/routes'
 import WalletSwitch from 'src/components/WalletSwitch'
 import Divider from 'src/components/layout/Divider'
 import { shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
-import { currentChainId } from 'src/logic/config/store/selectors'
+// import { currentChainId } from 'src/logic/config/store/selectors'
 import { useSelector } from 'react-redux'
 // import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
 // import Track from 'src/components/Track'
@@ -97,18 +95,13 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
   const { clickAway, open, toggle } = useStateHandler()
   const { clickAway: clickAwayNetworks, open: openNetworks, toggle: toggleNetworks } = useStateHandler()
   const isWrongChain = useSelector(shouldSwitchWalletChain)
-  const chainId = useSelector(currentChainId)
+  //const chainId = useSelector(currentChainId)
 
   return (
     <Row className={classes.summary}>
       <Col className={classes.logo} middle="xs" start="xs">
         <Link to={WELCOME_ROUTE}>
-          <Img
-            alt="Moonbeam Safe"
-            height={chainId == '1285' || chainId == '1284' ? '96' : '36'}
-            src={chainId == '1285' ? SafeLogoMVR : chainId == '1284' ? SafeLogoMBEAM : SafeLogoMBASE}
-            testId="heading-gnosis-logo"
-          />
+          <Img alt="Velas Safe" height={36} src={SafeLogo} testId="heading-gnosis-logo" id="safe-logo" />
         </Link>
       </Col>
 

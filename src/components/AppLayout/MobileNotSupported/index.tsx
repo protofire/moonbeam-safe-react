@@ -83,7 +83,7 @@ export const MobileNotSupported = ({ onClose }: Props): ReactElement => {
       <Overlay>
         <ModalApp>
           <StyledCard>
-            <Text size="lg">The Moonbeam Safe web app is not optimized for mobile.</Text>
+            <Text size="lg">The Velas Safe web app is not optimized for mobile.</Text>
           </StyledCard>
           <StyledButton size="md" variant="outlined" color="primary" onClick={onClose}>
             <StyledCloseIcon size="md" type="cross" />

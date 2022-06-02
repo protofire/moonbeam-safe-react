@@ -15,10 +15,10 @@ function Welcome(): ReactElement {
     <Page align="center">
       <Block>
         <Title size="md" strong>
-          Welcome to Moonbeam Safe.
+          Welcome to Velas Safe.
         </Title>
         <Title size="xs">
-          Moonbeam Safe is the most trusted platform to manage digital assets. <br /> Here is how to get started:
+          Velas Safe is the most trusted platform to manage digital assets. <br /> Here is how to get started:
         </Title>
         <CardsContainer>
           <StyledCard>

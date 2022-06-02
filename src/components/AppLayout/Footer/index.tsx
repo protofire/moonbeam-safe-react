@@ -45,7 +45,7 @@ const useStyles = makeStyles({
 } as any)
 
 const Footer = (): React.ReactElement => {
-  // const appVersion = process.env.REACT_APP_APP_VERSION ? `v${process.env.REACT_APP_APP_VERSION} ` : 'Versions'
+  const appVersion = process.env.REACT_APP_APP_VERSION ? `v${process.env.REACT_APP_APP_VERSION} ` : 'Versions'
   const date = new Date()
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -56,19 +56,39 @@ const Footer = (): React.ReactElement => {
 
   return (
     <footer className={classes.footer}>
-      <span className={classes.item}>©{date.getFullYear()} Moonbeam</span>
+      <span className={classes.item}>©{date.getFullYear()} Velas</span>
       <span className={classes.sep}>|</span>
-      <Link className={cn(classes.item, classes.link)} target="_blank" to="https://moonbeam.network/">
-        Moonbeam Network
+      <Link className={cn(classes.item, classes.link)} target="_blank" to="https://velas.com/pdf/terms_of_services.pdf">
+        Terms
       </Link>
       <span className={classes.sep}>|</span>
-      <Link className={cn(classes.item, classes.link)} target="_blank" to="https://moonbeam.foundation/">
-        Moonbeam Foundation
+      <Link
+        className={cn(classes.item, classes.link)}
+        target="_blank"
+        to="https://velas.com/pdf/website_privacy_notice.pdf"
+      >
+        Privacy
       </Link>
       <span className={classes.sep}>|</span>
+      <Link
+        className={cn(classes.item, classes.link)}
+        target="_blank"
+        to="https://velas.com/pdf/website_privacy_notice.pdf"
+      >
+        Cookie Policy
+      </Link>
+      <span className={classes.sep}>-</span>
       <GnoButtonLink className={cn(classes.item, classes.link, classes.buttonLink)} onClick={openCookiesHandler}>
         Preferences
       </GnoButtonLink>
+      <span className={classes.sep}>|</span>
+      <Link
+        className={cn(classes.item, classes.link)}
+        target="_blank"
+        to="https://github.com/protofire/safe-react/tree/staging"
+      >
+        {appVersion}
+      </Link>
     </footer>
   )
 }

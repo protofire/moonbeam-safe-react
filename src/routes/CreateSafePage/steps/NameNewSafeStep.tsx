@@ -88,9 +88,9 @@ function NameNewSafeStep(): ReactElement {
     <BlockWithPadding data-testid={'create-safe-name-step'}>
       <Block margin="md">
         <Paragraph color="primary" noMargin size="lg">
-          You are about to create a new Moonbeam Safe wallet with one or more owners. First, let&apos;s give your new
-          wallet a name. This name is only stored locally and will never be shared with Moonbeam or any third parties.
-          The new Safe will ONLY be available on <NetworkLabel />
+          You are about to create a new Velas Safe wallet with one or more owners. First, let&apos;s give your new
+          wallet a name. This name is only stored locally and will never be shared with Velas or any third parties. The
+          new Safe will ONLY be available on <NetworkLabel />
         </Paragraph>
       </Block>
       <label htmlFor={FIELD_CREATE_CUSTOM_SAFE_NAME}>Name of the new Safe</label>
@@ -109,15 +109,15 @@ function NameNewSafeStep(): ReactElement {
       <Block margin="lg">
         <Paragraph color="primary" noMargin size="lg">
           By continuing you consent to the{' '}
-          <Link href="https://gnosis-safe.io/terms" rel="noopener noreferrer" target="_blank">
+          <Link href="https://velas.com/pdf/terms_of_services.pdf" rel="noopener noreferrer" target="_blank">
             terms of use
           </Link>{' '}
           and{' '}
-          <Link href="https://moonbeam.foundation/privacy-policy" rel="noopener noreferrer" target="_blank">
+          <Link href="https://velas.com/pdf/website_privacy_notice.pdf" rel="noopener noreferrer" target="_blank">
             privacy policy
           </Link>
-          . Most importantly, you confirm that your funds are held securely in the Moonbeam Safe, a smart contract on
-          the Ethereum blockchain. These funds cannot be accessed by Moonbeam at any point.
+          . Most importantly, you confirm that your funds are held securely in the Velas Safe, a smart contract on the
+          Velas blockchain. These funds cannot be accessed by Velas at any point.
         </Paragraph>
       </Block>
     </BlockWithPadding>

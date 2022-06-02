@@ -40,13 +40,13 @@ const wallets = (chainId: ChainId): Wallet[] => {
       walletName: WALLETS.KEYSTONE,
       desktop: false,
       rpcUrl,
-      appName: 'Gnosis Safe',
+      appName: 'Velas Safe',
     },
     { walletName: WALLETS.TRUST, preferred: true, desktop: false },
     {
       walletName: WALLETS.LATTICE,
       rpcUrl,
-      appName: 'Gnosis Safe',
+      appName: 'Velas Safe',
       desktop: false,
     },
     {
