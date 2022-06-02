@@ -85,7 +85,7 @@ const Footer = (): React.ReactElement => {
       <Link
         className={cn(classes.item, classes.link)}
         target="_blank"
-        to="https://github.com/protofire/safe-react/tree/staging"
+        to="https://github.com/protofire/safe-react/tree/velas-stg"
       >
         {appVersion}
       </Link>
