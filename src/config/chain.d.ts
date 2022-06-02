@@ -11,6 +11,7 @@ export const CHAIN_ID: Record<ChainName, ChainId> = {
   UNKNOWN: '0',
   ETHEREUM: '1',
   RINKEBY: '4',
+  VELAS: '106',
   MOONBEAM: '1284',
   MOONRIVER: '1285',
   MOONBASE: '1287',

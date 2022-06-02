@@ -4,7 +4,7 @@ export const APP_ENV = process.env.REACT_APP_ENV
 export const NODE_ENV = process.env.NODE_ENV
 export const IS_PRODUCTION = APP_ENV === 'production'
 export const DEFAULT_CHAIN_ID =
-  process.env.REACT_APP_DEFAULT_CHAIN_ID || (IS_PRODUCTION ? CHAIN_ID.MOONBEAM : CHAIN_ID.MOONBASE)
+  process.env.REACT_APP_DEFAULT_CHAIN_ID || (IS_PRODUCTION ? CHAIN_ID.VELAS : CHAIN_ID.VELAS)
 export const PUBLIC_URL = process.env.PUBLIC_URL
 export const TX_SERVICE_VERSION = '1'
 export const INTERCOM_ID = IS_PRODUCTION ? process.env.REACT_APP_INTERCOM_ID : 'plssl1fl'
@@ -46,5 +46,5 @@ const isProdGateway = () => {
 export const GATEWAY_URL =
   process.env.REACT_APP_GATEWAY_URL ||
   (IS_PRODUCTION || isProdGateway()
-    ? 'https://gateway.multisig.moonbeam.network'
-    : 'https://gateway.staging.multisig.moonbeam.network')
+    ? 'https://gateway.staging.velasafe.com'
+    : 'https://gateway.staging.velasafe.com')
