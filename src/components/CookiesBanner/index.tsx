@@ -139,7 +139,7 @@ const CookiesBannerForm = (props: {
               value={formNecessary}
             />
           </div>
-          <div className={classes.formItem}>
+          {/*           <div className={classes.formItem}>
             <FormControlLabel
               control={<Checkbox checked={formSupportAndUpdates} />}
               label="Community support & updates"
@@ -147,7 +147,7 @@ const CookiesBannerForm = (props: {
               onChange={() => setFormSupportAndUpdates((prev) => !prev)}
               value={formSupportAndUpdates}
             />
-          </div>
+          </div> */}
           <div className={classes.formItem}>
             <FormControlLabel
               control={<Checkbox checked={formAnalytics} />}
