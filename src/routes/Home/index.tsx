@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-
 import Page from 'src/components/layout/Page'
 import PendingTxsList from 'src/components/Dashboard/PendingTxs/PendingTxsList'
 import Overview from 'src/components/Dashboard/Overview/Overview'
@@ -7,7 +6,7 @@ import Overview from 'src/components/Dashboard/Overview/Overview'
 // import { FeaturedApps } from 'src/components/Dashboard/FeaturedApps/FeaturedApps'
 import { Box, Grid } from '@material-ui/core'
 
-function Home(): ReactElement {
+const Home = (): ReactElement => {
   return (
     <Page>
       <Box pb={3}>

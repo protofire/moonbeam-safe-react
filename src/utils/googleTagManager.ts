@@ -86,10 +86,8 @@ export const loadGoogleTagManager = (): void => {
       event: GTM_EVENT.PAGEVIEW,
       chainId: _getChainId(),
       page,
-      // Allow only GA4 configuration and GA4 custom event tags
-      // @see https://developers.google.com/tag-platform/tag-manager/web/restrict
-      'gtm.allowlist': ['gaawc', 'gaawe'],
       // Block JS variables and custom scripts
+      // @see https://developers.google.com/tag-platform/tag-manager/web/restrict
       'gtm.blocklist': ['j', 'jsm', 'customScripts'],
     },
   })
@@ -160,17 +158,14 @@ type EventDataLayer = {
   eventLabel?: EventLabel
 }
 
-export const trackEvent = ({
-  event,
-  category,
-  action,
-  label,
-}: {
+export type CustomEvent = {
   event: GTM_EVENT
   category: string
   action: string
   label?: EventLabel
-}): void => {
+}
+
+export const trackEvent = ({ event, category, action, label }: CustomEvent): void => {
   const dataLayer: EventDataLayer = {
     event,
     chainId: _getChainId(),
