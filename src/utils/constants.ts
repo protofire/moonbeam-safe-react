@@ -47,4 +47,4 @@ const isProdGateway = () => {
 
 export const GATEWAY_URL =
   process.env.REACT_APP_GATEWAY_URL ||
-  (IS_PRODUCTION || isProdGateway() ? 'https://gateway.velasafe.com' : 'https://gateway.velasafe.com')
+  (IS_PRODUCTION || isProdGateway() ? 'https://gateway.velasafe.com' : 'https://gateway.staging.velasafe.com')
