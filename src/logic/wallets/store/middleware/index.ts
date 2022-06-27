@@ -3,17 +3,16 @@ import { Action } from 'redux-actions'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 
 import { store as reduxStore } from 'src/store'
-import { enhanceSnackbarForAction, NOTIFICATIONS } from 'src/logic/notifications'
-import enqueueSnackbar from 'src/logic/notifications/store/actions/enqueueSnackbar'
+import { NOTIFICATIONS } from 'src/logic/notifications'
+import { showNotification } from 'src/logic/notifications/store/notifications'
 import { PROVIDER_ACTIONS } from 'src/logic/wallets/store/actions'
 import { ProviderPayloads } from 'src/logic/wallets/store/reducer'
 import { providerSelector } from '../selectors'
 import { trackEvent } from 'src/utils/googleTagManager'
 import { WALLET_EVENTS } from 'src/utils/events/wallet'
 import { instantiateSafeContracts } from 'src/logic/contracts/safeContracts'
-import { resetWeb3, setWeb3 } from 'src/logic/wallets/getWeb3'
-import onboard, { removeLastUsedProvider, saveLastUsedProvider } from 'src/logic/wallets/onboard'
-import { WALLET_CONNECT_MODULE_NAME } from 'src/logic/wallets/patchedWalletConnect'
+import { isHardwareWallet, resetWeb3, setWeb3 } from 'src/logic/wallets/getWeb3'
+import onboard, { saveLastUsedProvider } from 'src/logic/wallets/onboard'
 import { checksumAddress } from 'src/utils/checksumAddress'
 import { shouldSwitchNetwork } from 'src/logic/wallets/utils/network'
 
@@ -42,7 +41,6 @@ const providerMiddleware =
     // No wallet is connected via onboard, reset provider
     if (!name && !account && !network) {
       resetWeb3()
-      removeLastUsedProvider()
     }
 
     // Wallet 'partially' connected: only a subset of onboard subscription(s) have fired
@@ -53,12 +51,12 @@ const providerMiddleware =
     // @TODO: `loaded` flag that is/was always set to true - should be moved to wallet connection catch
     // Wallet, account and network did not successfully load
     if (!loaded) {
-      store.dispatch(enqueueSnackbar(enhanceSnackbarForAction(NOTIFICATIONS.CONNECT_WALLET_ERROR_MSG)))
+      store.dispatch(showNotification(NOTIFICATIONS.CONNECT_WALLET_ERROR_MSG))
       return handledAction
     }
 
     if (!available) {
-      store.dispatch(enqueueSnackbar(enhanceSnackbarForAction(NOTIFICATIONS.UNLOCK_WALLET_MSG)))
+      store.dispatch(showNotification(NOTIFICATIONS.UNLOCK_WALLET_MSG))
       return handledAction
     }
 
@@ -74,11 +72,15 @@ const providerMiddleware =
       instantiateSafeContracts()
     }
 
-    // Only track when store/UI is in sync with onboard
-    if (account === checksumAddress(address) && !shouldSwitchNetwork(wallet)) {
+    // Store and onboard are in sync
+    const isStoreInSync = account === checksumAddress(address)
+    // onboard().getState().address is out of sync for hardware wallets
+    const shouldTrack = (isStoreInSync || isHardwareWallet(wallet)) && !shouldSwitchNetwork(wallet)
+
+    if (shouldTrack) {
       trackEvent({ ...WALLET_EVENTS.CONNECT, label: name })
       // Track WalletConnect peer wallet
-      if (name === WALLET_CONNECT_MODULE_NAME) {
+      if (name.toUpperCase() === 'WALLETCONNECT') {
         trackEvent({
           ...WALLET_EVENTS.WALLET_CONNECT,
           label: (wallet.provider as InstanceType<typeof WalletConnectProvider>)?.wc?.peerMeta?.name || UNKNOWN_PEER,
