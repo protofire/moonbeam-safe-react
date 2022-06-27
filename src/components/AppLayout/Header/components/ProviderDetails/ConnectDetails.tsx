@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import ConnectButton from 'src/components/ConnectButton'
-import MobilePairing from 'src/components/AppLayout/Header/components/ProviderDetails/MobilePairing'
+// import MobilePairing from 'src/components/AppLayout/Header/components/ProviderDetails/MobilePairing'
 
 const StyledContainer = styled.div<{
   $vertical: boolean
@@ -20,7 +20,7 @@ const ConnectDetails = ({ vertical = false }: { vertical?: boolean }): ReactElem
   <StyledContainer $vertical={vertical}>
     <ConnectButton data-testid="heading-connect-btn" />
 
-    <MobilePairing vertical={vertical} />
+    {/* <MobilePairing vertical={vertical} /> */}
   </StyledContainer>
 )
 
