@@ -9,7 +9,7 @@ const STORAGE_KEYS: Record<ChainId, string> = {
   '4': 'RINKEBY',
   '56': 'BSC',
   '100': 'XDAI',
-  '106': 'VELAS',
+  '106': 'VELAS_MAINNET',
   '137': 'POLYGON',
   '1284': 'MOONBEAM',
   '1285': 'MOONRIVER',
