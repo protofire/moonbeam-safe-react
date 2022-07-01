@@ -56,14 +56,10 @@ const Footer = (): React.ReactElement => {
 
   return (
     <footer className={classes.footer}>
-      <span className={classes.item}>©{date.getFullYear()} Moonbeam</span>
+      <span className={classes.item}>©{date.getFullYear()} Protofire</span>
       <span className={classes.sep}>|</span>
-      <Link className={cn(classes.item, classes.link)} target="_blank" to="https://moonbeam.network/">
-        Moonbeam Network
-      </Link>
-      <span className={classes.sep}>|</span>
-      <Link className={cn(classes.item, classes.link)} target="_blank" to="https://moonbeam.foundation/">
-        Moonbeam Foundation
+      <Link className={cn(classes.item, classes.link)} target="_blank" to="https://protofire.io/">
+        Protofire
       </Link>
       <span className={classes.sep}>|</span>
       <GnoButtonLink className={cn(classes.item, classes.link, classes.buttonLink)} onClick={openCookiesHandler}>

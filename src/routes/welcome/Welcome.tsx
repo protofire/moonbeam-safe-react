@@ -15,10 +15,11 @@ function Welcome(): ReactElement {
     <Page align="center">
       <Block>
         <Title size="md" strong>
-          Welcome to Moonbeam Safe.
+          Welcome to Protofire Sandbox Safe.
         </Title>
         <Title size="xs">
-          Moonbeam Safe is the most trusted platform to manage digital assets. <br /> Here is how to get started:
+          Protofire Sandbox Safe is the most trusted platform to manage digital assets. <br /> Here is how to get
+          started:
         </Title>
         <CardsContainer>
           <StyledCard>

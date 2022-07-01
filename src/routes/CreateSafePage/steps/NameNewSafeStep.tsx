@@ -88,8 +88,8 @@ function NameNewSafeStep(): ReactElement {
     <BlockWithPadding data-testid={'create-safe-name-step'}>
       <Block margin="md">
         <Paragraph color="primary" noMargin size="lg">
-          You are about to create a new Moonbeam Safe wallet with one or more owners. First, let&apos;s give your new
-          wallet a name. This name is only stored locally and will never be shared with Moonbeam or any third parties.
+          You are about to create a new Protofire Safe wallet with one or more owners. First, let&apos;s give your new
+          wallet a name. This name is only stored locally and will never be shared with Protofire or any third parties.
           The new Safe will ONLY be available on <NetworkLabel />
         </Paragraph>
       </Block>
@@ -109,15 +109,15 @@ function NameNewSafeStep(): ReactElement {
       <Block margin="lg">
         <Paragraph color="primary" noMargin size="lg">
           By continuing you consent to the{' '}
-          <Link href="https://gnosis-safe.io/terms" rel="noopener noreferrer" target="_blank">
+          <Link href="https://protofire.io/" rel="noopener noreferrer" target="_blank">
             terms of use
           </Link>{' '}
           and{' '}
-          <Link href="https://moonbeam.foundation/privacy-policy" rel="noopener noreferrer" target="_blank">
+          <Link href="https://protofire.io/" rel="noopener noreferrer" target="_blank">
             privacy policy
           </Link>
-          . Most importantly, you confirm that your funds are held securely in the Moonbeam Safe, a smart contract on
-          the Ethereum blockchain. These funds cannot be accessed by Moonbeam at any point.
+          . Most importantly, you confirm that your funds are held securely in the Protofire Safe, a smart contract on
+          the Ethereum blockchain. These funds cannot be accessed by Protofire at any point.
         </Paragraph>
       </Block>
     </BlockWithPadding>

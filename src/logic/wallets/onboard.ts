@@ -70,7 +70,7 @@ const getOnboard = (chainId: ChainId): API => {
         : undefined,
     },
     walletSelect: {
-      description: 'Please select a wallet to connect to Moonbeam Safe',
+      description: 'Please select a wallet to connect to Protofire Safe',
       wallets: getSupportedWallets(chainId),
     },
     walletCheck: [
