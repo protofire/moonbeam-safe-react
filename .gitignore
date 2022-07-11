@@ -21,3 +21,6 @@ public/**/*.js
 /moonriver_prd
 jest.results.json
 *.#*
+cypress/videos
+cypress/screenshots
+cypress/downloads
