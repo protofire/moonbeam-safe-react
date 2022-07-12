@@ -13,7 +13,7 @@ export const CHAIN_ID: Record<ChainName, ChainId> = {
   RINKEBY: '4',
   VELAS_MAINNET: '106',
   ASTAR: '592',
-  EVMOS_MAINNET: 9001,
+  EVMOS_MAINNET: '9001',
   MOONBEAM: '1284',
   MOONRIVER: '1285',
   MOONBASE: '1287',
