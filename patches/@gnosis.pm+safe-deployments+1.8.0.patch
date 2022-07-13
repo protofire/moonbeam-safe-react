@@ -1,0 +1,227 @@
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json
+index a8c3b5d..2900c60 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json
+@@ -16,6 +16,8 @@
+         "56": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "69": "0x017062a1dE2FE6b99BE3d9d37841FeD19F573804",
+         "100": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
++        "106": "0x017062a1dE2FE6b99BE3d9d37841FeD19F573804",
++        "111": "0x017062a1dE2FE6b99BE3d9d37841FeD19F573804",
+         "122": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "123": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+         "137": "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json
+index 05dc163..993d7ba 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/create_call.json
+@@ -16,6 +16,8 @@
+         "56": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "69": "0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d",
+         "100": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
++        "106": "0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d",
++        "111": "0xB19D6FFc2182150F8Eb585b79D4ABcd7C5640A9d",
+         "122": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "123": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+         "137": "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json
+index ea3f5e2..9bdd999 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json
+@@ -16,6 +16,8 @@
+         "56": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+         "69": "0x69f4D1788e39c87893C980c06EdF4b7f686e2938",
+         "100": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
++        "106": "0x69f4D1788e39c87893C980c06EdF4b7f686e2938",
++        "111": "0x69f4D1788e39c87893C980c06EdF4b7f686e2938",
+         "122": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+         "123": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+         "137": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json
+index aaebd45..08e01d5 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json
+@@ -16,6 +16,8 @@
+         "56": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+         "69": "0xfb1bffC9d739B8D520DaF37dF666da4C687191EA",
+         "100": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
++        "106": "0xfb1bffC9d739B8D520DaF37dF666da4C687191EA",
++        "111": "0xfb1bffC9d739B8D520DaF37dF666da4C687191EA",
+         "122": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+         "123": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+         "137": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json
+index eabb0f8..6512a2f 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json
+@@ -16,6 +16,8 @@
+         "56": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "69": "0x998739BFdAAdde7C933B942a68053933098f9EDa",
+         "100": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
++        "106": "0x998739BFdAAdde7C933B942a68053933098f9EDa",
++        "111": "0x998739BFdAAdde7C933B942a68053933098f9EDa",
+         "122": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "123": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+         "137": "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json
+index 079956c..549c972 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json
+@@ -16,6 +16,8 @@
+         "56": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "69": "0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B",
+         "100": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
++        "106": "0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B",
++        "111": "0xA1dabEF33b3B82c7814B6D82A79e50F4AC44102B",
+         "122": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "123": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+         "137": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
+index c1cfbec..886367a 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/proxy_factory.json
+@@ -16,6 +16,8 @@
+         "56": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+         "69": "0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC",
+         "100": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
++        "106": "0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC",
++        "111": "0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC",
+         "122": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+         "123": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+         "137": "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json
+index 360f50f..25291e4 100644
+--- a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json
+@@ -16,6 +16,8 @@
+         "56": "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+         "69": "0x98FFBBF51bb33A056B08ddf711f289936AafF717",
+         "100": "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
++        "106": "0x98FFBBF51bb33A056B08ddf711f289936AafF717",
++        "111": "0x98FFBBF51bb33A056B08ddf711f289936AafF717",
+         "122": "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+         "123": "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+         "137": "0xA65387F16B013cf2Af4605Ad8aA5ec25a2cbA3a2",
+diff --git a/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/simulate_tx_accessor.json b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/simulate_tx_accessor.json
+new file mode 100644
+index 0000000..de2b202
+--- /dev/null
++++ b/node_modules/@gnosis.pm/safe-deployments/dist/assets/v1.3.0/simulate_tx_accessor.json
+@@ -0,0 +1,116 @@
++{
++    "defaultAddress": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++    "released": true,
++    "contractName": "SimulateTxAccesor",
++    "version": "1.3.0",
++    "networkAddresses": {
++      "1": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "3": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "4": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "5": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "10": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "11": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "12": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "25": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "28": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "42": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "56": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "69": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "82": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "83":  "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "100": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "106": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "111": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "122": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "123": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "137": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "246": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "288": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "300": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "336": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "338": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "588": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "592": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1001": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "1008": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1088": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "1284": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1285": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1287": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1984": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "4002": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "4918": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "7341": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "8217": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "9000": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "9001": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "11437": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "12357": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "42161": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "42220": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "43114": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "47805": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "71401": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "73799": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "80001": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "333999": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "421611": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1313161554": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1313161555": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "1666600000": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "1666700000": "0x727a77a074D1E6c4530e814F89E618a3298FC044",
++      "11297108099": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da",
++      "11297108109": "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da"
++    },
++    "abi": [
++      {
++        "inputs": [],
++        "stateMutability": "nonpayable",
++        "type": "constructor"
++      },
++      {
++        "inputs": [
++          {
++            "internalType": "address",
++            "name": "to",
++            "type": "address"
++          },
++          {
++            "internalType": "uint256",
++            "name": "value",
++            "type": "uint256"
++          },
++          {
++            "internalType": "bytes",
++            "name": "data",
++            "type": "bytes"
++          },
++          {
++            "internalType": "enum Enum.Operation",
++            "name": "operation",
++            "type": "uint8"
++          }
++        ],
++        "name": "simulate",
++        "outputs": [
++          {
++            "internalType": "uint256",
++            "name": "estimate",
++            "type": "uint256"
++          },
++          {
++            "internalType": "bool",
++            "name": "success",
++            "type": "bool"
++          },
++          {
++            "internalType": "bytes",
++            "name": "returnData",
++            "type": "bytes"
++          }
++        ],
++        "stateMutability": "nonpayable",
++        "type": "function"
++      }
++    ]
++  }
+\ No newline at end of file
