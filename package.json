@@ -77,7 +77,7 @@
   },
   "dependencies": {
     "@ethersproject/hash": "^5.5.0",
-    "@gnosis.pm/safe-apps-sdk": "7.4.1",
+    "@gnosis.pm/safe-apps-sdk": "7.3.0",
     "@gnosis.pm/safe-apps-sdk-v1": "npm:@gnosis.pm/safe-apps-sdk@0.4.2",
     "@gnosis.pm/safe-core-sdk": "^2.2.0",
     "@gnosis.pm/safe-deployments": "^1.12.0",
