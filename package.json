@@ -143,7 +143,7 @@
     "web3-utils": "^1.7.0"
   },
   "devDependencies": {
-    "@gnosis.pm/safe-core-sdk-types": "1.2.0",
+    "@gnosis.pm/safe-core-sdk-types": "1.0.0",
     "@rescripts/cli": "^0.0.16",
     "@sentry/cli": "^1.67.2",
     "@testing-library/cypress": "^8.0.2",
