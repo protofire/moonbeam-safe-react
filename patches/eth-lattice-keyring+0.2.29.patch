@@ -1,0 +1,13 @@
+diff --git a/node_modules/eth-lattice-keyring/index.js b/node_modules/eth-lattice-keyring/index.js
+index 28ad668..2c89df0 100644
+--- a/node_modules/eth-lattice-keyring/index.js
++++ b/node_modules/eth-lattice-keyring/index.js
+@@ -478,7 +478,7 @@ class LatticeKeyring extends EventEmitter {
+         currency: 'ETH', 
+         startPath: this._getHDPathIndices(i), 
+         n: shouldRecurse ? 1 : n,
+-        skipCache: true,
++        //skipCache: true,
+       };
+       this.sdkSession.getAddresses(addrData, (err, addrs) => {
+         if (err)

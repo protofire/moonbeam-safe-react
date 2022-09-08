@@ -1,0 +1,66 @@
+diff --git a/node_modules/eth-block-tracker/dist/PollingBlockTracker.js b/node_modules/eth-block-tracker/dist/PollingBlockTracker.js
+index 6fab3ef..6a8bdd6 100644
+--- a/node_modules/eth-block-tracker/dist/PollingBlockTracker.js
++++ b/node_modules/eth-block-tracker/dist/PollingBlockTracker.js
+@@ -2596,7 +2596,7 @@ function (_BaseBlockTracker) {
+     var pollingInterval = opts.pollingInterval || 20 * sec;
+     var retryTimeout = opts.retryTimeout || pollingInterval / 10;
+     var keepEventLoopActive = opts.keepEventLoopActive !== undefined ? opts.keepEventLoopActive : true;
+-    var setSkipCacheFlag = opts.setSkipCacheFlag || false; // BaseBlockTracker constructor
++    var setSkipCacheFlag = false; // BaseBlockTracker constructor
+ 
+     _this = _possibleConstructorReturn(this, _getPrototypeOf(PollingBlockTracker).call(this, Object.assign({
+       blockResetDuration: pollingInterval
+@@ -2772,7 +2772,7 @@ function (_BaseBlockTracker) {
+                   method: 'eth_blockNumber',
+                   params: []
+                 };
+-                if (this._setSkipCacheFlag) req.skipCache = true;
++                //if (this._setSkipCacheFlag) req.skipCache = true;
+                 _context4.next = 4;
+                 return pify(function (cb) {
+                   return _this3._provider.sendAsync(req, cb);
+diff --git a/node_modules/eth-block-tracker/dist/es5/polling.js b/node_modules/eth-block-tracker/dist/es5/polling.js
+index d60b8c5..abb5694 100644
+--- a/node_modules/eth-block-tracker/dist/es5/polling.js
++++ b/node_modules/eth-block-tracker/dist/es5/polling.js
+@@ -49,7 +49,7 @@ function (_BaseBlockTracker) {
+     var pollingInterval = opts.pollingInterval || 20 * sec;
+     var retryTimeout = opts.retryTimeout || pollingInterval / 10;
+     var keepEventLoopActive = opts.keepEventLoopActive !== undefined ? opts.keepEventLoopActive : true;
+-    var setSkipCacheFlag = opts.setSkipCacheFlag || false; // BaseBlockTracker constructor
++    var setSkipCacheFlag = false; // BaseBlockTracker constructor
+ 
+     _this = _possibleConstructorReturn(this, _getPrototypeOf(PollingBlockTracker).call(this, Object.assign({
+       blockResetDuration: pollingInterval
+@@ -225,7 +225,7 @@ function (_BaseBlockTracker) {
+                   method: 'eth_blockNumber',
+                   params: []
+                 };
+-                if (this._setSkipCacheFlag) req.skipCache = true;
++                //if (this._setSkipCacheFlag) req.skipCache = true;
+                 _context4.next = 4;
+                 return pify(function (cb) {
+                   return _this3._provider.sendAsync(req, cb);
+diff --git a/node_modules/eth-block-tracker/src/polling.js b/node_modules/eth-block-tracker/src/polling.js
+index 1cc8ba7..89d2452 100644
+--- a/node_modules/eth-block-tracker/src/polling.js
++++ b/node_modules/eth-block-tracker/src/polling.js
+@@ -11,7 +11,7 @@ class PollingBlockTracker extends BaseBlockTracker {
+     const pollingInterval = opts.pollingInterval || 20 * sec
+     const retryTimeout = opts.retryTimeout || pollingInterval / 10
+     const keepEventLoopActive = opts.keepEventLoopActive !== undefined ? opts.keepEventLoopActive : true
+-    const setSkipCacheFlag = opts.setSkipCacheFlag || false
++    const setSkipCacheFlag = false
+     // BaseBlockTracker constructor
+     super(Object.assign({
+       blockResetDuration: pollingInterval,
+@@ -67,7 +67,7 @@ class PollingBlockTracker extends BaseBlockTracker {
+ 
+   async _fetchLatestBlock () {
+     const req = { jsonrpc: "2.0", id: 1, method: 'eth_blockNumber', params: [] }
+-    if (this._setSkipCacheFlag) req.skipCache = true
++    //if (this._setSkipCacheFlag) req.skipCache = true
+     const res = await pify((cb) => this._provider.sendAsync(req, cb))()
+     if (res.error) throw new Error(`PollingBlockTracker - encountered error fetching block:\n${res.error}`)
+     return res.result

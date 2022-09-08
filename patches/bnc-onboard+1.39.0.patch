@@ -1,0 +1,26 @@
+diff --git a/node_modules/bnc-onboard/dist/cjs/onboard-a936ce5d.js b/node_modules/bnc-onboard/dist/cjs/onboard-a936ce5d.js
+index 2e3dc15..82047d9 100644
+--- a/node_modules/bnc-onboard/dist/cjs/onboard-a936ce5d.js
++++ b/node_modules/bnc-onboard/dist/cjs/onboard-a936ce5d.js
+@@ -2540,7 +2540,7 @@ function initializeStores() {
+   balance = get_store_value(app).dappId ? createBalanceStore(null) : createWalletStateSliceStore({
+     parameter: 'balance',
+     initialState: null,
+-    intervalSetting: 1000
++    intervalSetting: 1000 * 60 * 60
+   });
+   wallet = writable({
+     name: null,
+diff --git a/node_modules/bnc-onboard/dist/esm/onboard-233b2f41.js b/node_modules/bnc-onboard/dist/esm/onboard-233b2f41.js
+index d5715d3..41720a5 100644
+--- a/node_modules/bnc-onboard/dist/esm/onboard-233b2f41.js
++++ b/node_modules/bnc-onboard/dist/esm/onboard-233b2f41.js
+@@ -2506,7 +2506,7 @@ function initializeStores() {
+   balance = get_store_value(app).dappId ? createBalanceStore(null) : createWalletStateSliceStore({
+     parameter: 'balance',
+     initialState: null,
+-    intervalSetting: 1000
++    intervalSetting: 1000 * 60 * 60
+   });
+   wallet = writable({
+     name: null,

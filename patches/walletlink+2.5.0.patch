@@ -1,0 +1,13 @@
+diff --git a/node_modules/walletlink/dist/provider/SubscriptionManager.js b/node_modules/walletlink/dist/provider/SubscriptionManager.js
+index 176a825..2ee4b6d 100644
+--- a/node_modules/walletlink/dist/provider/SubscriptionManager.js
++++ b/node_modules/walletlink/dist/provider/SubscriptionManager.js
+@@ -9,7 +9,7 @@ class SubscriptionManager {
+         const blockTracker = new PollingBlockTracker({
+             provider,
+             pollingInterval: 15 * 1000,
+-            setSkipCacheFlag: true
++            setSkipCacheFlag: false
+         });
+         const { events, middleware } = createSubscriptionManager({
+             blockTracker,

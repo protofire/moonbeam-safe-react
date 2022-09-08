@@ -4410,10 +4410,9 @@ bnb-javascript-sdk-nobroadcast@^2.16.14:
     uuid "^3.3.2"
     websocket-stream "^5.5.0"
 
-bnc-onboard@^1.38.2:
-  version "1.38.2"
-  resolved "https://registry.yarnpkg.com/bnc-onboard/-/bnc-onboard-1.38.2.tgz#23aa7f10546e15d595b4420e5959732c9a485c71"
-  integrity sha512-ObRQaHV1HXXOVuUJMHVYhmsz8T804hl+cl47t12ZRVG3HtF8Pf/22jGjrG2mWkgdx4h3RVLvxOqW5V1nwHTdaw==
+"bnc-onboard@git+https://github.com/nick8319/web3-onboard.git#v1-onboard":
+  version "1.39.0"
+  resolved "git+https://github.com/nick8319/web3-onboard.git#f2ae7f049ce16d64f1fba4e2e1899bc9cea15bcd"
   dependencies:
     "@cvbb/eth-keyring" "^1.1.0"
     "@ensdomains/ensjs" "^2.0.1"
@@ -4445,7 +4444,7 @@ bnc-onboard@^1.38.2:
     regenerator-runtime "^0.13.7"
     trezor-connect "^8.1.9"
     walletlink "^2.5.0"
-    web3-provider-engine "^15.0.4"
+    web3-provider-engine "^16.0.1"
 
 bnc-sdk@^4.1.0:
   version "4.2.0"
@@ -6846,12 +6845,6 @@ eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.8:
 eth-json-rpc-errors@^1.0.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/eth-json-rpc-errors/-/eth-json-rpc-errors-1.1.1.tgz#148377ef55155585981c21ff574a8937f9d6991f"
-  dependencies:
-    fast-safe-stringify "^2.0.6"
-
-eth-json-rpc-errors@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/eth-json-rpc-errors/-/eth-json-rpc-errors-2.0.2.tgz#c1965de0301fe941c058e928bebaba2e1285e3c4"
   dependencies:
     fast-safe-stringify "^2.0.6"
 
@@ -15906,22 +15899,22 @@ web3-provider-engine@16.0.3:
     xhr "^2.2.0"
     xtend "^4.0.1"
 
-web3-provider-engine@^15.0.4:
-  version "15.0.12"
-  resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-15.0.12.tgz#24d7f2f6fb6de856824c7306291018c4fc543ac3"
+web3-provider-engine@^16.0.1:
+  version "16.0.4"
+  resolved "https://registry.yarnpkg.com/web3-provider-engine/-/web3-provider-engine-16.0.4.tgz#a6565d85f3cfdc2da68f141af8728f90ad198f3f"
+  integrity sha512-f5WxJ9+LTF+4aJo4tCOXtQ6SDytBtLkhvV+qh/9gImHAuG9sMr6utY0mn/pro1Rx7O3hbztBxvQKjGMdOo8muw==
   dependencies:
+    "@ethereumjs/tx" "^3.3.0"
     async "^2.5.0"
     backoff "^2.5.0"
     clone "^2.0.0"
-    cross-fetch "^2.1.0"
     eth-block-tracker "^4.4.2"
-    eth-json-rpc-errors "^2.0.2"
-    eth-json-rpc-filters "^4.1.1"
-    eth-json-rpc-infura "^4.0.1"
-    eth-json-rpc-middleware "^4.1.5"
+    eth-json-rpc-filters "^4.2.1"
+    eth-json-rpc-infura "^5.1.0"
+    eth-json-rpc-middleware "^6.0.0"
+    eth-rpc-errors "^3.0.0"
     eth-sig-util "^1.4.2"
     ethereumjs-block "^1.2.2"
-    ethereumjs-tx "^1.2.0"
     ethereumjs-util "^5.1.5"
     ethereumjs-vm "^2.3.4"
     json-stable-stringify "^1.0.1"
