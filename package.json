@@ -179,6 +179,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.25.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "favicons": "^7.0.0-beta.5",
+    "favicons-webpack-plugin": "4.2.0",
     "husky": "^7.0.0",
     "jest": "26.6.0",
     "lint-staged": "^11.1.1",
@@ -187,6 +189,7 @@
     "prettier": "^2.4.0",
     "redux-mock-store": "^1.5.4",
     "sass": "^1.32.0",
+    "source-map-explorer": "^2.5.2",
     "typechain": "^5.1.2",
     "typescript": "^4.3.5",
     "wait-on": "^6.0.0"
