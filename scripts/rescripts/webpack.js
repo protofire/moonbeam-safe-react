@@ -21,9 +21,9 @@ module.exports = (config) => {
       // Inject html links/metadata (requires html-webpack-plugin).
       inject: true,
       favicons: {
-        appName: 'Safe',
-        appShortName: 'Safe',
-        appDescription: 'Safe is the most trusted platform to manage digital assets',
+        appName: 'Velas Safe',
+        appShortName: 'Velas Safe',
+        appDescription: 'Velas Safe is the most trusted platform to manage digital assets',
         // Primary language for name and short_name
         lang: 'en-US',
         // mode: 'webapp',
