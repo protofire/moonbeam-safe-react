@@ -1,6 +1,6 @@
 {
   "name": "safe-react",
-  "version": "3.29.1",
+  "version": "3.30.0",
   "description": "Allowing crypto users manage funds in a safer way",
   "website": "https://github.com/gnosis/safe-react#readme",
   "homepage": "/",
@@ -13,13 +13,12 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Gnosis Team",
-    "email": "safe@gnosis.io"
+    "name": "Safe Team",
+    "email": "support@safe.global"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "build-staging": "cross-env REACT_APP_APP_VERSION=$npm_package_version REACT_APP_ENV=staging rescripts --max-old-space-size=8192 build",
-    "build": "cross-env REACT_APP_APP_VERSION=$npm_package_version REACT_APP_ENV=production rescripts --max-old-space-size=8192 build",
+    "build": "cross-env REACT_APP_APP_VERSION=$npm_package_version rescripts --max-old-space-size=8192 build",
     "eject": "rescripts eject",
     "format:staged": "lint-staged",
     "generate-types": "yarn generate-types:spendingLimit && yarn generate-types:safeDeployments && yarn generate-types:erc20 && yarn generate-types:erc721",
@@ -76,8 +75,8 @@
     ]
   },
   "dependencies": {
-    "@ethersproject/hash": "^5.5.0",
-    "@gnosis.pm/safe-apps-sdk": "7.3.0",
+    "@ethersproject/hash": "^5.6.1",
+    "@gnosis.pm/safe-apps-sdk": "7.8.0",
     "@gnosis.pm/safe-apps-sdk-v1": "npm:@gnosis.pm/safe-apps-sdk@0.4.2",
     "@gnosis.pm/safe-core-sdk": "^2.0.0",
     "@gnosis.pm/safe-deployments": "^1.15.0",
@@ -88,7 +87,7 @@
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.0",
     "@material-ui/lab": "4.0.0-alpha.60",
-    "@openzeppelin/contracts": "4.7.1",
+    "@openzeppelin/contracts": "4.7.3",
     "@sentry/react": "^6.10.0",
     "@sentry/tracing": "^6.10.0",
     "@truffle/hdwallet-provider": "^2.0.8",
