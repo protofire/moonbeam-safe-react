@@ -8,6 +8,8 @@ import { IS_PRODUCTION } from 'src/utils/constants'
 import { wrapInSuspense } from 'src/utils/wrapInSuspense'
 import ListIcon from 'src/components/List/ListIcon'
 import { background } from 'src/theme/variables'
+import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
+import Track from 'src/components/Track'
 
 const StyledDivider = styled(Divider)`
   margin: 16px -8px 0;
@@ -104,17 +106,21 @@ const Sidebar = ({
         <StyledDivider />
 
         <HelpList>
-          {/* {!isDesktop && BEAMER_ID && (
-            <StyledListItem id="whats-new-button" button onClick={handleClick}>
-              <ListIcon type="gift" />
-              <StyledListItemText>What&apos;s new</StyledListItemText>
-            </StyledListItem>
-          )} */}
+          {/* !isDesktop && BEAMER_ID && (
+            <Track {...OVERVIEW_EVENTS.WHATS_NEW}>
+              <StyledListItem className="beamer-trigger" button onClick={handleClick}>
+                <ListIcon type="gift" color="secondary" size="sm" />
+                <StyledListItemText>What&apos;s new</StyledListItemText>
+              </StyledListItem>
+            </Track>
+          )*/}
 
-          <HelpCenterLink href="https://support.velas.com/hc/en-150" target="_blank" title="Help Center of Velas Safe">
-            <ListIcon type="question" />
-            <StyledListItemText>Help Center</StyledListItemText>
-          </HelpCenterLink>
+          <Track {...OVERVIEW_EVENTS.HELP_CENTER}>
+            <HelpCenterLink href="https://help.gnosis-safe.io/en/" target="_blank" title="Help Center of Gnosis Safe">
+              <ListIcon type="question" color="secondary" size="sm" />
+              <StyledListItemText>Help Center</StyledListItemText>
+            </HelpCenterLink>
+          </Track>
         </HelpList>
       </HelpContainer>
     </>

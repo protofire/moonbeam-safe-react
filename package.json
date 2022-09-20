@@ -1,6 +1,6 @@
 {
   "name": "safe-react",
-  "version": "3.29.1",
+  "version": "3.30.0",
   "description": "Allowing crypto users manage funds in a safer way",
   "website": "https://github.com/gnosis/safe-react#readme",
   "homepage": "/",
@@ -13,8 +13,8 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Gnosis Team",
-    "email": "safe@gnosis.io"
+    "name": "Safe Team",
+    "email": "support@safe.global"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
@@ -76,8 +76,8 @@
     ]
   },
   "dependencies": {
-    "@ethersproject/hash": "^5.5.0",
-    "@gnosis.pm/safe-apps-sdk": "7.3.0",
+    "@ethersproject/hash": "^5.6.1",
+    "@gnosis.pm/safe-apps-sdk": "7.8.0",
     "@gnosis.pm/safe-apps-sdk-v1": "npm:@gnosis.pm/safe-apps-sdk@0.4.2",
     "@gnosis.pm/safe-core-sdk": "^2.0.0",
     "@gnosis.pm/safe-deployments": "^1.15.0",
@@ -88,7 +88,7 @@
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.0",
     "@material-ui/lab": "4.0.0-alpha.60",
-    "@openzeppelin/contracts": "4.7.1",
+    "@openzeppelin/contracts": "4.7.3",
     "@sentry/react": "^6.10.0",
     "@sentry/tracing": "^6.10.0",
     "@truffle/hdwallet-provider": "^2.0.8",
@@ -180,6 +180,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.25.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "favicons": "^7.0.0-beta.5",
+    "favicons-webpack-plugin": "4.2.0",
     "husky": "^7.0.0",
     "jest": "26.6.0",
     "lint-staged": "^11.1.1",
@@ -188,6 +190,7 @@
     "prettier": "^2.4.0",
     "redux-mock-store": "^1.5.4",
     "sass": "^1.32.0",
+    "source-map-explorer": "^2.5.2",
     "typechain": "^5.1.2",
     "typescript": "^4.3.5",
     "wait-on": "^6.0.0"

@@ -41,7 +41,7 @@ export const TENDERLY_ORG_NAME = process.env.REACT_APP_TENDERLY_ORG_NAME || ''
 export const E2E_MNEMONIC = process.env.REACT_APP_E2E_MNEMONIC || ''
 
 // localStorage-related constants
-export const LS_NAMESPACE = 'SAFE'
+export const LS_NAMESPACE = 'VELAS_SAFE'
 export const LS_SEPARATOR = '__'
 export const LS_USE_PROD_CGW = 'useProdGateway'
 

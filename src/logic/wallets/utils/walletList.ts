@@ -37,7 +37,7 @@ const wallets = (chainId: ChainId): Wallet[] => {
       walletName: WALLETS.TREZOR,
       appUrl: 'gnosis-safe.io',
       preferred: true,
-      email: 'safe@gnosis.io',
+      email: 'support@safe.global',
       desktop: true,
       rpcUrl,
     },
