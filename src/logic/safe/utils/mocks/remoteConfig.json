@@ -3,119 +3,56 @@
   "previous": null,
   "results": [
     {
-      "transactionService": "https://safe-transaction.mainnet.staging.gnosisdev.com",
-      "chainId": "1",
-      "chainName": "Ethereum",
-      "shortName": "eth",
-      "l2": false,
-      "description": "",
-      "rpcUri": {
-        "authentication": "API_KEY_PATH",
-        "value": "https://mainnet.infura.io/v3/"
-      },
-      "safeAppsRpcUri": {
-        "authentication": "API_KEY_PATH",
-        "value": "https://mainnet.infura.io/v3/"
-      },
-      "publicRpcUri": {
-        "authentication": "API_KEY_PATH",
-        "value": "https://mainnet.infura.io/v3/"
-      },
-      "blockExplorerUriTemplate": {
-        "address": "https://etherscan.io/address/{{address}}",
-        "txHash": "https://etherscan.io/tx/{{txHash}}",
-        "api": "https://api.etherscan.io/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}"
-      },
-      "nativeCurrency": {
-        "name": "Ether",
-        "symbol": "ETH",
-        "decimals": 18,
-        "logoUri": "https://safe-transaction-assets.staging.gnosisdev.com/chains/1/currency_logo.png"
-      },
-      "theme": {
-        "textColor": "#001428",
-        "backgroundColor": "#DDDDDD"
-      },
-      "ensRegistryAddress": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
-      "gasPrice": [
-        {
-          "type": "ORACLE",
-          "uri": "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=JNFAU892RF9TJWBU3EV7DJCPIWZY8KEMY1",
-          "gasParameter": "FastGasPrice",
-          "gweiFactor": "1000000000.000000000"
-        },
-        {
-          "type": "ORACLE",
-          "uri": "https://ethgasstation.info/json/ethgasAPI.json?api-key=8bb8066b5c3ed1442190d0e30ad9126c7b8235314397efa76e6977791cb2",
-          "gasParameter": "fast",
-          "gweiFactor": "100000000.000000000"
-        }
-      ],
-      "disabledWallets": [
-        "lattice",
-        "safeMobile"
-      ],
-      "features": [
-        "CONTRACT_INTERACTION",
-        "DOMAIN_LOOKUP",
-        "EIP1559",
-        "ERC721",
-        "SAFE_APPS",
-        "SAFE_TX_GAS_OPTIONAL",
-        "SPENDING_LIMIT"
-      ]
-    },
-    {
-      "transactionService": "https://safe-transaction.xdai.gnosis.io",
-      "chainId": "100",
-      "chainName": "Gnosis Chain",
-      "shortName": "gno",
+      "transactionService": "https://transaction.staging.multisig.moonbeam.network",
+      "chainId": "1284",
+      "chainName": "Moonbeam",
+      "shortName": "mbeam",
       "l2": true,
       "description": "",
       "rpcUri": {
         "authentication": "NO_AUTHENTICATION",
-        "value": "https://rpc.xdaichain.com/"
+        "value": "https://rpc.multisig.moonbeam.network"
       },
       "safeAppsRpcUri": {
         "authentication": "NO_AUTHENTICATION",
-        "value": "https://rpc.xdaichain.com/"
+        "value": "https://rpc.multisig.moonbeam.network"
       },
       "publicRpcUri": {
         "authentication": "NO_AUTHENTICATION",
-        "value": "https://rpc.xdaichain.com/"
+        "value": "https://rpc.multisig.moonbeam.network"
       },
       "blockExplorerUriTemplate": {
-        "address": "https://blockscout.com/xdai/mainnet/address/{{address}}/transactions",
-        "txHash": "https://blockscout.com/xdai/mainnet/tx/{{txHash}}/",
-        "api": "https://blockscout.com/poa/xdai/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}"
+        "address": "https://moonscan.io/address/{{address}}",
+        "txHash": "https://moonscan.io/tx/{{txHash}}",
+        "api": "https://api-moonbeam.moonscan.io/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}"
       },
       "nativeCurrency": {
-        "name": "xDai",
-        "symbol": "XDAI",
+        "name": "GLMR",
+        "symbol": "GLMR",
         "decimals": 18,
-        "logoUri": "https://safe-transaction-assets.staging.gnosisdev.com/chains/100/currency_logo.png"
+        "logoUri": "https://safe-moonbeam-static-assets-staging.s3.amazonaws.com/chains/1284/currency_logo.png"
       },
       "theme": {
         "textColor": "#ffffff",
-        "backgroundColor": "#48A9A6"
+        "backgroundColor": "#3D1D5A"
       },
       "gasPrice": [
         {
           "type": "FIXED",
-          "weiValue": "4000000000"
+          "weiValue": "100000000000"
         }
       ],
       "disabledWallets": [
         "authereum",
         "coinbase",
         "fortmatic",
-        "frame",
         "keystone",
         "lattice",
         "ledger",
         "opera",
         "operaTouch",
         "portis",
+        "tally",
         "torus",
         "trezor",
         "trust",
@@ -123,7 +60,8 @@
       ],
       "features": [
         "CONTRACT_INTERACTION",
-        "EIP1559",
+        "DOMAIN_LOOKUP",
+        "ERC1155",
         "ERC721",
         "SAFE_APPS",
         "SAFE_TX_GAS_OPTIONAL",
@@ -131,90 +69,150 @@
       ]
     },
     {
-      "transactionService": "https://safe-transaction-polygon.staging.gnosisdev.com",
-      "chainId": "137",
-      "chainName": "Polygon",
-      "shortName": "matic",
+      "transactionService": "https://transaction.moonriver.staging.multisig.moonbeam.network",
+      "chainId": "1285",
+      "chainName": "Moonriver",
+      "shortName": "mriver",
       "l2": true,
-      "description": "Test",
+      "description": "",
       "rpcUri": {
-        "authentication": "API_KEY_PATH",
-        "value": "https://polygon-mainnet.infura.io/v3/"
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.moonriver.multisig.moonbeam.network"
       },
       "safeAppsRpcUri": {
-        "authentication": "API_KEY_PATH",
-        "value": "https://polygon-mainnet.infura.io/v3/"
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.moonriver.multisig.moonbeam.network"
       },
       "publicRpcUri": {
         "authentication": "NO_AUTHENTICATION",
-        "value": "https://polygon-rpc.com/"
+        "value": "https://rpc.moonriver.multisig.moonbeam.network"
       },
       "blockExplorerUriTemplate": {
-        "address": "https://polygonscan.com/address/{{address}}",
-        "txHash": "https://polygonscan.com/tx/{{txHash}}",
-        "api": "https://api.polygonscan.com/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}"
+        "address": "https://moonriver.moonscan.io/address/{{address}}",
+        "txHash": "https://moonriver.moonscan.io/tx/{{txHash}}",
+        "api": "https://api-moonriver.moonscan.io/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}"
       },
       "nativeCurrency": {
-        "name": "Matic",
-        "symbol": "MATIC",
+        "name": "MOVR",
+        "symbol": "MOVR",
         "decimals": 18,
-        "logoUri": "https://safe-transaction-assets.staging.gnosisdev.com/chains/137/currency_logo.png"
+        "logoUri": "https://safe-moonbeam-static-assets-staging.s3.amazonaws.com/chains/1285/currency_logo.png"
       },
       "theme": {
         "textColor": "#ffffff",
-        "backgroundColor": "#8248E5"
+        "backgroundColor": "#F2A007"
       },
       "gasPrice": [
         {
-          "type": "ORACLE",
-          "uri": "https://gasstation-mainnet.matic.network",
-          "gasParameter": "standard",
-          "gweiFactor": "1000000000.000000000"
+          "type": "FIXED",
+          "weiValue": "1000000000"
         }
       ],
       "disabledWallets": [
         "authereum",
         "coinbase",
         "fortmatic",
-        "frame",
         "keystone",
         "lattice",
+        "ledger",
         "opera",
         "operaTouch",
         "portis",
+        "tally",
         "torus",
+        "trezor",
         "trust",
-        "walletLink",
-        "safeMobile"
+        "walletLink"
       ],
       "features": [
         "CONTRACT_INTERACTION",
         "DOMAIN_LOOKUP",
-        "EIP1559",
+        "ERC1155",
         "ERC721",
         "SAFE_APPS",
-        "SAFE_TX_GAS_OPTIONAL",
         "SPENDING_LIMIT"
       ]
     },
     {
-      "transactionService": "https://safe-transaction.rinkeby.staging.gnosisdev.com",
+      "transactionService": "https://transaction.moonbase.staging.multisig.moonbeam.network",
+      "chainId": "1287",
+      "chainName": "Moonbase",
+      "shortName": "mbase",
+      "l2": true,
+      "description": "",
+      "rpcUri": {
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.moonbase.multisig.moonbeam.network"
+      },
+      "safeAppsRpcUri": {
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.moonbase.multisig.moonbeam.network"
+      },
+      "publicRpcUri": {
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rpc.moonbase.multisig.moonbeam.network"
+      },
+      "blockExplorerUriTemplate": {
+        "address": "https://moonbase.moonscan.io/address/{{address}}",
+        "txHash": "https://moonbase.moonscan.io/tx/{{txHash}}",
+        "api": "https://api-moonbase.moonscan.io/api?module={{module}}&action={{action}}&address={{address}}&apiKey={{apiKey}}"
+      },
+      "nativeCurrency": {
+        "name": "DEV",
+        "symbol": "DEV",
+        "decimals": 18,
+        "logoUri": "https://safe-moonbeam-static-assets-staging.s3.amazonaws.com/chains/1287/currency_logo.png"
+      },
+      "theme": {
+        "textColor": "#ffffff",
+        "backgroundColor": "#F45B5B"
+      },
+      "gasPrice": [
+        {
+          "type": "FIXED",
+          "weiValue": "1000000000"
+        }
+      ],
+      "disabledWallets": [
+        "authereum",
+        "coinbase",
+        "fortmatic",
+        "keystone",
+        "lattice",
+        "ledger",
+        "opera",
+        "operaTouch",
+        "portis",
+        "tally",
+        "torus",
+        "trezor",
+        "trust",
+        "walletLink"
+      ],
+      "features": [
+        "CONTRACT_INTERACTION",
+        "SAFE_APPS",
+        "SPENDING_LIMIT"
+      ]
+    },
+    {
+      "transactionService": "https://safe-transaction.rinkeby.gnosis.io",
       "chainId": "4",
       "chainName": "Rinkeby",
       "shortName": "rin",
       "l2": false,
-      "description": "",
+      "description": "Ethereum testnet",
       "rpcUri": {
-        "authentication": "API_KEY_PATH",
-        "value": "https://rinkeby.infura.io/v3/"
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rinkeby-light.eth.linkpool.io"
       },
       "safeAppsRpcUri": {
-        "authentication": "API_KEY_PATH",
+        "authentication": "NO_AUTHENTICATION",
         "value": "https://rinkeby.infura.io/v3/"
       },
       "publicRpcUri": {
-        "authentication": "API_KEY_PATH",
-        "value": "https://rinkeby.infura.io/v3/"
+        "authentication": "NO_AUTHENTICATION",
+        "value": "https://rinkeby-light.eth.linkpool.io"
       },
       "blockExplorerUriTemplate": {
         "address": "https://rinkeby.etherscan.io/address/{{address}}",
@@ -225,11 +223,11 @@
         "name": "Ether",
         "symbol": "ETH",
         "decimals": 18,
-        "logoUri": "https://safe-transaction-assets.staging.gnosisdev.com/chains/4/currency_logo.png"
+        "logoUri": "https://safe-moonbeam-static-assets-staging.s3.amazonaws.com/chains/4/currency_logo.png"
       },
       "theme": {
         "textColor": "#ffffff",
-        "backgroundColor": "#E8673C"
+        "backgroundColor": "#000000"
       },
       "ensRegistryAddress": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
       "gasPrice": [
@@ -239,17 +237,26 @@
         }
       ],
       "disabledWallets": [
+        "authereum",
+        "coinbase",
         "fortmatic",
+        "keystone",
         "lattice",
-        "safeMobile"
+        "ledger",
+        "opera",
+        "operaTouch",
+        "portis",
+        "tally",
+        "torus",
+        "trezor",
+        "trust",
+        "walletLink"
       ],
       "features": [
         "CONTRACT_INTERACTION",
         "DOMAIN_LOOKUP",
-        "EIP1559",
         "ERC721",
         "SAFE_APPS",
-        "SAFE_TX_GAS_OPTIONAL",
         "SPENDING_LIMIT"
       ]
     }
