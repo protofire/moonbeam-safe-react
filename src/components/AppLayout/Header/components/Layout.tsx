@@ -119,7 +119,7 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
         <Link to={WELCOME_ROUTE}>
           <Img
             alt="Moonbeam Safe"
-            height={chainId == '1285' || chainId == '1284' ? '96' : '36'}
+            style={{ height: '52px', width: 'auto', padding: '8px' }}
             src={chainId == '1285' ? SafeLogoMVR : chainId == '1284' ? SafeLogoMBEAM : SafeLogoMBASE}
             testId="heading-gnosis-logo"
           />
