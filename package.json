@@ -41,7 +41,8 @@
     "sentry-upload-sourcemaps": "sentry-cli --auth-token $SENTRY_AUTH_TOKEN releases -o $SENTRY_ORG -p $SENTRY_PROJECT files $npm_package_version upload-sourcemaps ./build/static/js/",
     "prepare": "husky install",
     "cypress:open": "node ./scripts/cypress.js open",
-    "cypress:run": "node ./scripts/cypress.js run"
+    "cypress:run": "node ./scripts/cypress.js run",
+    "optimize-images": "svgo -r -f ./src/components"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
