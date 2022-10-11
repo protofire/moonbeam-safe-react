@@ -46,7 +46,7 @@ export const LS_SEPARATOR = '__'
 export const LS_USE_PROD_CGW = 'useProdGateway'
 
 // For debugging on dev
-const isProdGateway = () => {
+export const isProdGateway = (): boolean => {
   try {
     return localStorage.getItem(`${LS_NAMESPACE}${LS_SEPARATOR}${LS_USE_PROD_CGW}`) === 'true'
   } catch (e) {
@@ -59,3 +59,9 @@ export const GATEWAY_URL =
   (IS_PRODUCTION || isProdGateway()
     ? 'https://gateway.multisig.moonbeam.network'
     : 'https://gateway.staging.multisig.moonbeam.network')
+
+// Safe Token
+export const SAFE_TOKEN_ADDRESSES: { [chainId: string]: string } = {
+  '1': '0x5aFE3855358E112B5647B952709E6165e1c1eEEe',
+  '4': '0xCFf1b0FdE85C102552D1D96084AF148f478F964A',
+}
