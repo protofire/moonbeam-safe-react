@@ -15,6 +15,7 @@ export const CHAIN_ID: Record<ChainName, ChainId> = {
   MOONRIVER: '1285',
   MOONBASE: '1287',
   GNOSIS_CHAIN: '100',
+  GOERLI: '5',
   VOLTA: '73799',
 }
 

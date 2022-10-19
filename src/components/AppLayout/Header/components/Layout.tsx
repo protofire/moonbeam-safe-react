@@ -19,13 +19,15 @@ import { WELCOME_ROUTE } from 'src/routes/routes'
 import WalletSwitch from 'src/components/WalletSwitch'
 import Divider from 'src/components/layout/Divider'
 import { shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
-import { currentChainId } from 'src/logic/config/store/selectors'
+// import { currentChainId } from 'src/logic/config/store/selectors'
 import { useSelector } from 'react-redux'
 // import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
 // import Track from 'src/components/Track'
 import Notifications from 'src/components/AppLayout/Header/components/Notifications'
 import Img from 'src/components/layout/Img'
 // import AnimatedLogo from 'src/components/AppLayout/Header/components/AnimatedLogo'
+import SafeTokenWidget, { getSafeTokenAddress } from './SafeTokenWidget'
+import { _getChainId } from 'src/config'
 
 const styles = () => ({
   root: {
@@ -107,7 +109,9 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
   const { clickAway: clickAwayWallet, open: openWallet, toggle: toggleWallet } = useStateHandler()
   const { clickAway: clickAwayNetworks, open: openNetworks, toggle: toggleNetworks } = useStateHandler()
   const isWrongChain = useSelector(shouldSwitchWalletChain)
-  const chainId = useSelector(currentChainId)
+  // const chainId = useSelector(currentChainId)
+  const chainId = _getChainId()
+  const chainHasSafeToken = Boolean(getSafeTokenAddress(chainId))
 
   return (
     <Row className={classes.summary}>
@@ -115,7 +119,7 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
         <Link to={WELCOME_ROUTE}>
           <Img
             alt="Moonbeam Safe"
-            height={chainId == '1285' || chainId == '1284' ? '96' : '36'}
+            style={{ height: '52px', width: 'auto', padding: '8px' }}
             src={chainId == '1285' ? SafeLogoMVR : chainId == '1284' ? SafeLogoMBEAM : SafeLogoMBASE}
             testId="heading-gnosis-logo"
           />
@@ -129,6 +133,13 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
           <WalletSwitch />
           <Divider />
         </div>
+      )}
+
+      {chainHasSafeToken && (
+        <>
+          <Divider />
+          <SafeTokenWidget />
+        </>
       )}
 
       <Divider />
