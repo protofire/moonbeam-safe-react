@@ -3,10 +3,11 @@ import { Grid } from '@material-ui/core'
 
 import PendingTxsList from './PendingTxs/PendingTxsList'
 import Overview from './Overview/Overview'
-import SafeApps from './SafeApps'
-import { FeaturedApps } from './FeaturedApps/FeaturedApps'
+// import SafeApps from './SafeApps'
+// import { FeaturedApps } from './FeaturedApps/FeaturedApps'
+// import MobileAppBanner from './MobileAppBanner'
 import { DashboardTitle } from './styled'
-import RebrandingBanner from './RebrandingBanner'
+// import RebrandingBanner from './RebrandingBanner'
 
 const Dashboard = (): ReactElement => {
   return (
@@ -17,19 +18,17 @@ const Dashboard = (): ReactElement => {
         <Overview />
       </Grid>
 
-      <Grid item xs={12} md={12} lg={6}>
-        <RebrandingBanner />
-      </Grid>
+      {/* <MobileAppBanner /> */}
 
       <Grid item xs={12} md={6}>
         <PendingTxsList size={4} />
       </Grid>
 
-      <FeaturedApps />
+      {/* <FeaturedApps /> */}
 
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <SafeApps />
-      </Grid>
+      </Grid> */}
     </Grid>
   )
 }

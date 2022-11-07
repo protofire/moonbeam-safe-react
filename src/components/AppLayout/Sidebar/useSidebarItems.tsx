@@ -8,6 +8,7 @@ import ListIcon from 'src/components/List/ListIcon'
 import { currentSafeFeaturesEnabled, currentSafeWithNames } from 'src/logic/safe/store/selectors'
 import { grantedSelector } from 'src/routes/safe/container/selector'
 import { ADDRESSED_ROUTE, SAFE_SUBSECTION_ROUTE, generatePrefixedAddressRoutes } from 'src/routes/routes'
+import { IS_PRODUCTION } from 'src/utils/constants'
 import { hasFeature } from 'src/logic/safe/utils/safeVersion'
 import useSafeAddress from 'src/logic/currentSession/hooks/useSafeAddress'
 
@@ -106,11 +107,12 @@ const useSidebarItems = (): ListItemType[] => {
         iconType: 'settingsTool',
         href: currentSafeRoutes.SETTINGS_ADVANCED,
       }),
-      makeEntryItem({
-        label: 'Safe Apps Permissions',
-        iconType: 'info',
-        href: currentSafeRoutes.SETTINGS_SAFE_APPS_PERMISSIONS,
-      }),
+      !IS_PRODUCTION &&
+        makeEntryItem({
+          label: 'Safe Apps Permissions',
+          iconType: 'info',
+          href: currentSafeRoutes.SETTINGS_SAFE_APPS_PERMISSIONS,
+        }),
     ].filter(Boolean)
 
     return [

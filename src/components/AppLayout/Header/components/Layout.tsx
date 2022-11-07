@@ -4,6 +4,7 @@ import Popper from '@material-ui/core/Popper'
 import { withStyles } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 
+// import { getNetworkInfo } from 'src/config'
 import Provider from './Provider'
 import NetworkSelector from './NetworkSelector'
 import Spacer from 'src/components/Spacer'
@@ -11,15 +12,20 @@ import Col from 'src/components/layout/Col'
 import Row from 'src/components/layout/Row'
 import { headerHeight, md, screenSm, sm } from 'src/theme/variables'
 import { useStateHandler } from 'src/logic/hooks/useStateHandler'
-import { ROOT_ROUTE } from 'src/routes/routes'
+import SafeLogoMBEAM from '../assets/moonbeam_logo.svg'
+import SafeLogoMVR from '../assets/moonriver_logo.svg'
+import SafeLogoMBASE from '../assets/moonbase_logo.svg'
+import { WELCOME_ROUTE } from 'src/routes/routes'
 import WalletSwitch from 'src/components/WalletSwitch'
 import Divider from 'src/components/layout/Divider'
 import { shouldSwitchWalletChain } from 'src/logic/wallets/store/selectors'
+// import { currentChainId } from 'src/logic/config/store/selectors'
 import { useSelector } from 'react-redux'
-import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
-import Track from 'src/components/Track'
+// import { OVERVIEW_EVENTS } from 'src/utils/events/overview'
+// import Track from 'src/components/Track'
 import Notifications from 'src/components/AppLayout/Header/components/Notifications'
-import AnimatedLogo from 'src/components/AppLayout/Header/components/AnimatedLogo'
+import Img from 'src/components/layout/Img'
+// import AnimatedLogo from 'src/components/AppLayout/Header/components/AnimatedLogo'
 import SafeTokenWidget, { getSafeTokenAddress } from './SafeTokenWidget'
 import { _getChainId } from 'src/config'
 
@@ -103,17 +109,21 @@ const Layout = ({ classes, providerDetails, providerInfo }) => {
   const { clickAway: clickAwayWallet, open: openWallet, toggle: toggleWallet } = useStateHandler()
   const { clickAway: clickAwayNetworks, open: openNetworks, toggle: toggleNetworks } = useStateHandler()
   const isWrongChain = useSelector(shouldSwitchWalletChain)
+  // const chainId = useSelector(currentChainId)
   const chainId = _getChainId()
   const chainHasSafeToken = Boolean(getSafeTokenAddress(chainId))
 
   return (
     <Row className={classes.summary}>
       <Col className={classes.logo} middle="xs" start="xs">
-        <Track {...OVERVIEW_EVENTS.HOME}>
-          <Link to={ROOT_ROUTE}>
-            <AnimatedLogo />
-          </Link>
-        </Track>
+        <Link to={WELCOME_ROUTE}>
+          <Img
+            alt="Moonbeam Safe"
+            style={{ height: '52px', width: 'auto', padding: '8px' }}
+            src={chainId == '1285' ? SafeLogoMVR : chainId == '1284' ? SafeLogoMBEAM : SafeLogoMBASE}
+            testId="heading-gnosis-logo"
+          />
+        </Link>
       </Col>
 
       <Spacer />

@@ -32,7 +32,7 @@ const NoTransactionGuardLegend = (): ReactElement => (
   </InfoText>
 )
 
-const DOCS_LINK = 'https://docs.gnosis-safe.io/contracts/modules-1'
+// const DOCS_LINK = 'https://docs.gnosis-safe.io/contracts/modules-1'
 
 const Advanced = (): ReactElement => {
   const classes = useStyles()
@@ -49,8 +49,8 @@ const Advanced = (): ReactElement => {
           Safe Nonce
         </Title>
         <InfoText size="lg">
-          For security reasons, transactions made with Safe need to be executed in order. The nonce shows you which
-          transaction will be executed next. You can find the nonce for a transaction in the transaction details.
+          For security reasons, transactions made with Moonbeam Safe need to be executed in order. The nonce shows you
+          which transaction will be executed next. You can find the nonce for a transaction in the transaction details.
         </InfoText>
         <InfoText color="secondaryLight" size="xl">
           Current Nonce: <Bold data-testid={'current-nonce'}>{nonce}</Bold>
@@ -64,11 +64,7 @@ const Advanced = (): ReactElement => {
         </Title>
         <InfoText size="lg">
           Modules allow you to customize the access-control logic of your Safe. Modules are potentially risky, so make
-          sure to only use modules from trusted sources. Learn more about modules{' '}
-          <a href={DOCS_LINK} rel="noopener noreferrer" target="_blank">
-            here
-          </a>
-          .
+          sure to only use modules from trusted sources.
         </InfoText>
 
         {!moduleData || !moduleData.length ? <NoModuleLegend /> : <ModulesTable moduleData={moduleData} />}
@@ -82,16 +78,7 @@ const Advanced = (): ReactElement => {
           </Title>
           <InfoText size="lg">
             Transaction guards impose additional constraints that are checked prior to executing a Safe transaction.
-            Transaction guards are potentially risky, so make sure to only use modules from trusted sources. Learn more
-            about transaction guards{' '}
-            <a
-              href="https://help.gnosis-safe.io/en/articles/5324092-what-is-a-transaction-guard"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              here
-            </a>
-            .
+            Transaction guards are potentially risky, so make sure to only use modules from trusted sources.
           </InfoText>
 
           {!guard ? <NoTransactionGuardLegend /> : <TransactionGuard address={guard} />}

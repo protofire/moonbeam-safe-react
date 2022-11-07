@@ -65,6 +65,7 @@ const SafeDetails = (): ReactElement => {
     currentVersion: safeCurrentVersion,
     chainId = curChainId,
   } = useSelector(currentSafe)
+
   const safeNamesMap = useSelector(safesWithNamesAsMap)
   const safeName = safeNamesMap[safeAddress]?.name
 
@@ -168,8 +169,8 @@ const SafeDetails = (): ReactElement => {
             <Block className={classes.formContainer}>
               <Heading tag="h2">Modify Safe Name</Heading>
               <Paragraph>
-                You can change the name of this Safe. This name is only stored locally and never shared with us or any
-                third parties.
+                You can change the name of this Safe. This name is only stored locally and never shared with Moonbeam or
+                any third parties.
               </Paragraph>
               <Block className={classes.root}>
                 <Field

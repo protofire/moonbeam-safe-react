@@ -146,23 +146,12 @@ function LoadSafeAddressStep(): ReactElement {
     <Container data-testid={'load-safe-address-step'}>
       <Block margin="md">
         <Paragraph color="primary" noMargin size="lg">
-          You are about to add an existing Safe on <NetworkLabel />. First, choose a name and enter the Safe address.
-          The name is only stored locally and will never be shared with us or any third parties.
+          You are about to add an existing Moonbeam Safe on <NetworkLabel />. First, choose a name and enter the Safe
+          address. The name is only stored locally and will never be shared with Moonbeam or any third parties.
         </Paragraph>
         <Paragraph color="primary" size="lg">
           Your connected wallet does not have to be the owner of this Safe. In this case, the interface will provide you
           a read-only view.
-        </Paragraph>
-
-        <Paragraph color="primary" size="lg">
-          Don&apos;t have the address of the Safe you created?{' '}
-          <StyledLink
-            href="https://help.gnosis-safe.io/en/articles/4971293-i-don-t-remember-my-safe-address-where-can-i-find-it"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            This article explains how to find it.
-          </StyledLink>
         </Paragraph>
       </Block>
       <FieldContainer>
@@ -210,7 +199,7 @@ function LoadSafeAddressStep(): ReactElement {
             terms of use
           </StyledLink>
           {' and '}
-          <StyledLink href="https://gnosis-safe.io/privacy" rel="noopener noreferrer" target="_blank">
+          <StyledLink href="https://moonbeam.foundation/privacy-policy" rel="noopener noreferrer" target="_blank">
             privacy policy
           </StyledLink>
           .

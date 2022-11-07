@@ -15,6 +15,10 @@ src/types/contracts/
 src/types/gateway/
 tsconfig.tsbuildinfo
 public/**/*.js
+/moonbase
+/moonbase_prd
+/moonriver
+/moonriver_prd
 jest.results.json
 *.#*
 cypress/videos

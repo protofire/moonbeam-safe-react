@@ -3,6 +3,7 @@
   "version": "3.33.0",
   "description": "Allowing crypto users manage funds in a safer way",
   "website": "https://github.com/gnosis/safe-react#readme",
+  "homepage": "/",
   "bugs": {
     "url": "https://github.com/gnosis/safe-react/issues"
   },
@@ -15,7 +16,6 @@
     "name": "Safe Team",
     "email": "support@safe.global"
   },
-  "homepage": "/app",
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build": "cross-env REACT_APP_APP_VERSION=$npm_package_version rescripts --max-old-space-size=8192 build",
@@ -41,7 +41,8 @@
     "sentry-upload-sourcemaps": "sentry-cli --auth-token $SENTRY_AUTH_TOKEN releases -o $SENTRY_ORG -p $SENTRY_PROJECT files $npm_package_version upload-sourcemaps ./build/static/js/",
     "prepare": "husky install",
     "cypress:open": "node ./scripts/cypress.js open",
-    "cypress:run": "node ./scripts/cypress.js run"
+    "cypress:run": "node ./scripts/cypress.js run",
+    "optimize-images": "svgo -r -f ./src/components"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
