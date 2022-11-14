@@ -7,11 +7,11 @@ export const DEFAULT_CHAIN_ID =
   process.env.REACT_APP_DEFAULT_CHAIN_ID || (IS_PRODUCTION ? CHAIN_ID.MOONBEAM : CHAIN_ID.MOONBASE)
 export const PUBLIC_URL = process.env.PUBLIC_URL
 export const TX_SERVICE_VERSION = '1'
-export const INTERCOM_ID = IS_PRODUCTION ? process.env.REACT_APP_INTERCOM_ID : 'plssl1fl'
-export const BEAMER_ID = IS_PRODUCTION ? process.env.REACT_APP_BEAMER_ID : 'ehlRMhQi41258'
+export const INTERCOM_ID = IS_PRODUCTION ? process.env.REACT_APP_INTERCOM_ID : ''
+export const BEAMER_ID = IS_PRODUCTION ? process.env.REACT_APP_BEAMER_ID : ''
 export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN || ''
-export const PORTIS_ID = process.env.REACT_APP_PORTIS_ID ?? '852b763d-f28b-4463-80cb-846d7ec5806b'
-export const FORTMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY ?? 'pk_test_CAD437AA29BE0A40'
+export const PORTIS_ID = process.env.REACT_APP_PORTIS_ID || ''
+export const FORTMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY || ''
 export const INFURA_TOKEN = process.env.REACT_APP_INFURA_TOKEN || ''
 export const SAFE_APPS_RPC_TOKEN = process.env.REACT_APP_SAFE_APPS_RPC_INFURA_TOKEN || ''
 export const LATEST_SAFE_VERSION = process.env.REACT_APP_LATEST_SAFE_VERSION || '1.3.0'

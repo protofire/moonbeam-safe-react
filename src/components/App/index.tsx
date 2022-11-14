@@ -16,7 +16,6 @@ import ReceiveModal from './ReceiveModal'
 import { useSidebarItems } from 'src/components/AppLayout/Sidebar/useSidebarItems'
 import useAddressBookSync from 'src/logic/addressBook/hooks/useAddressBookSync'
 import { useCurrentSafeAddressSync } from 'src/logic/currentSession/hooks/useCurrentSafeAddressSync'
-import PsaBanner from '../PsaBanner'
 
 const Frame = styled.div`
   display: flex;
@@ -45,8 +44,6 @@ const App: React.FC = ({ children }) => {
 
   return (
     <Frame>
-      <PsaBanner />
-
       <AppLayout
         sidebarItems={sidebarItems}
         safeAddress={safeAddress}

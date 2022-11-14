@@ -61,6 +61,7 @@
       "features": [
         "CONTRACT_INTERACTION",
         "DOMAIN_LOOKUP",
+        "EIP1559",
         "ERC1155",
         "ERC721",
         "SAFE_APPS",
@@ -127,6 +128,7 @@
       "features": [
         "CONTRACT_INTERACTION",
         "DOMAIN_LOOKUP",
+        "EIP1559",
         "ERC1155",
         "ERC721",
         "SAFE_APPS",
@@ -191,6 +193,7 @@
       ],
       "features": [
         "CONTRACT_INTERACTION",
+        "EIP1559",
         "SAFE_APPS",
         "SPENDING_LIMIT"
       ]
