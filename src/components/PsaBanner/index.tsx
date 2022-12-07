@@ -6,23 +6,23 @@ import { currentChainId } from 'src/logic/config/store/selectors'
 import { hasFeature } from 'src/logic/safe/utils/safeVersion'
 import useCachedState from 'src/utils/storage/useCachedState'
 import styles from './index.module.scss'
-import Countdown from './Countdown'
+// import Countdown from './Countdown'
 
-const NEW_URL = 'https://app.safe.global'
+// const NEW_URL = 'https://app.safe.global'
 
-const redirectToNewApp = (): void => {
-  const path = window.location.pathname.replace(/^\/app/, '')
-  window.location.replace(NEW_URL + path)
-}
+// const redirectToNewApp = (): void => {
+//   const path = window.location.pathname.replace(/^\/app/, '')
+//   window.location.replace(NEW_URL + path)
+// }
 
 const BANNERS: Record<string, ReactElement | string> = {
   '*': (
     <>
-      ⚠️ Safe&apos;s new official URL is <a href={NEW_URL}>app.safe.global</a>.<br />
-      Please update your bookmarks.{' '}
-      <Countdown seconds={10} onEnd={redirectToNewApp}>
+      ⚠️ Moonbeam Multisig App will be down for a scheduled maintenance on Thursday 2022-12-15 from XX:XX UTC till XX:XX
+      UTC..{' '}
+      {/* <Countdown seconds={10} onEnd={redirectToNewApp}>
         {(count) => <>Redirecting in {count} seconds...</>}
-      </Countdown>
+      </Countdown> */}
     </>
   ),
 }
