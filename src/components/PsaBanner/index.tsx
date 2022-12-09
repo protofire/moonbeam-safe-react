@@ -18,8 +18,8 @@ import styles from './index.module.scss'
 const BANNERS: Record<string, ReactElement | string> = {
   '*': (
     <>
-      ⚠️ Moonbeam Multisig App will be down for a scheduled maintenance on Thursday 2022-12-15 from XX:XX UTC till XX:XX
-      UTC..{' '}
+      ⚠️ Moonbeam Multisig App will be down for a scheduled maintenance on Thursday 2022-12-15 from 07:00AM UTC till 08:00AM
+      UTC{' '}
       {/* <Countdown seconds={10} onEnd={redirectToNewApp}>
         {(count) => <>Redirecting in {count} seconds...</>}
       </Countdown> */}
