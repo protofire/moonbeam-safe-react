@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy" content="script-src 'localhost:' 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'self'; style-src 'self' 'unsafe-inline'; media-src *">
 <script>
   ;(function () {
     const allowedOrigins = [
-      'https://web-core.pages.dev',
-      'https://beta.safe.global',
-      'https://app.safe.global',
+        'https://localhost',
+        'https://new.staging.multisig.moonbeam.network'
+
     ]
     // Send the entire localStorage if the origin is allowed
     window.addEventListener('message', function (event) {
