@@ -18,8 +18,8 @@ import styles from './index.module.scss'
 const BANNERS: Record<string, ReactElement | string> = {
   '*': (
     <>
-      ⚠️ Moonbeam Multisig App will be down for a scheduled maintenance on Thursday 2022-12-15 from 07:00AM UTC till 08:00AM
-      UTC{' '}
+      ⚠️ Moonbeam Multisig App will be down for a scheduled maintenance on Thursday 2022-12-15 from 07:00AM UTC till
+      08:00AM UTC{' '}
       {/* <Countdown seconds={10} onEnd={redirectToNewApp}>
         {(count) => <>Redirecting in {count} seconds...</>}
       </Countdown> */}
@@ -27,13 +27,13 @@ const BANNERS: Record<string, ReactElement | string> = {
   ),
 }
 
-const WARNING_BANNER = 'WARNING_BANNER'
+const WARNING_BANNER_V1 = 'WARNING_BANNER_V1'
 
 const PsaBanner = (): ReactElement | null => {
   const chainId = useSelector(currentChainId)
   const banner = BANNERS[chainId] || BANNERS['*']
-  const isEnabled = hasFeature(WARNING_BANNER as FEATURES)
-  const [closed = false, setClosed] = useCachedState<boolean>(`${WARNING_BANNER}_${chainId}_closed`, true)
+  const isEnabled = hasFeature(WARNING_BANNER_V1 as FEATURES)
+  const [closed = false, setClosed] = useCachedState<boolean>(`${WARNING_BANNER_V1}_${chainId}_closed`, true)
 
   const showBanner = Boolean(isEnabled && banner && !closed)
 
